@@ -8,11 +8,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('branches', BranchController::class);
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::resource('branches', BranchController::class);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

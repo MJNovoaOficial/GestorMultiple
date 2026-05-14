@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,9 @@ class BranchController extends Controller
      */
     public function index()
     {
-        return view('branches.index');
+        $branches = Branch::latest()->get();
+
+        return view('branches.index', compact('branches'));
     }
 
     /**

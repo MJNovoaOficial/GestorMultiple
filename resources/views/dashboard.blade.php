@@ -1,17 +1,57 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
-        </div>
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            Dashboard
+        </h1>
+
+        <p class="text-gray-500">
+            Bienvenido al sistema de gestión IP.
+        </p>
     </div>
+
+    <div class="grid grid-cols-4 gap-6">
+
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-gray-500 text-sm">
+                Total IPs
+            </h2>
+
+            <p class="text-3xl font-bold mt-2">
+                0
+            </p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-gray-500 text-sm">
+                Sucursales
+            </h2>
+
+            <p class="text-3xl font-bold mt-2">
+                0
+            </p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-gray-500 text-sm">
+                IPs libres
+            </h2>
+
+            <p class="text-3xl font-bold mt-2">
+                0
+            </p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6">
+            <h2 class="text-gray-500 text-sm">
+                IPs asignadas
+            </h2>
+
+            <p class="text-3xl font-bold mt-2">
+                0
+            </p>
+        </div>
+
+    </div>
+
 </x-app-layout>
