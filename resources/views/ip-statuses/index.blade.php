@@ -24,6 +24,16 @@
         </div>
 
         <div class="bg-gray-950 rounded-2xl overflow-hidden shadow-lg">
+            
+            @php
+                $colors = [
+                'green' => 'bg-green-500',
+                'blue' => 'bg-blue-500',
+                'yellow' => 'bg-yellow-500',
+                'red' => 'bg-red-500',
+                'orange' => 'bg-orange-500',
+                ];
+            @endphp
 
             <table class="w-full">
 
@@ -62,7 +72,7 @@
                             {{-- Estado --}}
                             <td class="px-6 py-4">
 
-                                <span class="{{ $ipStatus->color }} text-white px-3 py-1 rounded-full text-sm">
+                                <span class="{{ $colors[$ipStatus->color] ?? 'bg-gray-500' }} text-white px-3 py-1 rounded-full text-sm">
                                     {{ $ipStatus->name }}
                                 </span>
 

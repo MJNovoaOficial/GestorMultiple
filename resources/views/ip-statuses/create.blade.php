@@ -42,17 +42,35 @@
                 <div class="mb-6">
 
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Clase color Tailwind
+                        ¿Qué Color?
                     </label>
 
-                    <input
-                        type="text"
+                    <select
                         name="color"
-                        value="{{ old('color') }}"
-                        placeholder="Ej: bg-green-500"
                         class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
-                        required
                     >
+
+                        <option value="green">
+                            🟢 Verde
+                        </option>
+
+                        <option value="blue">
+                            🔵 Azul
+                        </option>
+
+                        <option value="yellow">
+                            🟡 Amarillo
+                        </option>
+
+                        <option value="red">
+                            🔴 Rojo
+                        </option>
+
+                        <option value="orange">
+                            🟠 Naranjo
+                        </option>
+                        
+                    </select>
 
                     @error('color')
                         <p class="text-red-400 text-sm mt-2">

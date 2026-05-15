@@ -24,7 +24,7 @@
                         type="text"
                         name="name"
                         value="{{ old('name') }}"
-                        placeholder="Ej: TI"
+                        placeholder="Ej: Notebook"
                         class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
                         required
                     >

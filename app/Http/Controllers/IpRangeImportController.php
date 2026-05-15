@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Branch;
 use App\Models\IpStatus;
+use App\Models\IpAddress;
 
 class IpRangeImportController extends Controller
 {

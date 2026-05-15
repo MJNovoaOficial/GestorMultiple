@@ -36,16 +36,35 @@
                 <div class="mb-6">
 
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Clase color Tailwind
+                        ¿Cambiará de color? Seleccione el nuevo color o deje el mismo para no cambiarlo.
                     </label>
 
-                    <input
-                        type="text"
+                    <select
                         name="color"
-                        value="{{ old('color', $ipStatus->color) }}"
                         class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
-                        required
                     >
+
+                        <option value="green">
+                            🟢 Verde
+                        </option>
+
+                        <option value="blue">
+                            🔵 Azul
+                        </option>
+
+                        <option value="yellow">
+                            🟡 Amarillo
+                        </option>
+
+                        <option value="red">
+                            🔴 Rojo
+                        </option>
+
+                        <option value="orange">
+                            🟠 Naranjo
+                        </option>
+
+                    </select>
 
                 </div>
 

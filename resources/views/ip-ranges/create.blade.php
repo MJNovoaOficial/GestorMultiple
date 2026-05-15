@@ -101,6 +101,28 @@
                         @foreach($ipStatuses as $status)
 
                             <option value="{{ $status->id }}">
+                                @switch($status->color)
+                                    @case('green')
+                                        🟢
+                                        @break
+
+                                    @case('blue')
+                                        🔵
+                                        @break
+
+                                    @case('yellow')
+                                        🟡
+                                        @break
+
+                                    @case('red')
+                                        🔴
+                                        @break
+
+                                    @case('orange')
+                                        🟠
+                                        @break
+                                @endswitch
+
                                 {{ $status->name }}
                             </option>
 
