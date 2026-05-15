@@ -26,11 +26,12 @@
             <thead class="bg-gray-800 text-gray-300">
 
                 <tr>
-                    <th class="p-4">ID</th>
+                    
                     <th class="p-4">Nombre</th>
                     <th class="p-4">Ciudad</th>
                     <th class="p-4">Creado</th>
-                    <th class="p-4">Acciones</th>
+                    <th class="p-4">Actualizado</th>
+                    <th class="px-6 py-4">Acciones</th>
                 </tr>
 
             </thead>
@@ -40,10 +41,6 @@
                 @forelse($branches as $branch)
 
                     <tr class="border-t border-gray-800 text-gray-200">
-
-                        <td class="p-4">
-                            {{ $branch->id }}
-                        </td>
 
                         <td class="p-4">
                             {{ $branch->name }}
@@ -58,12 +55,43 @@
                         </td>
 
                         <td class="p-4">
+                            @if($branch->created_at->equalTo($branch->updated_at))
+                            <span class="text-gray-500">
+                                Sin actualización
+                            </span>
+                            @else
+                                {{ $branch->updated_at->format('d/m/Y') }}
+                            @endif
+                        </td>    
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                {{-- Editar --}}
+                                <a
+                                    href="{{ route('branches.edit', $branch) }}"
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white p-2 rounded-lg transition"
+                                    title="Editar"
+                                >
+                                    ✏️
+                                </a>
+                                
+                                {{-- Eliminar --}}
+                                <form
+                                    action="{{ route('branches.destroy', $branch) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('¿Eliminar sucursal?')"
+                                >
+                                    @csrf
+                                    @method('DELETE')
 
-                            <a href="{{ route('branches.edit', $branch) }}"
-                               class="text-indigo-400 hover:text-indigo-300">
-                                Editar
-                            </a>
-
+                                    <button
+                                        type="submit"
+                                        class="bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg transition"
+                                        title="Eliminar"
+                                    >
+                                        🗑️
+                                    </button>
+                                </form>
+                            </div>
                         </td>
 
                     </tr>

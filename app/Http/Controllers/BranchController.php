@@ -6,24 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use Illuminate\Http\Request;
 
+
 class BranchController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $branches = Branch::latest()->get();
-
         return view('branches.index', compact('branches'));
+        
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        return view('branches.create');
     }
 
     /**
@@ -31,13 +30,25 @@ class BranchController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'city' => 'nullable|string|max:255',
+        ]);
+
+        Branch::create([
+            'name' => $request->name,
+            'city' => $request->city,
+        ]);
+
+        return redirect()
+            ->route('branches.index')
+            ->with('success', 'Sucursal creada correctamente.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Branch $branch)
+    public function show(string $id)
     {
         //
     }
@@ -45,7 +56,7 @@ class BranchController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Branch $branch)
+    public function edit(string $id)
     {
         //
     }
@@ -53,7 +64,7 @@ class BranchController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Branch $branch)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -61,7 +72,7 @@ class BranchController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Branch $branch)
+    public function destroy(string $id)
     {
         //
     }

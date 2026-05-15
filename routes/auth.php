@@ -61,8 +61,7 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->middleware(['verified'])->name('dashboard');
 
-    Route::resource('branches', BranchController::class);
-    
+
 });
 
 
