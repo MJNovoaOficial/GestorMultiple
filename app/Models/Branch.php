@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\IpAddress;
 
 class Branch extends Model
 {
@@ -11,9 +10,6 @@ class Branch extends Model
         'name',
         'city',
     ];
-    public function ipAddresses()
-    {
-        return $this->hasMany(IpAddress::class);
-    }
+    
 }
 

@@ -20,9 +20,11 @@
             <div class="w-full sm:max-w-md">
 
                 <div class="text-center mb-8">
-                    <h1 class="text-4xl font-bold text-white">
-                        Gestor IP
-                    </h1>
+                    <img
+                        src="{{ asset('images/logo.png') }}"
+                        alt="MultiGestor"
+                        class="h-20 w-auto mx-auto"
+                    >
 
                     <p class="text-gray-400 mt-2">
                         Administración de direcciones IP empresariales

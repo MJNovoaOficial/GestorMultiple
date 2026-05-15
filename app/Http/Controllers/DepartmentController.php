@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Models\Branch;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
-
-class BranchController extends Controller
+class DepartmentController extends Controller
 {
     public function index()
     {
-        $branches = Branch::latest()->get();
-        return view('branches.index', compact('branches'));
+        $departments = Department::latest()->get();
+        return view('departments.index', compact('departments'));
         
     }
     /**
@@ -20,7 +18,7 @@ class BranchController extends Controller
      */
     public function create()
     {
-        return view('branches.create');
+        return view('departments.create');
     }
 
     /**
@@ -30,17 +28,15 @@ class BranchController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'city' => 'nullable|string|max:255',
         ]);
 
-        Branch::create([
+        Department::create([
             'name' => $request->name,
-            'city' => $request->city,
         ]);
 
         return redirect()
-            ->route('branches.index')
-            ->with('success', 'Sucursal creada correctamente.');
+            ->route('departments.index')
+            ->with('success', 'Departamento creado correctamente.');
     }
 
     /**
@@ -54,41 +50,39 @@ class BranchController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Branch $branch)
+    public function edit(Department $department)
     {
 
-        return view('branches.edit', compact('branch'));
+        return view('departments.edit', compact('department'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Branch $branch)
+    public function update(Request $request, Department $department)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'city' => 'nullable|string|max:255',
         ]);
 
-        $branch->update([
+        $department->update([
             'name' => $request->name,
-            'city' => $request->city,
         ]);
 
         return redirect()
-            ->route('branches.index')
-            ->with('success', 'Sucursal actualizada correctamente.');
+            ->route('departments.index')
+            ->with('success', 'Departamento actualizado correctamente.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Branch $branch)
+    public function destroy(Department $department)
     {
-        $branch->delete();
+        $department->delete();
 
         return redirect()
-            ->route('branches.index')
-            ->with('success', 'Sucursal eliminada correctamente.');
+            ->route('departments.index')
+            ->with('success', 'Departamento eliminado correctamente.');
     }
 }

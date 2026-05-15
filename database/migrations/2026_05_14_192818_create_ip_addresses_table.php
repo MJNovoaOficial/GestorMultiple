@@ -13,6 +13,33 @@ return new class extends Migration
     {
         Schema::create('ip_addresses', function (Blueprint $table) {
             $table->id();
+
+            $table->ipAddress('ip_address')->unique();
+
+            $table->foreignId('branch_id')
+                ->constrained()
+                ->onDelete('cascade');
+
+            $table->foreignId('department_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+
+            $table->foreignId('device_type_id')
+                ->nullable()
+                ->constrained()
+                ->nullOnDelete();
+
+            $table->foreignId('ip_status_id')
+                ->constrained()
+                ->onDelete('cascade');
+
+            $table->string('hostname')->nullable();
+
+            $table->string('mac_address')->nullable();
+
+            $table->text('description')->nullable();
+
             $table->timestamps();
         });
     }

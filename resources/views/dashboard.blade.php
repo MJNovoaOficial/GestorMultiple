@@ -2,11 +2,11 @@
 
     <div class="mb-6">
         <h1 class="text-3xl font-bold text-gray-800">
-            Dashboard
+            Bienvenido al Gestor de Múltiples Servicios.
         </h1>
 
         <p class="text-gray-500">
-            Bienvenido al sistema de gestión IP.
+            Información importante, pronto estará disponible en esta sección.
         </p>
     </div>
 

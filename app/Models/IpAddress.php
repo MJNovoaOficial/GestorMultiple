@@ -7,15 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class IpAddress extends Model
 {
     protected $fillable = [
-    'branch_id',
-    'department_id',
-    'device_type_id',
-    'ip_status_id',
-    'ip_address',
-    'assigned_user',
-    'uses_vnc',
-    'vnc_password',
-    'observations',
+        'ip_address',
+        'branch_id',
+        'department_id',
+        'device_type_id',
+        'ip_status_id',
+        'hostname',
+        'mac_address',
+        'description',
     ];
 
     public function branch()
@@ -33,9 +32,9 @@ class IpAddress extends Model
         return $this->belongsTo(DeviceType::class);
     }
 
-    public function status()
+    public function ipStatus()
     {
-        return $this->belongsTo(IpStatus::class, 'ip_status_id');
+        return $this->belongsTo(IpStatus::class);
     }
 }
 

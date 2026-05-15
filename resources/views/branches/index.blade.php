@@ -1,42 +1,42 @@
 <x-app-layout>
 
-    <div class="flex items-center justify-between mb-6">
+    <div class="p-6">
 
-        <div>
-            <h1 class="text-3xl font-bold text-white">
-                Sucursales
-            </h1>
+        <div class="flex items-center justify-between mb-6">
 
-            <p class="text-gray-400">
-                Gestión de sucursales del sistema
-            </p>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">
+                    Sucursales
+                </h1>
+
+                <p class="text-gray-400 mt-1">
+                    Gestión de sucursales del sistema
+                </p>
+            </div>
+
+            <a
+                href="{{ route('branches.create') }}"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-lg transition"
+            >
+                Nueva sucursal
+            </a>
         </div>
 
-        <a href="{{ route('branches.create') }}"
-           class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg">
-            Nueva sucursal
-        </a>
+        <div class="bg-gray-950 rounded-2xl overflow-hidden shadow-lg">
 
-    </div>
+            <table class="w-full">
 
-    <div class="bg-gray-900 rounded-xl shadow overflow-hidden">
+                <thead class="bg-gray-800 text-gray-200">
+                    <tr>
+                        <th class="px-6 py-4 text-left">Nombre</th>
+                        <th class="px-6 py-4 text-left">Ciudad</th>
+                        <th class="px-6 py-4 text-left">Creado</th>
+                        <th class="px-6 py-4 text-left">Actualizado</th>
+                        <th class="px-6 py-4 text-left">Acciones</th>
+                    </tr>
+                </thead>
 
-        <table class="w-full text-left">
-
-            <thead class="bg-gray-800 text-gray-300">
-
-                <tr>
-                    
-                    <th class="p-4">Nombre</th>
-                    <th class="p-4">Ciudad</th>
-                    <th class="p-4">Creado</th>
-                    <th class="p-4">Actualizado</th>
-                    <th class="px-6 py-4">Acciones</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
+            <tbody class="divide-y divide-gray-800">
 
                 @forelse($branches as $branch)
 
@@ -114,7 +114,7 @@
             </tbody>
 
         </table>
-
+        </div>
     </div>
 
 </x-app-layout>
