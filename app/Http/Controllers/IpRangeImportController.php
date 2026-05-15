@@ -34,11 +34,28 @@ class IpRangeImportController extends Controller
 
         for ($ip = $start; $ip <= $end; $ip++) {
 
+            $currentIp = long2ip($ip);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Evitar IPs reservadas
+            |--------------------------------------------------------------------------
+            */
+
+            $lastOctet = explode('.', $currentIp)[3];
+
+            if ($lastOctet == 0 ) {
+
+                continue;
+
+            }
+
             IpAddress::create([
-                'ip_address' => long2ip($ip),
+                'ip_address' => $currentIp,
                 'branch_id' => $request->branch_id,
                 'ip_status_id' => $request->ip_status_id,
             ]);
+
         }
 
         return redirect()

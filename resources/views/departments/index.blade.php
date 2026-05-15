@@ -29,19 +29,19 @@
 
                 <thead class="bg-gray-800 text-gray-200">
                     <tr>
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Nombre
                         </th>
 
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Creado
                         </th>
 
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Actualizado
                         </th>
 
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Acciones
                         </th>
                     </tr>
@@ -53,15 +53,15 @@
 
                         <tr class="hover:bg-gray-900 transition">
 
-                            <td class="px-6 py-4 text-white">
+                            <td class="px-6 py-4 text-white text-center">
                                 {{ $department->name }}
                             </td>
 
-                            <td class="px-6 py-4 text-gray-300">
+                            <td class="px-6 py-4 text-gray-300 text-center">
                                 {{ $department->created_at->format('d/m/Y') }}
                             </td>
 
-                            <td class="px-6 py-4 text-gray-300">
+                            <td class="px-6 py-4 text-gray-300 text-center">
                                 @if($department->created_at->equalTo($department->updated_at))
                                     <span class="text-gray-500">
                                         Sin actualización
@@ -73,7 +73,7 @@
 
                             <td class="px-6 py-4">
 
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center justify-center gap-2">
 
                                     {{-- Editar --}}
                                     <a

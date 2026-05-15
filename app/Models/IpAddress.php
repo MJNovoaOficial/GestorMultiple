@@ -12,10 +12,14 @@ class IpAddress extends Model
         'department_id',
         'device_type_id',
         'ip_status_id',
-        'hostname',
-        'mac_address',
-        'description',
+        'user_assigned',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relaciones
+    |--------------------------------------------------------------------------
+    */
 
     public function branch()
     {

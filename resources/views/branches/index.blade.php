@@ -28,11 +28,10 @@
 
                 <thead class="bg-gray-800 text-gray-200">
                     <tr>
-                        <th class="px-6 py-4 text-left">Nombre</th>
-                        <th class="px-6 py-4 text-left">Ciudad</th>
-                        <th class="px-6 py-4 text-left">Creado</th>
-                        <th class="px-6 py-4 text-left">Actualizado</th>
-                        <th class="px-6 py-4 text-left">Acciones</th>
+                        <th class="px-6 py-4 text-center">Nombre</th>
+                        <th class="px-6 py-4 text-center">Creado</th>
+                        <th class="px-6 py-4 text-center">Actualizado</th>
+                        <th class="px-6 py-4 text-center">Acciones</th>
                     </tr>
                 </thead>
 
@@ -42,19 +41,15 @@
 
                     <tr class="border-t border-gray-800 text-gray-200">
 
-                        <td class="p-4">
+                        <td class="p-4 text-center">
                             {{ $branch->name }}
                         </td>
 
-                        <td class="p-4">
-                            {{ $branch->city }}
-                        </td>
-
-                        <td class="p-4">
+                        <td class="p-4 text-center">
                             {{ $branch->created_at->format('d/m/Y') }}
                         </td>
 
-                        <td class="p-4">
+                        <td class="p-4 text-center">
                             @if($branch->created_at->equalTo($branch->updated_at))
                             <span class="text-gray-500">
                                 Sin actualización
@@ -63,8 +58,8 @@
                                 {{ $branch->updated_at->format('d/m/Y') }}
                             @endif
                         </td>    
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-2">
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
                                 {{-- Editar --}}
                                 <a
                                     href="{{ route('branches.edit', $branch) }}"

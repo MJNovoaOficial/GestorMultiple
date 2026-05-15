@@ -40,23 +40,23 @@
                 <thead class="bg-gray-800 text-gray-200">
                     <tr>
 
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Estado
                         </th>
 
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Color
                         </th>
 
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Creado
                         </th>
 
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Actualizado
                         </th>
 
-                        <th class="px-6 py-4 text-left">
+                        <th class="px-6 py-4 text-center">
                             Acciones
                         </th>
 
@@ -70,7 +70,7 @@
                         <tr class="hover:bg-gray-900 transition">
 
                             {{-- Estado --}}
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 text-center">
 
                                 <span class="{{ $colors[$ipStatus->color] ?? 'bg-gray-500' }} text-white px-3 py-1 rounded-full text-sm">
                                     {{ $ipStatus->name }}
@@ -79,17 +79,17 @@
                             </td>
 
                             {{-- Clase color --}}
-                            <td class="px-6 py-4 text-gray-300">
+                            <td class="px-6 py-4 text-gray-300 text-center">
                                 {{ $ipStatus->color }}
                             </td>
 
                             {{-- Creado --}}
-                            <td class="px-6 py-4 text-gray-300">
+                            <td class="px-6 py-4 text-gray-300 text-center">
                                 {{ $ipStatus->created_at->format('d/m/Y') }}
                             </td>
 
                             {{-- Actualizado --}}
-                            <td class="px-6 py-4 text-gray-300">
+                            <td class="px-6 py-4 text-gray-300 text-center">
 
                                 @if($ipStatus->created_at->equalTo($ipStatus->updated_at))
 
@@ -106,9 +106,9 @@
                             </td>
 
                             {{-- Acciones --}}
-                            <td class="px-6 py-4">
+                            <td class="px-6 py-4 text-center">
 
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center justify-center gap-2">
 
                                     <a
                                         href="{{ route('ip-statuses.edit', $ipStatus) }}"
