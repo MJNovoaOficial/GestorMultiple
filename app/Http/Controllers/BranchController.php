@@ -56,17 +56,30 @@ class BranchController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Branch $branch)
     {
-        //
+
+        return view('branches.edit', compact('branch'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Branch $branch)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'city' => 'nullable|string|max:255',
+        ]);
+
+        $branch->update([
+            'name' => $request->name,
+            'city' => $request->city,
+        ]);
+
+        return redirect()
+            ->route('branches.index')
+            ->with('success', 'Sucursal actualizada correctamente.');
     }
 
     /**
