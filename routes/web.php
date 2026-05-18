@@ -8,6 +8,11 @@ use App\Http\Controllers\DeviceTypeController;
 use App\Http\Controllers\IpStatusController;
 use App\Http\Controllers\IpRangeImportController;
 use App\Http\Controllers\IpAddressController;
+use App\Http\Controllers\EmailCredentialController;
+use App\Http\Controllers\PasswordGeneratorController;
+use App\Http\Controllers\PasswordRevealController;
+use App\Http\Controllers\AuditController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
    
@@ -40,6 +45,28 @@ Route::middleware('auth')->group(function () {
             return view('dashboard');
         })->name('dashboard');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Usuarios
+        |--------------------------------------------------------------------------
+        */
+        Route::resource('users', UserController::class);
+        Route::get('/users', [UserController::class, 'index'])
+            ->name('users.index');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo Gestor Passwords
+        |--------------------------------------------------------------------------
+        */
+        
+        Route::post('/passwords/generate',[PasswordGeneratorController::class, 'generate'])
+            ->name('passwords.generate');
+
+        Route::post('/passwords/{password}/reveal',[PasswordRevealController::class, 'reveal'])
+            ->name('passwords.reveal');
+
+        Route::resource('passwords', EmailCredentialController::class);
 
         /*
         |--------------------------------------------------------------------------
@@ -58,12 +85,19 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/ip-addresses/{ip}/release', [IpAddressController::class, 'release'])
             ->name('ip-addresses.release');
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Auditoría
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/audits',[AuditController::class, 'index'])
+            ->name('audits.index');
         /*
         |--------------------------------------------------------------------------
         | Solo Superadmin
         |--------------------------------------------------------------------------
         */
-
         Route::middleware(['superadmin'])->group(function () {
 
             /*

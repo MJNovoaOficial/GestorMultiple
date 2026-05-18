@@ -47,6 +47,7 @@
                         id="branchFilterForm"
                         method="GET"
                         action="{{ route('ip-addresses.index') }}"
+                        class="flex items-center gap-4 flex-wrap"
                     >
 
                         <select
@@ -81,6 +82,23 @@
                             @endforeach
 
                         </select>
+
+                        <input
+                            type="text"
+                            id="globalSearch"
+                            placeholder="Buscar IP, usuario, dispositivo, sucursal..."
+                            class="
+                                w-full md:w-96
+                                bg-[#1E293B]
+                                border border-gray-700
+                                text-white
+                                rounded-xl
+                                px-4 py-3
+                                text-sm
+                                focus:ring-2 focus:ring-indigo-500
+                                focus:border-indigo-500
+                            "
+                        >
 
                     </form>
 
@@ -173,42 +191,45 @@
 
                         <tr
                             x-data="{ editing: false }"
-                            class="border-b border-gray-800 hover:bg-[#0F172A] transition"
+
+                            data-search="{{ strtolower(
+                                $ip->ip_address . ' ' .
+                                ($ip->ipStatus?->name ?? '') . ' ' .
+                                ($ip->user_assigned ?? '') . ' ' .
+                                ($ip->deviceType?->name ?? '') . ' ' .
+                                ($ip->branch?->name ?? '') . ' ' .
+                                ($ip->department?->name ?? '')
+                            ) }}"
+
+                            class="ip-row border-b border-gray-800 hover:bg-[#0F172A] transition"
                         >
 
-                            <form
-                                method="POST"
-                                action="{{ route('ip-addresses.update', $ip) }}"
-                            >
+                            {{-- IP --}}
+                            <td class="px-6 py-4 text-white font-medium">
+                                {{ $ip->ip_address }}
+                            </td>
 
-                                @csrf
-                                @method('PUT')
+                            {{-- Estado --}}
+                            <td class="px-6 py-4 text-center">
 
-                                {{-- IP --}}
-                                <td class="px-6 py-4 text-white font-medium">
-                                    {{ $ip->ip_address }}
-                                </td>
+                                <span class="
+                                    {{ $colors[$ip->ipStatus->color] ?? 'bg-gray-500' }}
+                                    text-white
+                                    px-3 py-1
+                                    rounded-full
+                                    text-sm
+                                ">
+                                    {{ $ip->ipStatus->name }}
+                                </span>
 
-                                {{-- Estado --}}
-                                <td class="px-6 py-4 text-center">
+                            </td>
 
-                                    <span class="
-                                        {{ $colors[$ip->ipStatus->color] ?? 'bg-gray-500' }}
-                                        text-white
-                                        px-3 py-1
-                                        rounded-full
-                                        text-sm
-                                    ">
-                                        {{ $ip->ipStatus->name }}
-                                    </span>
+                            {{-- Usuario Responsable --}}
+                            <td class="px-6 py-4 text-center text-gray-300">
 
-                                </td>
+                                <template x-if="!editing">
 
-                                {{-- Usuario Responsable --}}
-                                <td class="px-6 py-4 text-center text-gray-300">
-
-                                    {{-- Vista normal --}}
-                                    <div x-show="!editing">
+                                    <div>
 
                                         @if ($ip->user_assigned)
 
@@ -224,14 +245,18 @@
 
                                     </div>
 
-                                    {{-- Vista edición --}}
-                                    <div x-show="editing">
+                                </template>
+
+                                <template x-if="editing">
+
+                                    <div>
 
                                         <input
                                             type="text"
                                             name="user_assigned"
                                             value="{{ $ip->user_assigned }}"
                                             placeholder="Usuario responsable"
+                                            form="form-{{ $ip->id }}"
                                             class="
                                                 bg-[#1E293B]
                                                 border border-gray-700
@@ -245,13 +270,16 @@
 
                                     </div>
 
-                                </td>
+                                </template>
 
-                                {{-- Tipo de dispositivo --}}
-                                <td class="px-6 py-4 text-center text-gray-300">
+                            </td>
 
-                                    {{-- Vista normal --}}
-                                    <div x-show="!editing">
+                            {{-- Tipo de dispositivo --}}
+                            <td class="px-6 py-4 text-center text-gray-300">
+
+                                <template x-if="!editing">
+
+                                    <div>
 
                                         @if($ip->deviceType)
 
@@ -267,11 +295,15 @@
 
                                     </div>
 
-                                    {{-- Vista edición --}}
-                                    <div x-show="editing">
+                                </template>
+
+                                <template x-if="editing">
+
+                                    <div>
 
                                         <select
                                             name="device_type_id"
+                                            form="form-{{ $ip->id }}"
                                             class="
                                                 bg-[#1E293B]
                                                 border border-gray-700
@@ -302,30 +334,33 @@
 
                                     </div>
 
-                                </td>
+                                </template>
 
-                                {{-- Sucursal --}}
-                                <td class="px-6 py-4 text-center text-gray-300">
+                            </td>
 
-                                    @if($ip->branch)
+                            {{-- Sucursal --}}
+                            <td class="px-6 py-4 text-center text-gray-300">
 
-                                        {{ $ip->branch->name }}
+                                @if($ip->branch)
 
-                                    @else
+                                    {{ $ip->branch->name }}
 
-                                        <span class="text-gray-500 italic">
-                                            Sin asignación
-                                        </span>
+                                @else
 
-                                    @endif
+                                    <span class="text-gray-500 italic">
+                                        Sin asignación
+                                    </span>
 
-                                </td>
+                                @endif
 
-                                {{-- Departamento --}}
-                                <td class="px-6 py-4 text-center text-gray-300">
+                            </td>
 
-                                    {{-- Vista normal --}}
-                                    <div x-show="!editing">
+                            {{-- Departamento --}}
+                            <td class="px-6 py-4 text-center text-gray-300">
+
+                                <template x-if="!editing">
+
+                                    <div>
 
                                         @if($ip->department)
 
@@ -341,11 +376,15 @@
 
                                     </div>
 
-                                    {{-- Vista edición --}}
-                                    <div x-show="editing">
+                                </template>
+
+                                <template x-if="editing">
+
+                                    <div>
 
                                         <select
                                             name="department_id"
+                                            form="form-{{ $ip->id }}"
                                             class="
                                                 bg-[#1E293B]
                                                 border border-gray-700
@@ -376,28 +415,43 @@
 
                                     </div>
 
-                                </td>
+                                </template>
 
-                                {{-- Acciones --}}
-                                <td class="px-6 py-4">
+                            </td>
 
-                                    <div class="flex items-center justify-center gap-2">
+                            {{-- Acciones --}}
+                            <td class="px-6 py-4">
 
-                                        {{-- Editar --}}
-                                        <button
-                                            type="button"
-                                            @click="editing = !editing"
-                                            class="bg-yellow-500 hover:bg-yellow-600
-                                                   text-white p-2 rounded-lg transition"
-                                        >
-                                            ✏️
-                                        </button>
+                                <div class="flex items-center justify-center gap-2">
 
-                                        {{-- Guardar --}}
-                                        <div x-show="editing">
+                                    {{-- Formulario --}}
+                                    <form
+                                        id="form-{{ $ip->id }}"
+                                        method="POST"
+                                        action="{{ route('ip-addresses.update', $ip) }}"
+                                    >
+                                        @csrf
+                                        @method('PUT')
+                                    </form>
+
+                                    {{-- Editar --}}
+                                    <button
+                                        type="button"
+                                        @click="editing = !editing"
+                                        class="bg-yellow-500 hover:bg-yellow-600
+                                               text-white p-2 rounded-lg transition"
+                                    >
+                                        ✏️
+                                    </button>
+
+                                    {{-- Guardar --}}
+                                    <template x-if="editing">
+
+                                        <div>
 
                                             <button
                                                 type="submit"
+                                                form="form-{{ $ip->id }}"
                                                 class="bg-green-600 hover:bg-green-500
                                                        text-white p-2 rounded-lg transition"
                                             >
@@ -406,37 +460,37 @@
 
                                         </div>
 
-                                        {{-- Ping --}}
-                                        <button
-                                            type="button"
-                                            data-ip="{{ $ip->ip_address }}"
-                                            class="
-                                                ping-btn
-                                                bg-blue-500 hover:bg-blue-600
-                                                text-white p-2 rounded-lg transition
-                                            "
-                                        >
-                                            📡
-                                        </button>
+                                    </template>
 
-                                        {{-- Liberar --}}
-                                        <button
-                                            type="button"
-                                            data-id="{{ $ip->id }}"
-                                            class="
-                                                release-btn
-                                                bg-green-600 hover:bg-green-500
-                                                text-white p-2 rounded-lg transition
-                                            "
-                                        >
-                                            🔓
-                                        </button>
+                                    {{-- Ping --}}
+                                    <button
+                                        type="button"
+                                        data-ip="{{ $ip->ip_address }}"
+                                        class="
+                                            ping-btn
+                                            bg-blue-500 hover:bg-blue-600
+                                            text-white p-2 rounded-lg transition
+                                        "
+                                    >
+                                        📡
+                                    </button>
 
-                                    </div>
+                                    {{-- Liberar --}}
+                                    <button
+                                        type="button"
+                                        data-id="{{ $ip->id }}"
+                                        class="
+                                            release-btn
+                                            bg-green-600 hover:bg-green-500
+                                            text-white p-2 rounded-lg transition
+                                        "
+                                    >
+                                        🔓
+                                    </button>
 
-                                </td>
+                                </div>
 
-                            </form>
+                            </td>
 
                         </tr>
 
@@ -455,17 +509,13 @@
                     @endforelse
 
                 </tbody>
-                
+
             </table>
 
         </div>
 
-        {{-- Paginación --}}
-        <div class="mt-6">
-            {{ $ipAddresses->links() }}
-        </div>
-
     </div>
+
     {{-- Modal Ping --}}
     <div
         id="pingModal"
@@ -529,8 +579,29 @@
         </div>
 
     </div>
+
     <script>
 
+        // BUSCADOR GLOBAL
+        const globalSearch = document.getElementById('globalSearch');
+
+        globalSearch.addEventListener('input', () => {
+
+            const value = globalSearch.value.toLowerCase();
+
+            document.querySelectorAll('.ip-row').forEach(row => {
+
+                const content = row.dataset.search;
+
+                row.style.display = content.includes(value)
+                    ? ''
+                    : 'none';
+
+            });
+
+        });
+
+        // MODAL PING
         let pingInterval = null;
 
         const pingModal = document.getElementById('pingModal');
@@ -613,45 +684,48 @@
         document.getElementById('closePingBtn')
             .addEventListener('click', closePingModal);
 
+        // LIBERAR IP
         document.querySelectorAll('.release-btn').forEach(button => {
 
-        button.addEventListener('click', async () => {
+            button.addEventListener('click', async () => {
 
-            if (!confirm('¿Liberar esta IP?')) {
-                return;
-            }
+                if (!confirm('¿Liberar esta IP?')) {
+                    return;
+                }
 
-            const id = button.dataset.id;
+                const id = button.dataset.id;
 
-            try {
+                try {
 
-                const response = await fetch(
-                    `/ip-addresses/${id}/release`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
+                    const response = await fetch(
+                        `/ip-addresses/${id}/release`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json'
+                            }
                         }
+                    );
+
+                    const data = await response.json();
+
+                    if (data.success) {
+
+                        location.reload();
+
                     }
-                );
 
-                const data = await response.json();
+                } catch (error) {
 
-                if (data.success) {
-
-                    location.reload();
+                    alert('Error liberando IP');
 
                 }
 
-            } catch (error) {
-
-                alert('Error liberando IP');
-
-            }
+            });
 
         });
 
-    });
     </script>
+
 </x-app-layout>

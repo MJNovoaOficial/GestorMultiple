@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Branch;
 use App\Models\IpStatus;
 use App\Models\IpAddress;
+use App\Services\AuditService;
 
 class IpRangeImportController extends Controller
 {
@@ -57,6 +58,11 @@ class IpRangeImportController extends Controller
             ]);
 
         }
+        AuditService::log(
+            'imported',
+            $range,
+            'Rango IP importado'
+        );
 
         return redirect()
             ->route('dashboard')

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\DeviceType;
 use App\Models\IpStatus;
+use App\Services\AuditService;
 
 class IpAddressController extends Controller
 {
@@ -61,7 +62,7 @@ class IpAddressController extends Controller
             );
 
         }
-
+        
         /*
         |--------------------------------------------------------------------------
         | Obtener ramas únicas
@@ -88,8 +89,7 @@ class IpAddressController extends Controller
 
         $ipAddresses = $query
             ->orderByRaw('INET_ATON(ip_address)')
-            ->paginate(50)
-            ->withQueryString();
+            ->get();
 
         /*
         |--------------------------------------------------------------------------
@@ -145,6 +145,11 @@ class IpAddressController extends Controller
             'device_type_id' => $request->device_type_id,
             'ip_status_id' => $status->id,
         ]);
+        AuditService::log(
+            'updated',
+            $ip,
+            'IP actualizada: ' . $ip->ip_address
+        );
 
         return redirect()
             ->route('ip-addresses.index')
@@ -183,6 +188,12 @@ class IpAddressController extends Controller
             'ip_status_id' => $availableStatus->id
 
         ]);
+
+        AuditService::log(
+            'released',
+            $ip,
+            'IP liberada: ' . $ip->ip_address
+        );
 
         return response()->json([
             'success' => true

@@ -11,6 +11,46 @@
             class="h-20 w-auto"
         >
     </a>
+
+    {{-- Módulo Usuarios --}}
+    <a
+        href="{{ route('users.index') }}"
+        class="flex items-center gap-3
+            px-4 py-3 rounded-2xl
+            bg-[#111827]
+            hover:bg-[#1E293B]
+            transition
+            shadow-lg
+            mb-4"
+    >
+
+        {{-- Icono --}}
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 text-gray-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.8"
+                d="M17 20h5V4H2v16h5m10 0v-2
+                a4 4 0 00-4-4H9a4 4 0 00-4 4v2m12 0H5
+                m12 0a2 2 0 002-2V6a2 2 0 00-2-2H7
+                a2 2 0 00-2 2v12a2 2 0 002 2m6-12
+                a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+        </svg>
+
+        <span class="font-semibold text-sm tracking-wide text-white">
+            Usuarios
+        </span>
+
+    </a>
+
+
     {{-- Módulo Gestor IP --}}
     <div
         x-data="{ openIp: true }"
@@ -22,8 +62,7 @@
             @click="openIp = !openIp"
             class="w-full flex items-center justify-between
                 px-4 py-3 rounded-xl
-                border border-gray-700
-                bg-[#0F172A]
+                bg-[#111827]
                 hover:bg-[#1E293B]
                 transition"
         >
@@ -105,6 +144,131 @@
 
     </div>
 
+    {{-- Módulo Gestor Contraseñas --}}
+    <div
+        x-data="{ openPasswords: true }"
+        class="bg-[#111827] rounded-2xl p-2 shadow-lg mb-4"
+    >
+
+        {{-- Header --}}
+        <button
+            @click="openPasswords = !openPasswords"
+            class="w-full flex items-center justify-between
+                px-4 py-3 rounded-xl
+                bg-[#111827]
+                hover:bg-[#1E293B]
+                transition"
+        >
+
+            <div class="flex items-center gap-3">
+
+                {{-- Icono --}}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-8 h-8 text-gray-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.8"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2h-1V9a5 5 0 00-10 0v2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+                    />
+                </svg>
+
+                <span class="font-semibold text-sm tracking-wide">
+                    Módulo Gestor Contraseñas
+                </span>
+
+            </div>
+
+            {{-- Flecha --}}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4 h-4 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                />
+            </svg>
+
+        </button>
+
+        {{-- Submenu --}}
+        <div
+            x-show="openPasswords"
+            x-transition
+            class="mt-2 space-y-1 px-2 pb-2"
+        >
+
+            {{-- Listado Contraseñas --}}
+            <a
+                href="{{ route('passwords.index') }}"
+                class="block px-4 py-2 rounded-lg
+                    text-sm text-gray-300
+                    hover:bg-gray-800
+                    hover:text-white
+                    transition"
+            >
+                Listado de Contraseñas
+            </a>
+
+            {{-- Asignar Contraseña --}}
+            <a
+                href="{{ route('passwords.create') }}"
+                class="block px-4 py-2 rounded-lg
+                    text-sm text-gray-300
+                    hover:bg-gray-800
+                    hover:text-white
+                    transition"
+            >
+                Asignar Contraseña
+            </a>
+
+        </div>
+
+    </div>
+    {{-- Auditoría --}}
+    <a
+        href="{{ route('audits.index') }}"
+        class="flex items-center gap-3 mb-4
+            px-4 py-3 rounded-2xl
+            bg-[#111827]
+            hover:bg-[#1E293B]
+            transition
+            shadow-lg"
+    >
+
+        {{-- Icono --}}
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6 text-gray-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.8"
+                d="M9 17v-6m3 6V7m3 10v-4m3 8H6a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2v14a2 2 0 01-2 2z"
+            />
+        </svg>
+
+        <span class="font-semibold text-sm tracking-wide text-white">
+            Auditoría
+        </span>
+
+    </a>
+
     {{-- Módulo Básicos --}}
     @if(auth()->user()->role === 'superadmin')
         <div
@@ -117,10 +281,10 @@
                 @click="openBasic = !openBasic"
                 class="w-full flex items-center justify-between
                     px-4 py-3 rounded-xl
-                    border border-gray-700
-                    bg-[#0F172A]
+                    bg-[#111827]
                     hover:bg-[#1E293B]
                     transition"
+                    
             >
 
                 <div class="flex items-center gap-3">
