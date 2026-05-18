@@ -18,6 +18,50 @@
                 Administración de usuarios del sistema
             </p>
 
+            @if(auth()->user()->role === 'superadmin')
+
+            <div class="flex gap-3 mt-5 mb-6">
+
+                {{-- Activos --}}
+                <a
+                    href="{{ route('users.index', ['status' => 'active']) }}"
+                    class="
+                        px-5 py-2 rounded-xl text-sm font-semibold
+                        transition
+
+                        {{ $status === 'active'
+                            ? 'bg-blue-600 text-white shadow-lg'
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                        }}
+                    "
+                >
+
+                    Activos
+
+                </a>
+
+                {{-- Inactivos --}}
+                <a
+                    href="{{ route('users.index', ['status' => 'inactive']) }}"
+                    class="
+                        px-5 py-2 rounded-xl text-sm font-semibold
+                        transition
+
+                        {{ $status === 'inactive'
+                            ? 'bg-red-600 text-white shadow-lg'
+                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                        }}
+                    "
+                >
+
+                    Inactivos
+
+                </a>
+
+            </div>
+
+        @endif
+
         </div>
 
         {{-- Botón Crear --}}
@@ -337,6 +381,7 @@
     <div
         x-show="openCreateUser"
         x-transition
+        x-cloak
         class="
             fixed inset-0 z-50
             flex items-center justify-center

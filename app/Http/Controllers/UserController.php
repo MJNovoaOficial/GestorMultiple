@@ -12,13 +12,38 @@ class UserController extends Controller
     /**
      * Listado usuarios
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::where('is_active', true)
-            ->latest()
-            ->paginate(15);
+        $status = $request->get('status', 'active');
 
-        return view('users.index', compact('users'));
+        if (auth()->user()->role === 'superadmin') {
+
+            $users = User::when(
+
+                $status === 'inactive',
+
+                fn ($query) => $query->where('is_active', false),
+
+                fn ($query) => $query->where('is_active', true)
+
+            )
+            ->latest()
+            ->paginate(10);
+
+        } else {
+
+            $users = User::where(
+                'is_active',
+                true
+            )
+            ->latest()
+            ->get();
+        }
+
+        return view(
+            'users.index',
+            compact('users', 'status')
+        );
     }
 
     /**

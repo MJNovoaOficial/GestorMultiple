@@ -1,4 +1,8 @@
-<aside class="w-64 bg-[#0B1220] text-white min-h-screen px-4 py-4">
+<aside class="
+    bg-slate-100 dark:bg-[#020817]
+    text-slate-900 dark:text-white
+    min-h-screen
+">
 
     {{-- Logo --}}
     <a
@@ -17,8 +21,9 @@
         href="{{ route('users.index') }}"
         class="flex items-center gap-3
             px-4 py-3 rounded-2xl
-            bg-[#111827]
-            hover:bg-[#1E293B]
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            hover:bg-slate-100 dark:hover:bg-[#1E293B]
             transition
             shadow-lg
             mb-4"
@@ -54,7 +59,7 @@
     {{-- Módulo Gestor IP --}}
     <div
         x-data="{ openIp: true }"
-        class="bg-[#111827] rounded-2xl p-2 shadow-lg mb-4"
+        class="bg-white dark:bg-[#111827] rounded-2xl p-2 shadow-lg mb-4"
     >
 
         {{-- Header --}}
@@ -62,8 +67,9 @@
             @click="openIp = !openIp"
             class="w-full flex items-center justify-between
                 px-4 py-3 rounded-xl
-                bg-[#111827]
-                hover:bg-[#1E293B]
+                bg-white dark:bg-[#111827]
+                border border-slate-200 dark:border-slate-800
+                hover:bg-slate-100 dark:hover:bg-[#1E293B]
                 transition"
         >
 
@@ -147,7 +153,7 @@
     {{-- Módulo Gestor Contraseñas --}}
     <div
         x-data="{ openPasswords: true }"
-        class="bg-[#111827] rounded-2xl p-2 shadow-lg mb-4"
+        class="bg-white dark:bg-[#111827] rounded-2xl p-2 shadow-lg mb-4"
     >
 
         {{-- Header --}}
@@ -155,8 +161,9 @@
             @click="openPasswords = !openPasswords"
             class="w-full flex items-center justify-between
                 px-4 py-3 rounded-xl
-                bg-[#111827]
-                hover:bg-[#1E293B]
+                bg-white dark:bg-[#111827]
+                border border-slate-200 dark:border-slate-800
+                hover:bg-slate-100 dark:hover:bg-[#1E293B]
                 transition"
         >
 
@@ -241,8 +248,9 @@
         href="{{ route('audits.index') }}"
         class="flex items-center gap-3 mb-4
             px-4 py-3 rounded-2xl
-            bg-[#111827]
-            hover:bg-[#1E293B]
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            hover:bg-slate-100 dark:hover:bg-[#1E293B]
             transition
             shadow-lg"
     >
@@ -273,7 +281,7 @@
     @if(auth()->user()->role === 'superadmin')
         <div
             x-data="{ openBasic: true }"
-            class="bg-[#111827] rounded-2xl p-2 shadow-lg"
+            class="bg-white dark:bg-[#111827] rounded-2xl p-2 shadow-lg"
         >
 
             {{-- Header --}}
@@ -281,8 +289,9 @@
                 @click="openBasic = !openBasic"
                 class="w-full flex items-center justify-between
                     px-4 py-3 rounded-xl
-                    bg-[#111827]
-                    hover:bg-[#1E293B]
+                    bg-white dark:bg-[#111827]
+                    border border-slate-200 dark:border-slate-800
+                    hover:bg-slate-100 dark:hover:bg-[#1E293B]
                     transition"
                     
             >
@@ -391,4 +400,112 @@
 
         </div>
     @endif
+    <!-- Toggle Tema -->
+    <div class="flex justify-center mt-6 mb-8">
+        <button
+            id="theme-toggle"
+            class="relative flex items-center w-20 h-10 px-1
+            rounded-full
+            bg-slate-700
+            transition-all duration-300"
+        >
+            <!-- Label -->
+            <span
+                id="toggle-label"
+                class="absolute left-3 text-[10px] font-bold tracking-wider uppercase
+                text-slate-300 transition-all duration-300"
+            >
+                Dark
+            </span>
+
+            <!-- Circle -->
+            <div
+                id="toggle-circle"
+                class="absolute right-1 flex items-center justify-center
+                w-8 h-8 rounded-full
+                bg-slate-800
+                shadow-md
+                transition-all duration-300"
+            >
+                <!-- Moon -->
+                <svg
+                    id="moon-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4 text-indigo-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 12.79A9 9 0 1111.21 3c0 .34.02.67.05 1A7 7 0 0021 12.79z"/>
+                </svg>
+
+                <!-- Sun -->
+                <svg
+                    id="sun-icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="hidden w-4 h-4 text-yellow-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364l-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0-1.414 1.414M7.05 16.95l-1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8"/>
+                </svg>
+            </div>
+        </button>
+    </div>
+
+    {{-- Footer Sidebar --}}
+    <div class="mt-auto px-4 pb-6 space-y-3">
+
+        {{-- Logout --}}
+        <form
+            method="POST"
+            action="{{ route('logout') }}"
+        >
+
+            @csrf
+
+            <button
+                type="submit"
+                class="
+                    w-full flex items-center gap-3
+                    px-4 py-3 rounded-2xl
+                    bg-red-600/20
+                    hover:bg-red-600/30
+                    border border-red-500/20
+                    text-red-400
+                    transition
+                    font-medium
+                "
+            >
+
+                {{-- Icon --}}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1
+                        a2 2 0 01-2 2H6a2 2 0 01-2-2V7
+                        a2 2 0 012-2h5a2 2 0 012 2v1"
+                    />
+                </svg>
+
+                <span>
+                    Cerrar sesión
+                </span>
+
+            </button>
+
+        </form>
+
+    </div>
 </aside>
