@@ -584,8 +584,8 @@
                         const time = new Date().toLocaleTimeString();
 
                         line.innerHTML = data.success
-                            ? `[${time}] ✅ Reply from ${ip}`
-                            : `[${time}] ❌ Timeout`;
+                            ? `[${time}] ✅ Respuesta desde ${ip}`
+                            : `[${time}] ❌ Tiempo de espera agotado para ${ip}`;
 
                         pingOutput.appendChild(line);
 
