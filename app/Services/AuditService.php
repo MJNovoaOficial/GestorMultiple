@@ -16,7 +16,10 @@ class AuditService
     ): void {
 
         CredentialAuditLog::create([
-            'email_credential_id' => $model->id,
+
+            'auditable_type' => $model::class,
+
+            'auditable_id' => $model->id,
 
             'user_id' => auth()->id(),
 
@@ -24,13 +27,18 @@ class AuditService
 
             'description' => $description,
 
-            'old_values' => $oldValues,
+            'old_values' => $oldValues
+                ? json_encode($oldValues)
+                : null,
 
-            'new_values' => $newValues,
+            'new_values' => $newValues
+                ? json_encode($newValues)
+                : null,
 
             'ip_address' => request()->ip(),
 
             'user_agent' => request()->userAgent(),
+
         ]);
     }
 }

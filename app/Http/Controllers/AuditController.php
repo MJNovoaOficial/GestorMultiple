@@ -11,7 +11,7 @@ class AuditController extends Controller
     {
         $audits = CredentialAuditLog::with([
             'user',
-            'emailCredential'
+            'auditable'
         ])
         ->latest()
         ->paginate(50);

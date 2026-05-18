@@ -1,6 +1,9 @@
 <x-app-layout>
 
-<div class="p-6">
+<div
+    x-data="{ openCreateUser: false }"
+    class="p-6"
+>
 
     {{-- Header --}}
     <div class="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
@@ -17,17 +20,46 @@
 
         </div>
 
-        {{-- Crear Usuario --}}
+        {{-- Botón Crear --}}
         <button
             @click="openCreateUser = true"
-            class="px-5 py-3 text-sm font-semibold text-white transition bg-blue-600 rounded-2xl hover:bg-blue-700 shadow-lg"
+            class="px-5 py-3 text-sm font-semibold text-white
+                transition bg-blue-600 rounded-2xl
+                hover:bg-blue-700 shadow-lg"
         >
 
-            + Crear Usuario
+            Nuevo Usuario
 
         </button>
 
     </div>
+
+    {{-- Alertas --}}
+    @if(session('success'))
+
+        <div class="
+            mb-5 px-4 py-3 rounded-xl
+            bg-green-600 text-white text-sm
+        ">
+
+            {{ session('success') }}
+
+        </div>
+
+    @endif
+
+    @if(session('error'))
+
+        <div class="
+            mb-5 px-4 py-3 rounded-xl
+            bg-red-600 text-white text-sm
+        ">
+
+            {{ session('error') }}
+
+        </div>
+
+    @endif
 
     {{-- Buscador --}}
     <div class="mb-5">
@@ -36,14 +68,23 @@
             id="globalSearch"
             type="text"
             placeholder="Buscar usuario..."
-            class="w-full px-4 py-3 text-white bg-gray-900 border border-gray-800 rounded-2xl
-                   focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            class="w-full px-4 py-3
+                text-white bg-gray-900
+                border border-gray-800
+                rounded-2xl
+                focus:ring-2 focus:ring-blue-500
+                focus:outline-none"
         >
 
     </div>
 
     {{-- Tabla --}}
-    <div class="overflow-hidden bg-gray-900 border border-gray-800 rounded-2xl">
+    <div class="
+        overflow-hidden
+        bg-gray-900
+        border border-gray-800
+        rounded-2xl
+    ">
 
         <div class="overflow-x-auto">
 
@@ -54,24 +95,36 @@
 
                     <tr>
 
-                        <th class="px-6 py-4 text-xs font-semibold tracking-wider text-left text-gray-400 uppercase">
+                        <th class="
+                            px-6 py-4 text-xs font-semibold
+                            tracking-wider text-left
+                            text-gray-400 uppercase
+                        ">
                             Nombre
                         </th>
 
-                        <th class="px-6 py-4 text-xs font-semibold tracking-wider text-left text-gray-400 uppercase">
+                        <th class="
+                            px-6 py-4 text-xs font-semibold
+                            tracking-wider text-left
+                            text-gray-400 uppercase
+                        ">
                             Correo
                         </th>
 
-                        <th class="px-6 py-4 text-xs font-semibold tracking-wider text-left text-gray-400 uppercase">
+                        <th class="
+                            px-6 py-4 text-xs font-semibold
+                            tracking-wider text-left
+                            text-gray-400 uppercase
+                        ">
                             Rol
                         </th>
 
-                        <th class="px-6 py-4 text-xs font-semibold tracking-wider text-left text-gray-400 uppercase">
+                        <th class="
+                            px-6 py-4 text-xs font-semibold
+                            tracking-wider text-left
+                            text-gray-400 uppercase
+                        ">
                             Estado
-                        </th>
-
-                        <th class="px-6 py-4 text-xs font-semibold tracking-wider text-center text-gray-400 uppercase">
-                            Acciones
                         </th>
 
                     </tr>
@@ -109,79 +162,137 @@
                             {{-- Rol --}}
                             <td class="px-6 py-4">
 
-                                <span class="
-                                    px-3 py-1 rounded-full text-xs font-semibold text-white
+                                @if(
+                                    auth()->user()->role === 'superadmin'
+                                    && auth()->id() !== $user->id
+                                )
 
-                                    {{ $user->role === 'superadmin'
-                                        ? 'bg-red-600'
-                                        : 'bg-blue-600'
-                                    }}
-                                ">
+                                    <form
+                                        method="POST"
+                                        action="{{ route('users.update', $user) }}"
+                                    >
 
-                                    {{ strtoupper($user->role) }}
+                                        @csrf
+                                        @method('PUT')
 
-                                </span>
+                                        <input
+                                            type="hidden"
+                                            name="type"
+                                            value="role"
+                                        >
+
+                                        <select
+                                            name="role"
+                                            onchange="this.form.submit()"
+                                            class="
+                                                px-3 py-1 rounded-full
+                                                text-xs font-semibold
+                                                bg-gray-800 border border-gray-700
+                                                text-white
+                                                focus:outline-none
+                                            "
+                                        >
+
+                                            <option
+                                                value="admin"
+                                                {{ $user->role === 'admin' ? 'selected' : '' }}
+                                            >
+                                                ADMIN
+                                            </option>
+
+                                            <option
+                                                value="superadmin"
+                                                {{ $user->role === 'superadmin' ? 'selected' : '' }}
+                                            >
+                                                SUPERADMIN
+                                            </option>
+
+                                        </select>
+
+                                    </form>
+
+                                @else
+
+                                    <span class="
+                                        px-3 py-1 rounded-full
+                                        text-xs font-semibold text-white
+
+                                        {{ $user->role === 'superadmin'
+                                            ? 'bg-red-600'
+                                            : 'bg-blue-600'
+                                        }}
+                                    ">
+
+                                        {{ strtoupper($user->role) }}
+
+                                    </span>
+
+                                @endif
 
                             </td>
 
                             {{-- Estado --}}
                             <td class="px-6 py-4">
 
-                                <span class="
-                                    px-3 py-1 rounded-full text-xs font-semibold text-white
+                                @if(auth()->id() !== $user->id)
 
-                                    {{ $user->is_active
-                                        ? 'bg-green-600'
-                                        : 'bg-gray-600'
-                                    }}
-                                ">
-
-                                    {{ $user->is_active ? 'ACTIVO' : 'INACTIVO' }}
-
-                                </span>
-
-                            </td>
-
-                            {{-- Acciones --}}
-                            <td class="px-6 py-4">
-
-                                <div class="flex items-center justify-center gap-3">
-
-                                    {{-- Editar --}}
-                                    <button
-                                        class="px-3 py-1 text-xs font-semibold text-white transition bg-blue-600 rounded-lg hover:bg-blue-700"
+                                    <form
+                                        method="POST"
+                                        action="{{ route('users.update', $user) }}"
                                     >
 
-                                        Editar
+                                        @csrf
+                                        @method('PUT')
 
-                                    </button>
-
-                                    {{-- Eliminar --}}
-                                    @if(auth()->user()->role === 'superadmin')
-
-                                        <form
-                                            method="POST"
-                                            action="{{ route('users.destroy', $user) }}"
-                                            onsubmit="return confirm('¿Deshabilitar usuario?')"
+                                        <input
+                                            type="hidden"
+                                            name="type"
+                                            value="status"
                                         >
 
-                                            @csrf
-                                            @method('DELETE')
+                                        <select
+                                            name="is_active"
+                                            onchange="this.form.submit()"
+                                            class="
+                                                px-3 py-1 rounded-full
+                                                text-xs font-semibold
+                                                bg-gray-800 border border-gray-700
+                                                text-white
+                                                focus:outline-none
+                                            "
+                                        >
 
-                                            <button
-                                                type="submit"
-                                                class="px-3 py-1 text-xs font-semibold text-white transition bg-red-600 rounded-lg hover:bg-red-700"
+                                            <option
+                                                value="1"
+                                                {{ $user->is_active ? 'selected' : '' }}
                                             >
+                                                Activo
+                                            </option>
 
+                                            <option
+                                                value="0"
+                                                {{ !$user->is_active ? 'selected' : '' }}
+                                            >
                                                 Eliminar
+                                            </option>
 
-                                            </button>
+                                        </select>
 
-                                        </form>
+                                    </form>
 
-                                    @endif
+                                @else
 
-                                </div>
+                                    <span class="
+                                        px-3 py-1 rounded-full
+                                        text-xs font-semibold
+                                        bg-green-600 text-white
+                                    ">
+
+                                        ACTIVO
+
+                                    </span>
+
+                                @endif
 
                             </td>
 
@@ -193,7 +304,10 @@
 
                             <td
                                 colspan="5"
-                                class="px-6 py-8 text-sm text-center text-gray-500"
+                                class="
+                                    px-6 py-8 text-sm
+                                    text-center text-gray-500
+                                "
                             >
 
                                 No existen usuarios registrados.
@@ -219,34 +333,54 @@
 
     </div>
 
-</div>
-
-{{-- MODAL CREAR USUARIO --}}
-<div
-    x-data="{ openCreateUser: false }"
->
-
+    {{-- MODAL CREAR USUARIO --}}
     <div
         x-show="openCreateUser"
         x-transition
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+        class="
+            fixed inset-0 z-50
+            flex items-center justify-center
+            bg-black/60 backdrop-blur-sm
+        "
     >
 
         <div
             @click.away="openCreateUser = false"
-            class="w-full max-w-lg p-6 bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl"
+            class="
+                w-full max-w-xl
+                bg-[#0B1220]
+                border border-gray-800
+                rounded-3xl
+                shadow-2xl
+                p-8
+            "
         >
 
             {{-- Header --}}
-            <div class="flex items-center justify-between mb-6">
+            <div class="
+                flex items-center justify-between
+                mb-6
+            ">
 
-                <h2 class="text-xl font-bold text-white">
-                    Crear Usuario
-                </h2>
+                <div>
 
+                    <h2 class="text-2xl font-bold text-white">
+                        Crear Usuario
+                    </h2>
+
+                    <p class="text-sm text-gray-400 mt-1">
+                        Nuevo acceso administrativo
+                    </p>
+
+                </div>
+
+                {{-- Cerrar --}}
                 <button
                     @click="openCreateUser = false"
-                    class="text-gray-400 hover:text-white"
+                    class="
+                        text-gray-400 hover:text-white
+                        text-xl transition
+                    "
                 >
 
                     ✕
@@ -255,7 +389,7 @@
 
             </div>
 
-            {{-- Form --}}
+            {{-- Formulario --}}
             <form
                 method="POST"
                 action="{{ route('users.store') }}"
@@ -267,7 +401,9 @@
                 {{-- Nombre --}}
                 <div>
 
-                    <label class="block mb-2 text-sm text-gray-300">
+                    <label class="
+                        block mb-2 text-sm text-gray-300
+                    ">
                         Nombre
                     </label>
 
@@ -275,7 +411,15 @@
                         type="text"
                         name="name"
                         required
-                        class="w-full px-4 py-3 text-white bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="
+                            w-full px-4 py-3
+                            text-white
+                            bg-gray-800
+                            border border-gray-700
+                            rounded-2xl
+                            focus:ring-2 focus:ring-blue-500
+                            focus:outline-none
+                        "
                     >
 
                 </div>
@@ -283,7 +427,9 @@
                 {{-- Correo --}}
                 <div>
 
-                    <label class="block mb-2 text-sm text-gray-300">
+                    <label class="
+                        block mb-2 text-sm text-gray-300
+                    ">
                         Correo
                     </label>
 
@@ -291,7 +437,15 @@
                         type="email"
                         name="email"
                         required
-                        class="w-full px-4 py-3 text-white bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="
+                            w-full px-4 py-3
+                            text-white
+                            bg-gray-800
+                            border border-gray-700
+                            rounded-2xl
+                            focus:ring-2 focus:ring-blue-500
+                            focus:outline-none
+                        "
                     >
 
                 </div>
@@ -299,13 +453,23 @@
                 {{-- Rol --}}
                 <div>
 
-                    <label class="block mb-2 text-sm text-gray-300">
+                    <label class="
+                        block mb-2 text-sm text-gray-300
+                    ">
                         Rol
                     </label>
 
                     <select
                         name="role"
-                        class="w-full px-4 py-3 text-white bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        class="
+                            w-full px-4 py-3
+                            text-white
+                            bg-gray-800
+                            border border-gray-700
+                            rounded-2xl
+                            focus:ring-2 focus:ring-blue-500
+                            focus:outline-none
+                        "
                     >
 
                         <option value="admin">
@@ -325,18 +489,66 @@
                 </div>
 
                 {{-- Info --}}
-                <div class="p-4 text-sm text-blue-300 border border-blue-800 bg-blue-900/30 rounded-xl">
+                <div
+                    class="
+                        flex items-start gap-3
+                        p-4 rounded-2xl
+                        border border-yellow-300
+                    "
+                    style="
+                        background-color: #FFF2CC;
+                    "
+                >
 
-                    El usuario recibirá una contraseña temporal y deberá cambiarla en su primer inicio de sesión.
+                    {{-- Icono --}}
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 mt-0.5 shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        style="color: #B45309;"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 9v2m0 4h.01M10.29 3.86l-7.5 13
+                            A1 1 0 003.66 18h16.68a1 1 0 00.87-1.5l-7.5-13
+                            a1 1 0 00-1.74 0z"
+                        />
+                    </svg>
+
+                    {{-- Texto --}}
+                    <p
+                        class="text-sm leading-relaxed"
+                        style="color: #78350F;"
+                    >
+
+                        El usuario recibirá una contraseña temporal
+                        y deberá cambiarla en su primer inicio de sesión.
+
+                    </p>
 
                 </div>
-
-                {{-- Submit --}}
-                <div class="flex justify-center pt-3">
+                {{-- Botón --}}
+                <div class="flex justify-center pt-2">
 
                     <button
                         type="submit"
-                        class="px-8 py-3 font-semibold text-white transition bg-green-600 rounded-xl hover:bg-green-700"
+                        class="
+                            px-10 py-3
+                            min-w-[220px]
+                            bg-green-600
+                            hover:bg-green-700
+                            transition
+                            rounded-2xl
+                            text-white
+                            font-semibold
+                            shadow-lg
+                            text-sm
+                            tracking-wide
+                        "
                     >
 
                         Crear Usuario
@@ -353,7 +565,7 @@
 
 </div>
 
-{{-- SEARCH --}}
+{{-- Buscador --}}
 <script>
 
     const globalSearch = document.getElementById('globalSearch');

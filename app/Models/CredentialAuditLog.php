@@ -30,11 +30,8 @@ class CredentialAuditLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function emailCredential()
+    public function auditable()
     {
-        return $this->belongsTo(
-            EmailCredential::class,
-            'email_credential_id'
-        );
+        return $this->morphTo();
     }
 }

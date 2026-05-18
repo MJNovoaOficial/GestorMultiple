@@ -47,7 +47,7 @@ class UserController extends Controller
 
         ]);
 
-        $temporaryPassword = 'Temp2026!';
+        $temporaryPassword = 'Inicio.2026';
 
         $user = User::create([
 
@@ -118,5 +118,121 @@ class UserController extends Controller
                 'success',
                 'Usuario deshabilitado correctamente.'
             );
+    }
+
+    /**
+ * Actualizar usuario
+ */
+    public function update(Request $request, User $user)
+    {
+        // Evitar auto modificación peligrosa
+        if (auth()->id() === $user->id) {
+
+            return redirect()
+                ->route('users.index')
+                ->with(
+                    'error',
+                    'No puedes modificar tu propio usuario.'
+                );
+        }
+
+        /**
+         * Cambiar rol
+         */
+        if ($request->type === 'role') {
+
+            // Solo superadmin
+            if (auth()->user()->role !== 'superadmin') {
+
+                abort(403);
+            }
+
+            $request->validate([
+
+                'role' => [
+                    'required',
+                    'in:admin,superadmin',
+                ],
+
+            ]);
+
+            $oldRole = $user->role;
+
+            $user->update([
+                'role' => $request->role
+            ]);
+
+            AuditService::log(
+
+                $request->is_active
+                    ? 'updated'
+                    : 'deleted',
+
+                $user,
+
+                $request->is_active
+                    ? 'Usuario activado: ' . $user->email
+                    : 'Usuario eliminado: ' . $user->email,
+
+                [
+                    'is_active' => $oldStatus
+                ],
+
+                [
+                    'is_active' => $request->is_active
+                ]
+
+            );
+
+            return redirect()
+                ->route('users.index')
+                ->with(
+                    'success',
+                    'Rol actualizado correctamente.'
+                );
+        }
+
+        /**
+         * Cambiar estado
+         */
+        if ($request->type === 'status') {
+
+            $request->validate([
+
+                'is_active' => [
+                    'required',
+                    'boolean',
+                ],
+
+            ]);
+
+            $oldStatus = $user->is_active;
+
+            $user->update([
+                'is_active' => $request->is_active
+            ]);
+
+            AuditService::log(
+                'updated',
+                $user,
+                'Estado actualizado para ' . $user->email,
+                [
+                    'is_active' => $oldStatus
+                ],
+                [
+                    'is_active' => $request->is_active
+                ]
+            );
+
+            return redirect()
+                ->route('users.index')
+                ->with(
+                    'success',
+                    'Estado actualizado correctamente.'
+                );
+        }
+
+        return redirect()
+            ->route('users.index');
     }
 }
