@@ -5,11 +5,11 @@
         {{-- Header --}}
         <div class="mb-6">
 
-            <h1 class="text-3xl font-bold text-gray-900">
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
                 Gestor de IPs
             </h1>
 
-            <p class="text-gray-500 mt-1">
+            <p class="text-slate-500 dark:text-slate-400 mt-1">
                 Administración de direcciones IP del sistema
             </p>
 
@@ -82,6 +82,36 @@
                             @endforeach
 
                         </select>
+
+                        <div>
+                            <select
+                                id="statusFilter"
+                                class="
+                                    min-w-[240px]
+                                    bg-[#1E293B]
+                                    border border-gray-700
+                                    text-white
+                                    rounded-xl
+                                    px-4 py-2.5
+                                    text-sm
+                                    focus:ring-2 focus:ring-indigo-500
+                                    focus:border-indigo-500
+                                "
+                            >
+                                <option value="">
+                                    Todos los estados
+                                </option>
+
+                                @foreach($ipStatuses as $status)
+
+                                    <option value="{{ strtolower($status->name) }}">
+                                        {{ $status->name }}
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+                        </div>
 
                         <input
                             type="text"
@@ -189,7 +219,7 @@
 
                     @forelse($ipAddresses as $ip)
 
-                        <tr
+                        <tr data-status="{{ strtolower($ip->ipStatus->name) }}"
                             x-data="{ editing: false }"
 
                             data-search="{{ strtolower(
@@ -583,23 +613,53 @@
     <script>
 
         // BUSCADOR GLOBAL
-        const globalSearch = document.getElementById('globalSearch');
+        const globalSearch =
+            document.getElementById('globalSearch');
 
-        globalSearch.addEventListener('input', () => {
+        const statusFilter =
+            document.getElementById('statusFilter');
 
-            const value = globalSearch.value.toLowerCase();
+        function filterTable() {
+
+            const searchValue =
+                globalSearch.value.toLowerCase();
+
+            const selectedStatus =
+                statusFilter.value.toLowerCase();
 
             document.querySelectorAll('.ip-row').forEach(row => {
 
-                const content = row.dataset.search;
+                const content =
+                    row.dataset.search || '';
 
-                row.style.display = content.includes(value)
-                    ? ''
-                    : 'none';
+                const rowStatus =
+                    row.dataset.status || '';
+
+                const matchesSearch =
+                    content.includes(searchValue);
+
+                const matchesStatus =
+                    !selectedStatus ||
+                    rowStatus.includes(selectedStatus);
+
+                row.style.display =
+                    matchesSearch && matchesStatus
+                        ? ''
+                        : 'none';
 
             });
 
-        });
+        }
+
+        globalSearch.addEventListener(
+            'input',
+            filterTable
+        );
+
+        statusFilter.addEventListener(
+            'change',
+            filterTable
+        );
 
         // MODAL PING
         let pingInterval = null;

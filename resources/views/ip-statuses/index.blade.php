@@ -5,11 +5,11 @@
         <div class="flex items-center justify-between mb-6">
 
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">
+                <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-200">
                     Estados IP
                 </h1>
 
-                <p class="text-gray-400 mt-1">
+                <p class="text-slate-500 dark:text-slate-400 mt-1">
                     Gestión de estados para direcciones IP
                 </p>
             </div>
@@ -45,10 +45,6 @@
                         </th>
 
                         <th class="px-6 py-4 text-center">
-                            Color
-                        </th>
-
-                        <th class="px-6 py-4 text-center">
                             Creado
                         </th>
 
@@ -76,11 +72,6 @@
                                     {{ $ipStatus->name }}
                                 </span>
 
-                            </td>
-
-                            {{-- Clase color --}}
-                            <td class="px-6 py-4 text-gray-300 text-center">
-                                {{ $ipStatus->color }}
                             </td>
 
                             {{-- Creado --}}

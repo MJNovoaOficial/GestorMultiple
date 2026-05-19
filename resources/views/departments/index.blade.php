@@ -5,11 +5,11 @@
         <div class="flex items-center justify-between mb-6">
 
             <div>
-                <h1 class="text-3xl font-bold text-gray-800">
+                <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-200">
                     Departamentos
                 </h1>
 
-                <p class="text-gray-400 mt-1">
+                <p class="text-slate-500 dark:text-slate-400 mt-1">
                     Gestión de departamentos del sistema
                 </p>
             </div>

@@ -13,7 +13,7 @@ class PasswordRevealController extends Controller
         AuditService::log(
             'revealed',
             $password,
-            'Contraseña revelada para ' . $password->email
+            'Visualizó la contraseña de:' . $password->email
         );
 
         return response()->json([

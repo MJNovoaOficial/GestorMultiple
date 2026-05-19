@@ -14,19 +14,8 @@ class IpAddressController extends Controller
 {
     public function index(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Sucursales
-        |--------------------------------------------------------------------------
-        */
-
+        
         $branches = Branch::orderBy('name')->get();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Query principal
-        |--------------------------------------------------------------------------
-        */
 
         $query = IpAddress::with([
             'branch',
@@ -35,23 +24,11 @@ class IpAddressController extends Controller
             'ipStatus',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filtro sucursal
-        |--------------------------------------------------------------------------
-        */
-
         if ($request->filled('branch_id')) {
 
             $query->where('branch_id', $request->branch_id);
 
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Filtro subnet/rama
-        |--------------------------------------------------------------------------
-        */
 
         if ($request->filled('subnet')) {
 
@@ -63,12 +40,6 @@ class IpAddressController extends Controller
 
         }
         
-        /*
-        |--------------------------------------------------------------------------
-        | Obtener ramas únicas
-        |--------------------------------------------------------------------------
-        */
-
         $subnets = IpAddress::selectRaw("
                 SUBSTRING_INDEX(ip_address, '.', 3) as subnet
             ")
@@ -81,21 +52,11 @@ class IpAddressController extends Controller
             ->orderBy('subnet')
             ->pluck('subnet');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Obtener IPs
-        |--------------------------------------------------------------------------
-        */
 
         $ipAddresses = $query
             ->orderByRaw('INET_ATON(ip_address)')
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Catálogos edición
-        |--------------------------------------------------------------------------
-        */
 
         $departments = Department::orderBy('name')->get();
 
@@ -148,7 +109,7 @@ class IpAddressController extends Controller
         AuditService::log(
             'updated',
             $ip,
-            'IP actualizada: ' . $ip->ip_address
+            'Se actualizo la IP: ' . $ip->ip_address
         );
 
         return redirect()
@@ -192,7 +153,7 @@ class IpAddressController extends Controller
         AuditService::log(
             'released',
             $ip,
-            'IP liberada: ' . $ip->ip_address
+            'Se liberó la IP: ' . $ip->ip_address
         );
 
         return response()->json([

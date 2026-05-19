@@ -2,7 +2,7 @@
 
     <div class="p-6">
 
-        <div class="max-w-3xl mx-auto bg-gray-900 rounded-2xl shadow-lg p-8">
+        <div class="max-w-3xl mx-auto bg-gray-900 rounded-2xl shadow-lg p-8 border border-slate-200 dark:border-slate-800">
 
             <h1 class="text-3xl font-bold text-white mb-2">
                 Importar rango IP

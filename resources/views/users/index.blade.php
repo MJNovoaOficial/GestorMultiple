@@ -10,11 +10,11 @@
 
         <div>
 
-            <h1 class="text-3xl font-bold text-gray-800">
+            <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
                 Gestión Usuarios
             </h1>
 
-            <p class="mt-1 text-sm text-gray-400">
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                 Administración de usuarios del sistema
             </p>
 

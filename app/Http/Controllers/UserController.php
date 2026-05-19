@@ -93,7 +93,7 @@ class UserController extends Controller
         AuditService::log(
             'created',
             $user,
-            'Usuario creado: ' . $user->email
+            'Se ha creado el usuario: ' . $user->email
         );
 
         return redirect()
@@ -134,14 +134,14 @@ class UserController extends Controller
         AuditService::log(
             'deleted',
             $user,
-            'Usuario deshabilitado: ' . $user->email
+            'Se ha eliminado el usuario: ' . $user->email
         );
 
         return redirect()
             ->route('users.index')
             ->with(
                 'success',
-                'Usuario deshabilitado correctamente.'
+                'Usuario Eliminado correctamente.'
             );
     }
 
@@ -196,8 +196,8 @@ class UserController extends Controller
                 $user,
 
                 $request->is_active
-                    ? 'Usuario activado: ' . $user->email
-                    : 'Usuario eliminado: ' . $user->email,
+                    ? 'Se ha activado el usuario: ' . $user->email
+                    : 'Se ha eliminado el usuario: ' . $user->email,
 
                 [
                     'is_active' => $oldStatus
@@ -240,7 +240,7 @@ class UserController extends Controller
             AuditService::log(
                 'updated',
                 $user,
-                'Estado actualizado para ' . $user->email,
+                'Estado actualizado para el usuario:' . $user->email,
                 [
                     'is_active' => $oldStatus
                 ],

@@ -5,11 +5,11 @@
     {{-- Header --}}
     <div class="mb-6">
 
-        <h1 class="text-3xl font-bold text-gray-800">
+        <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-200">
             Auditoría
         </h1>
 
-        <p class="mt-1 text-sm text-gray-400">
+        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Registro de acciones realizadas en MultiGestor
         </p>
 

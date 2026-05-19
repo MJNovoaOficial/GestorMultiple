@@ -4,60 +4,57 @@ import Alpine from 'alpinejs';
 
 const toggle = document.getElementById('theme-toggle');
 
-if (toggle) {
-    const circle = document.getElementById('toggle-circle');
-    const label = document.getElementById('toggle-label');
-    const moonIcon = document.getElementById('moon-icon');
-    const sunIcon = document.getElementById('sun-icon');
+    if (toggle) {
 
-    function applyTheme(theme) {
-        if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
+        const circle = document.getElementById('toggle-circle');
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
 
-            toggle.classList.remove('bg-slate-200');
-            toggle.classList.add('bg-slate-700');
+        function applyTheme(theme) {
 
-            circle.classList.remove('left-1', 'bg-white');
-            circle.classList.add('right-1', 'bg-slate-800');
+            if (theme === 'dark') {
 
-            label.textContent = 'Dark';
-            label.classList.remove('right-3', 'text-slate-600');
-            label.classList.add('left-3', 'text-slate-300');
+                document.documentElement.classList.add('dark');
 
-            moonIcon.classList.remove('hidden');
-            sunIcon.classList.add('hidden');
-        } else {
-            document.documentElement.classList.remove('dark');
+                circle.classList.remove('left-1');
+                circle.classList.add('right-1');
 
-            toggle.classList.remove('bg-slate-700');
-            toggle.classList.add('bg-slate-200');
+                moonIcon.classList.remove('hidden');
+                sunIcon.classList.add('hidden');
 
-            circle.classList.remove('right-1', 'bg-slate-800');
-            circle.classList.add('left-1', 'bg-white');
+            } else {
 
-            label.textContent = 'Light';
-            label.classList.remove('left-3', 'text-slate-300');
-            label.classList.add('right-3', 'text-slate-600');
+                document.documentElement.classList.remove('dark');
 
-            moonIcon.classList.add('hidden');
-            sunIcon.classList.remove('hidden');
+                circle.classList.remove('right-1');
+                circle.classList.add('left-1');
+
+                moonIcon.classList.add('hidden');
+                sunIcon.classList.remove('hidden');
+            }
+
         }
+
+        const savedTheme =
+            localStorage.getItem('theme') || 'dark';
+
+        applyTheme(savedTheme);
+
+        toggle.addEventListener('click', () => {
+
+            const isDark =
+                document.documentElement.classList.contains('dark');
+
+            const newTheme =
+                isDark ? 'light' : 'dark';
+
+            localStorage.setItem('theme', newTheme);
+
+            applyTheme(newTheme);
+
+        });
+
     }
-
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-
-    applyTheme(savedTheme);
-
-    toggle.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.contains('dark');
-
-        const newTheme = isDark ? 'light' : 'dark';
-
-        localStorage.setItem('theme', newTheme);
-
-        applyTheme(newTheme);
-    });
-}
 
 window.Alpine = Alpine;
 

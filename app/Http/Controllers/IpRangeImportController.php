@@ -61,7 +61,7 @@ class IpRangeImportController extends Controller
         AuditService::log(
             'imported',
             $range,
-            'Rango IP importado'
+            'Ha importado un rango de IPs'
         );
 
         return redirect()

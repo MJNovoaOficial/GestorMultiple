@@ -105,7 +105,7 @@ class EmailCredentialController extends Controller
         AuditService::log(
             'created',
             $password,
-            'Credencial creada para ' . $password->email
+            'Se creo la credencial para ' . $password->email
         );
 
         return redirect()
@@ -172,7 +172,7 @@ class EmailCredentialController extends Controller
         AuditService::log(
             'updated',
             $password,
-            'Credencial actualizada para ' . $password->email,
+            'Se actualizaron las credenciales para ' . $password->email,
             $oldValues,
             $password->fresh()->toArray()
         );
@@ -190,7 +190,7 @@ class EmailCredentialController extends Controller
         AuditService::log(
             'deleted',
             $password,
-            'Credencial eliminada para ' . $password->email
+            'Se han eliminado las credenciales para ' . $password->email
         );
 
         $password->update([
