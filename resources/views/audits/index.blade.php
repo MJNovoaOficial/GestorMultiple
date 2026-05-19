@@ -70,29 +70,63 @@
 
                                 @php
 
-                                    $colors = [
-                                        'created' => 'bg-green-600',
-                                        'updated' => 'bg-blue-600',
-                                        'regenerated' => 'bg-yellow-500',
-                                        'revealed' => 'bg-purple-600',
-                                        'deleted' => 'bg-red-600',
+                                    $actionMap = [
+
+                                        'STOCK_AGREGADO' => [
+                                            'label' => 'Stock agregado',
+                                            'class' => 'bg-green-600',
+                                        ],
+
+                                        'STOCK_DESCONTADO' => [
+                                            'label' => 'Stock descontado',
+                                            'class' => 'bg-orange-500',
+                                        ],
+
+                                        'SUMINISTRO_DESACTIVADO' => [
+                                            'label' => 'Suministro desactivado',
+                                            'class' => 'bg-red-600',
+                                        ],
+
+                                        'updated' => [
+                                            'label' => 'Actualizado',
+                                            'class' => 'bg-blue-600',
+                                        ],
+
+                                        'created' => [
+                                            'label' => 'Creado',
+                                            'class' => 'bg-green-600',
+                                        ],
+
+                                        'deleted' => [
+                                            'label' => 'Eliminado',
+                                            'class' => 'bg-red-600',
+                                        ],
+
+                                        'revealed' => [
+                                            'label' => 'Revelado',
+                                            'class' => 'bg-purple-600',
+                                        ],
+
                                     ];
-                                    
-                                    $labels = [
-                                        'created' => 'CREADO',
-                                        'updated' => 'ACTUALIZADO',
-                                        'regenerated' => 'REGENERADO',
-                                        'revealed' => 'REVELADO',
-                                        'deleted' => 'ELIMINADO',
-                                    ];
+
+                                    $actionData =
+                                        $actionMap[$audit->action]
+                                        ?? [
+                                            'label' => $audit->action,
+                                            'class' => 'bg-slate-600',
+                                        ];
+
                                 @endphp
 
                                 <span class="
-                                    px-3 py-1 rounded-full text-xs font-semibold text-white
-                                    {{ $colors[$audit->action] ?? 'bg-gray-600' }}
+                                    inline-flex items-center
+                                    px-4 py-1
+                                    rounded-full
+                                    text-xs font-bold text-white
+                                    {{ $actionData['class'] }}
                                 ">
 
-                                    {{ $labels[$audit->action] ?? strtoupper($audit->action) }}
+                                    {{ $actionData['label'] }}
 
                                 </span>
 
@@ -143,13 +177,6 @@
             </table>
 
         </div>
-
-    </div>
-
-    {{-- Paginación --}}
-    <div class="mt-6">
-
-        {{ $audits->links() }}
 
     </div>
 

@@ -220,44 +220,55 @@ class UserController extends Controller
         /**
          * Cambiar estado
          */
+
         if ($request->type === 'status') {
 
-            $request->validate([
+        $request->validate([
 
-                'is_active' => [
-                    'required',
-                    'boolean',
-                ],
+            'is_active' => [
+                'required',
+                'boolean',
+            ],
 
-            ]);
+        ]);
 
-            $oldStatus = $user->is_active;
+        if (
+            auth()->user()->role !== 'superadmin'
+            &&
+            $user->role === 'superadmin'
+        ) {
 
-            $user->update([
-                'is_active' => $request->is_active
-            ]);
-
-            AuditService::log(
-                'updated',
-                $user,
-                'Estado actualizado para el usuario:' . $user->email,
-                [
-                    'is_active' => $oldStatus
-                ],
-                [
-                    'is_active' => $request->is_active
-                ]
+            abort(
+                403,
+                'No tienes permisos para modificar este usuario.'
             );
 
-            return redirect()
-                ->route('users.index')
-                ->with(
-                    'success',
-                    'Estado actualizado correctamente.'
-                );
         }
 
+        $oldStatus = $user->is_active;
+
+        $user->update([
+            'is_active' => $request->is_active
+        ]);
+
+        AuditService::log(
+            'updated',
+            $user,
+            'Estado actualizado para el usuario: ' . $user->email,
+            [
+                'is_active' => $oldStatus
+            ],
+            [
+                'is_active' => $request->is_active
+            ]
+        );
+
         return redirect()
-            ->route('users.index');
+            ->route('users.index')
+            ->with(
+                'success',
+                'Estado actualizado correctamente.'
+            );
+        }
     }
 }

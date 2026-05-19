@@ -367,6 +367,114 @@
 
         </div>
     @endif
+    
+    {{-- Gestión Suministros --}}
+    <div
+        x-data="{
+            open: window.location.pathname.includes('supplies')
+        }"
+        class="bg-slate-900/80 rounded-2xl shadow-lg overflow-hidden"
+    >
+
+        {{-- Header --}}
+        <button
+            @click="open = !open"
+            class="
+                w-full flex items-center justify-between
+                    px-4 py-2.5 rounded-none
+                    bg-slate-900/80
+                    dark:border-slate-800
+                    hover:bg-[#1E293B]
+                    transition
+            "
+        >
+
+            <div class="flex items-center gap-3">
+
+                {{-- Icon --}}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-6 h-6 text-slate-300"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20 13V7a2 2 0 00-2-2h-3V3H9v2H6a2 2 0 00-2 2v6m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6m16 0H4"
+                    />
+                </svg>
+
+                <span>
+                    Gestión Suministros
+                </span>
+
+            </div>
+
+            {{-- Arrow --}}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5 text-slate-400 transition-transform duration-300"
+                :class="{ 'rotate-180': open }"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                />
+            </svg>
+
+        </button>
+
+        {{-- Content --}}
+        <div
+            x-show="open"
+            x-transition
+            class="
+                border-t border-slate-800
+                px-5 py-4
+                space-y-3
+            "
+        >
+
+            <a
+                href="{{ route('supplies.index') }}"
+                class="
+                    block px-4 py-2 rounded-xl
+                    text-sm text-gray-300
+                    hover:bg-[#1E293B]
+                    hover:text-white
+                    transition-all duration-200
+                "
+            >
+                Listado Suministros
+            </a>
+
+            <a
+                href="{{ route('supplies.create') }}"
+                class="
+                    block px-4 py-2 rounded-xl
+                    text-sm text-gray-300
+                    hover:bg-[#1E293B]
+                    hover:text-white
+                    transition-all duration-200
+                "
+            >
+                Registrar Suministro
+            </a>
+
+        </div>
+
+    </div>
+
+
+
     {{-- Auditoría --}}
         <a
             href="{{ route('audits.index') }}"

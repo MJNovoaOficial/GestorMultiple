@@ -11,224 +11,395 @@
         </p>
     </div>
 
+    {{-- primera fila --}}
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
 
-    {{-- Sucursales --}}
-    <div class="
-        bg-white dark:bg-[#111827]
-        border border-slate-200 dark:border-slate-800
-        rounded-2xl
-        flex flex-col justify-center
-        shadow-sm dark:shadow-none
-    ">
-        <p class="
-            text-sm text-center
-            font-semibold
-            tracking-wide
-            text-slate-700 dark:text-slate-300
-            uppercase
+        {{-- Sucursales --}}
+        <div class="
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            rounded-2xl
+            flex flex-col justify-center
+            shadow-sm dark:shadow-none
         ">
-            Sucursales
-        </p>
+            <p class="
+                text-sm text-center
+                font-semibold
+                tracking-wide
+                text-slate-700 dark:text-slate-300
+                uppercase
+            ">
+                Sucursales
+            </p>
 
-        <h2 class="mt-3 text-4xl font-bold text-center">
-            {{ $totalBranches }}
-        </h2>
+            <h2 class="mt-3 text-4xl font-bold text-center">
+                {{ $totalBranches }}
+            </h2>
+        </div>
+
+        {{-- Total IPs --}}
+        <div class="
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            rounded-2xl
+            flex flex-col justify-center
+            shadow-sm dark:shadow-none
+        ">
+            <p class="
+                text-sm text-center
+                font-semibold
+                tracking-wide
+                text-slate-700 dark:text-slate-300
+                uppercase
+            ">
+                Total IPs
+            </p>
+
+            <h2 class="mt-3 text-4xl font-bold text-center">
+                {{ $totalIps }}
+            </h2>
+        </div>
+
+        {{-- Disponibles --}}
+        <div class="
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            rounded-2xl
+            flex flex-col justify-center
+            shadow-sm dark:shadow-none
+        ">
+            <p class="
+                text-sm text-center
+                font-semibold
+                tracking-wide
+                text-slate-700 dark:text-slate-300
+                uppercase
+            ">
+                IPs disponibles
+            </p>
+
+            <h2 class="mt-3 text-4xl font-bold text-green-500 text-center">
+                {{ $availableIps }}
+            </h2>
+        </div>
+
+        {{-- Asignadas --}}
+        <div class="
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            rounded-2xl
+            flex flex-col justify-center
+            shadow-sm dark:shadow-none
+        ">
+            <p class="
+                text-sm text-center
+                font-semibold
+                tracking-wide
+                text-slate-700 dark:text-slate-300
+                uppercase
+            ">
+                IPs asignadas
+            </p>
+
+            <h2 class="mt-3 text-4xl font-bold text-blue-500 text-center">
+                {{ $assignedIps }}
+            </h2>
+        </div>
     </div>
 
-    {{-- Total IPs --}}
-    <div class="
-        bg-white dark:bg-[#111827]
-        border border-slate-200 dark:border-slate-800
-        rounded-2xl
-        flex flex-col justify-center
-        shadow-sm dark:shadow-none
-    ">
-        <p class="
-            text-sm text-center
-            font-semibold
-            tracking-wide
-            text-slate-700 dark:text-slate-300
-            uppercase
+    {{-- segunda fila --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        {{-- Usuarios activos --}}
+        <div class="
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            rounded-2xl
+            flex flex-col justify-center
+            shadow-sm dark:shadow-none
         ">
-            Total IPs
-        </p>
+            <p class="
+                text-sm text-center
+                font-semibold
+                tracking-wide
+                text-slate-700 dark:text-slate-300
+                uppercase
+            ">
+                Usuarios activos
+            </p>
 
-        <h2 class="mt-3 text-4xl font-bold text-center">
-            {{ $totalIps }}
-        </h2>
-    </div>
+            <h2 class="mt-3 text-4xl font-bold text-center">
+                {{ $activeUsers }}
+            </h2>
+        </div>
 
-    {{-- Disponibles --}}
-    <div class="
-        bg-white dark:bg-[#111827]
-        border border-slate-200 dark:border-slate-800
-        rounded-2xl
-        flex flex-col justify-center
-        shadow-sm dark:shadow-none
-    ">
-        <p class="
-            text-sm text-center
-            font-semibold
-            tracking-wide
-            text-slate-700 dark:text-slate-300
-            uppercase
+        {{-- Usuarios con password --}}
+        <div class="
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            rounded-2xl
+            flex flex-col justify-center
+            shadow-sm dark:shadow-none
         ">
-            IPs disponibles
-        </p>
+            <p class="
+                text-sm text-center
+                font-semibold
+                tracking-wide
+                text-slate-700 dark:text-slate-300
+                uppercase
+            ">
+                Usuarios con contraseña
+            </p>
 
-        <h2 class="mt-3 text-4xl font-bold text-green-500 text-center">
-            {{ $availableIps }}
-        </h2>
-    </div>
+            <h2 class="mt-3 text-4xl font-bold text-center">
+                {{ $usersWithPasswords }}
+            </h2>
+        </div>
 
-    {{-- Asignadas --}}
-    <div class="
-        bg-white dark:bg-[#111827]
-        border border-slate-200 dark:border-slate-800
-        rounded-2xl
-        flex flex-col justify-center
-        shadow-sm dark:shadow-none
-    ">
-        <p class="
-            text-sm text-center
-            font-semibold
-            tracking-wide
-            text-slate-700 dark:text-slate-300
-            uppercase
+        {{-- Cobertura --}}
+        <div class="
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            rounded-2xl
+            flex flex-col justify-center
+            shadow-sm dark:shadow-none
         ">
-            IPs asignadas
-        </p>
+            <p class="
+                text-sm text-center
+                font-semibold
+                tracking-wide
+                text-slate-700 dark:text-slate-300
+                uppercase
+            ">
+                Cobertura passwords
+            </p>
 
-        <h2 class="mt-3 text-4xl font-bold text-blue-500 text-center">
-            {{ $assignedIps }}
-        </h2>
-    </div>
+            <h2 class="mt-3 text-4xl font-bold text-amber-500 text-center">
+                {{ $passwordCoverage }}%
+            </h2>
+        </div>
 
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-
-    {{-- Usuarios activos --}}
-    <div class="
-        bg-white dark:bg-[#111827]
-        border border-slate-200 dark:border-slate-800
-        rounded-2xl
-        flex flex-col justify-center
-        shadow-sm dark:shadow-none
-    ">
-        <p class="
-            text-sm text-center
-            font-semibold
-            tracking-wide
-            text-slate-700 dark:text-slate-300
-            uppercase
+        <div class="
+            bg-white dark:bg-[#111827]
+            border border-slate-200 dark:border-slate-800
+            rounded-2xl
+            flex flex-col justify-center
+            shadow-sm dark:shadow-none
         ">
-            Usuarios activos
-        </p>
 
-        <h2 class="mt-3 text-4xl font-bold text-center">
-            {{ $activeUsers }}
-        </h2>
-    </div>
+            <p class="
+                text-sm text-center
+                font-semibold
+                tracking-wide
+                text-slate-700 dark:text-slate-300
+                uppercase
+            ">
+                Última auditoría
+            </p>
 
-    {{-- Usuarios con password --}}
-    <div class="
-        bg-white dark:bg-[#111827]
-        border border-slate-200 dark:border-slate-800
-        rounded-2xl
-        flex flex-col justify-center
-        shadow-sm dark:shadow-none
-    ">
-        <p class="
-            text-sm text-center
-            font-semibold
-            tracking-wide
-            text-slate-700 dark:text-slate-300
-            uppercase
-        ">
-            Usuarios con contraseña
-        </p>
+            @if($lastAudit)
 
-        <h2 class="mt-3 text-4xl font-bold text-center">
-            {{ $usersWithPasswords }}
-        </h2>
-    </div>
+                <div class="space-y-1">
 
-    {{-- Cobertura --}}
-    <div class="
-        bg-white dark:bg-[#111827]
-        border border-slate-200 dark:border-slate-800
-        rounded-2xl
-        flex flex-col justify-center
-        shadow-sm dark:shadow-none
-    ">
-        <p class="
-            text-sm text-center
-            font-semibold
-            tracking-wide
-            text-slate-700 dark:text-slate-300
-            uppercase
-        ">
-            Cobertura passwords
-        </p>
+                    <h3 class="text-lg text-center font-semibold leading-snug">
+                        {{ $lastAudit->description ?? 'Actividad registrada' }}
+                    </h3>
 
-        <h2 class="mt-3 text-4xl font-bold text-amber-500 text-center">
-            {{ $passwordCoverage }}%
-        </h2>
-    </div>
+                    @if($lastAudit->user)
 
-    <div class="
-        bg-white dark:bg-[#111827]
-        border border-slate-200 dark:border-slate-800
-        rounded-2xl
-        flex flex-col justify-center
-        shadow-sm dark:shadow-none
-    ">
+                        <p class="text-sm text-center text-slate-500 dark:text-slate-400">
+                            Realizado por
+                            <span class="font-medium">
+                                {{ $lastAudit->user->name }}
+                            </span>
+                        </p>
 
-    <p class="
-        text-sm text-center
-        font-semibold
-        tracking-wide
-        text-slate-700 dark:text-slate-300
-        uppercase
-    ">
-        Última auditoría
-    </p>
+                    @endif
 
-    @if($lastAudit)
+                    <p class="text-sm text-center text-slate-500 dark:text-slate-400">
+                        {{ $lastAudit->created_at->diffForHumans() }}
+                    </p>
 
-        <div class="space-y-1">
+                </div>
 
-            <h3 class="text-lg text-center font-semibold leading-snug">
-                {{ $lastAudit->description ?? 'Actividad registrada' }}
-            </h3>
-
-            @if($lastAudit->user)
+            @else
 
                 <p class="text-sm text-center text-slate-500 dark:text-slate-400">
-                    Realizado por
-                    <span class="font-medium">
-                        {{ $lastAudit->user->name }}
-                    </span>
+                    No hay registros de auditoría.
                 </p>
 
             @endif
 
-            <p class="text-sm text-center text-slate-500 dark:text-slate-400">
-                {{ $lastAudit->created_at->diffForHumans() }}
-            </p>
-
         </div>
-
-    @else
-
-        <p class="text-sm text-center text-slate-500 dark:text-slate-400">
-            No hay registros de auditoría.
-        </p>
-
-    @endif
-
     </div>
 
-</div>
+    {{-- Tercera fila --}}
+    <div class="
+        mt-8
+        grid grid-cols-1
+        md:grid-cols-3
+        gap-6
+        ">
+
+        {{-- STOCK BAJO --}}
+        <a
+            href="{{ route('supplies.index', [
+                'filter' => 'critical'
+            ]) }}"
+            class="
+                block
+                bg-yellow-500/10
+                border border-yellow-500/20
+                rounded-2xl
+                p-6
+                hover:bg-yellow-500/20
+                transition
+                text-center
+                flex
+                flex-col
+                justify-center
+            "
+        >
+
+            <p class="
+                text-sm font-bold uppercase
+                text-yellow-400
+            ">
+                Stock crítico
+            </p>
+
+            <h2 class="
+                mt-3 text-4xl font-bold
+                text-yellow-300
+            ">
+                {{ $lowStockSupplies }}
+            </h2>
+
+            <p class="
+                mt-2 text-sm
+                text-yellow-200/70
+            ">
+                suministros con stock bajo
+            </p>
+
+        </a>
+
+        {{-- SIN STOCK --}}
+        <a
+            href="{{ route('supplies.index', [
+                'filter' => 'out'
+            ]) }}"
+            class="
+                block
+                bg-red-500/10
+                border border-red-500/20
+                rounded-2xl
+                p-6
+                hover:bg-red-500/20
+                transition
+                text-center
+                flex
+                flex-col
+                justify-center
+            "
+        >
+
+            <p class="
+                text-sm font-bold uppercase
+                text-red-400
+            ">
+                Sin stock
+            </p>
+
+            <h2 class="
+                mt-3 text-4xl font-bold
+                text-red-300
+            ">
+                {{ $outOfStockSupplies }}
+            </h2>
+
+            <p class="
+                mt-2 text-sm
+                text-red-200/70
+            ">
+                suministros agotados
+            </p>
+
+        </a>
+
+        {{-- ÚLTIMO MOVIMIENTO --}}
+        <div class="
+                bg-blue-500/10
+                border border-blue-500/20
+                rounded-2xl
+                p-6
+                h-full
+                text-center
+                flex
+                flex-col
+                justify-center
+            ">
+                @if($lastSupplyMovement)
+
+                @php
+
+                    $isAdd = $lastSupplyMovement->type === 'add';
+
+                @endphp
+
+                <div class="mt-4">
+
+                    <p class="
+                        text-sm font-semibold
+                        {{ $isAdd
+                            ? 'text-green-400'
+                            : 'text-red-400'
+                        }}
+                    ">
+
+                        {{ $isAdd ? '⬆ Stock agregado' : '⬇ Stock descontado' }}
+
+                    </p>
+
+                    <h2 class="
+                        mt-2 text-xl font-bold
+                        text-white
+                    ">
+
+                        {{ $lastSupplyMovement->supply?->supply_type }}
+
+                    </h2>
+
+                    <p class="
+                        mt-2 text-lg
+                        text-slate-300
+                    ">
+                        +{{ $lastSupplyMovement->quantity }} unidades
+                    </p>
+
+                    <p class="
+                        mt-4 text-sm
+                        text-slate-400
+                    ">
+
+                        {{ $lastSupplyMovement->created_at->diffForHumans() }}
+
+                    </p>
+
+                    <p class="
+                        text-sm
+                        text-slate-500
+                    ">
+
+                        por
+                        {{ $lastSupplyMovement->user?->name ?? 'Sistema' }}
+
+                    </p>
+
+                </div>
+
+            @endif
+        </div>
+    </div>
+
 </x-app-layout>

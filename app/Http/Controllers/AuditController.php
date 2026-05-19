@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use App\Models\CredentialAuditLog;
 
@@ -9,13 +10,22 @@ class AuditController extends Controller
 {
     public function index()
     {
-        $audits = CredentialAuditLog::with([
+        $credentialAudits = CredentialAuditLog::with([
             'user',
             'auditable'
-        ])
-        ->latest()
-        ->paginate(50);
+        ])->get();
 
-        return view('audits.index', compact('audits'));
+        $systemAudits = AuditLog::with([
+            'user'
+        ])->get();
+
+        $audits = $credentialAudits
+            ->concat($systemAudits)
+            ->sortByDesc('created_at');
+
+        return view(
+            'audits.index',
+            compact('audits')
+        );
     }
 }

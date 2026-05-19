@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\SupplyMovement;
 
 class Supply extends Model
 {
@@ -13,7 +14,6 @@ class Supply extends Model
         'supply_type',
         'quantity',
         'minimum_stock',
-        'notes',
         'created_by',
         'updated_by',
 
@@ -32,6 +32,13 @@ class Supply extends Model
         return $this->belongsTo(
             User::class,
             'updated_by'
+        );
+    }
+
+    public function movements()
+    {
+        return $this->hasMany(
+            SupplyMovement::class
         );
     }
 }

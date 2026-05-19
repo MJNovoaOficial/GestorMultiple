@@ -24,8 +24,6 @@ return new class extends Migration
 
             $table->integer('minimum_stock')->default(1);
 
-            $table->text('notes')->nullable();
-
             $table->foreignId('created_by')
                 ->nullable()
                 ->constrained('users')

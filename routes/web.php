@@ -14,6 +14,7 @@ use App\Http\Controllers\PasswordGeneratorController;
 use App\Http\Controllers\PasswordRevealController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SupplyController;
 
 Route::get('/', function () {
    
@@ -79,6 +80,28 @@ Route::middleware('auth')->group(function () {
         Route::post('/ip-addresses/{ip}/release', [IpAddressController::class, 'release'])
             ->name('ip-addresses.release');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de suministros de impresoras
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/supplies', [SupplyController::class, 'index'])
+            ->name('supplies.index');
+        Route::get('/supplies/create', [SupplyController::class, 'create'])
+            ->name('supplies.create');
+        Route::get('/supplies/{supply}/edit', [SupplyController::class, 'edit'])
+            ->name('supplies.edit');
+        Route::put('/supplies/{supply}', [SupplyController::class, 'update'])
+            ->name('supplies.update');
+        Route::post('/supplies', [SupplyController::class, 'store'])
+            ->name('supplies.store');
+        Route::post('/supplies/{supply}/add',[SupplyController::class, 'addStock'])
+            ->name('supplies.add');
+        Route::post('/supplies/{supply}/remove',[SupplyController::class, 'removeStock'])
+            ->name('supplies.remove');
+        Route::delete('/supplies/{supply}',[SupplyController::class, 'destroy'])
+            ->name('supplies.destroy');
+        
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría

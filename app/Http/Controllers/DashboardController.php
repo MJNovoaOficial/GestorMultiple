@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\IpAddress;
 use App\Models\EmailCredential;
 use App\Models\CredentialAuditLog;
+use App\Models\Supply;
 
 class DashboardController extends Controller
 {
@@ -33,6 +34,28 @@ class DashboardController extends Controller
             : 0;
 
         $lastAudit = CredentialAuditLog::latest()->first();
+       
+        $lowStockSupplies = Supply::where(
+                'is_active',
+                true
+            )
+            ->whereColumn(
+                'quantity',
+                '<=',
+                'minimum_stock'
+            )
+            ->where('quantity', '>', 0)
+            ->count();
+
+        $outOfStockSupplies = Supply::where(
+                'is_active',
+                true
+            )
+            ->where('quantity', '<=', 0)
+            ->count();
+
+        $lastSupplyMovement = \App\Models\SupplyMovement::latest()
+            ->first();
         
         return view('dashboard', compact(
             'totalBranches',
@@ -42,7 +65,10 @@ class DashboardController extends Controller
             'activeUsers',
             'usersWithPasswords',
             'passwordCoverage',
-            'lastAudit'
+            'lastAudit',
+            'lowStockSupplies',
+            'outOfStockSupplies',
+            'lastSupplyMovement',
         ));
     }
 }

@@ -370,12 +370,6 @@
 
     </div>
 
-    {{-- Paginación --}}
-    <div class="mt-6">
-
-        {{ $users->links() }}
-
-    </div>
 
     {{-- MODAL CREAR USUARIO --}}
     <div
