@@ -243,40 +243,7 @@
         </div>
 
     </div>
-    {{-- Auditoría --}}
-    <a
-        href="{{ route('audits.index') }}"
-        class="flex items-center gap-3
-            px-4 py-2.5 rounded-2xl
-            bg-slate-900/80
-            dark:border-slate-800
-            hover:bg-[#1E293B]
-            transition
-            shadow-lg"
-    >
-
-        {{-- Icono --}}
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-6 h-6 text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.8"
-                d="M9 17v-6m3 6V7m3 10v-4m3 8H6a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2v14a2 2 0 01-2 2z"
-            />
-        </svg>
-
-        <span class="font-semibold text-sm tracking-wide text-white">
-            Auditoría
-        </span>
-
-    </a>
-
+    
     {{-- Módulo Básicos --}}
     @if(auth()->user()->role === 'superadmin')
         <div
@@ -400,6 +367,40 @@
 
         </div>
     @endif
+    {{-- Auditoría --}}
+        <a
+            href="{{ route('audits.index') }}"
+            class="flex items-center gap-3
+                px-4 py-2.5 rounded-2xl
+                bg-slate-900/80
+                dark:border-slate-800
+                hover:bg-[#1E293B]
+                transition
+                shadow-lg"
+        >
+
+            {{-- Icono --}}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-6 h-6 text-gray-300"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.8"
+                    d="M9 17v-6m3 6V7m3 10v-4m3 8H6a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2v14a2 2 0 01-2 2z"
+                />
+            </svg>
+
+            <span class="font-semibold text-sm tracking-wide text-white">
+                Auditoría
+            </span>
+
+        </a>
+
     <!-- Toggle Tema -->
     <div class="flex justify-center mt-6 mb-8">
 
