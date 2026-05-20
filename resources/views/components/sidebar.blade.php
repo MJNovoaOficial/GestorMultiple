@@ -3,6 +3,9 @@
     text-white
     min-h-screen
     px-3 py-6 pt-4
+    h-screen
+    sticky
+    top-0
 ">
 
     {{-- Logo --}}
@@ -574,6 +577,81 @@
     
     {{-- Footer Sidebar --}}
     <div class="mt-auto px-4 pb-6 space-y-3">
+
+        <a
+            href="{{ route('profile.edit') }}"
+            class="
+                flex items-center gap-3
+                px-4 py-3
+                rounded-2xl
+
+                bg-slate-800/60
+                hover:bg-slate-700/70
+
+                border border-slate-700/50
+
+                transition
+            "
+        >
+
+            @if(auth()->user()->profile_photo)
+
+                <img
+                    src="/storage/{{ auth()->user()->profile_photo }}"
+                    alt="Foto perfil"
+
+                    class="
+                        w-10 h-10
+                        rounded-full
+                        object-cover
+                        border border-slate-700
+                    "
+                >
+
+            @else
+
+                <div class="
+                    w-10 h-10
+                    rounded-full
+
+                    bg-blue-600
+
+                    flex items-center
+                    justify-center
+
+                    text-white font-bold
+                ">
+
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+
+                </div>
+
+            @endif
+
+            <div class="flex flex-col">
+
+                <span class="
+                    text-sm font-semibold
+                    text-white
+                ">
+
+                    {{ auth()->user()->name }}
+
+                </span>
+
+                <span class="
+                    text-xs
+                    text-slate-400
+                    uppercase
+                ">
+
+                    {{ auth()->user()->role }}
+
+                </span>
+
+            </div>
+
+        </a>
 
         {{-- Logout --}}
         <form

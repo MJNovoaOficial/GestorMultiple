@@ -8,6 +8,11 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
+        <link
+            rel="icon"
+            type="image/png"
+            href="{{ asset('images/logo.png') }}"
+        >
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
@@ -21,7 +26,7 @@
 
                 <div class="text-center mb-8">
                     <img
-                        src="{{ asset('images/logo.png') }}"
+                        src="{{ asset('images/logo.png?v=2') }}"
                         alt="MultiGestor"
                         class="h-20 w-auto mx-auto"
                     >

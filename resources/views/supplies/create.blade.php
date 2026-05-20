@@ -22,12 +22,7 @@
         </div>
 
         {{-- Card --}}
-        <div class="
-            bg-white dark:bg-[#111827]
-            border border-slate-200 dark:border-slate-800
-            rounded-2xl
-            p-6
-        ">
+        <div class="p-6 bg-gray-900 border border-gray-800 rounded-2xl">
 
             <form
                 action="{{ route('supplies.store') }}"
@@ -44,9 +39,9 @@
                     <div>
 
                         <label class="
-                            block mb-2
+                            block mb-2 
                             text-sm font-semibold
-                            text-slate-700 dark:text-slate-300
+                            text-gray-300
                         ">
                             Marca de Impresora
                         </label>
@@ -69,7 +64,7 @@
                         <label class="
                             block mb-2
                             text-sm font-semibold
-                            text-slate-700 dark:text-slate-300
+                            text-slate-300
                         ">
                             Modelo impresora
                         </label>
@@ -92,7 +87,7 @@
                         <label class="
                             block mb-2
                             text-sm font-semibold
-                            text-slate-700 dark:text-slate-300
+                            text-slate-300 
                         ">
                             Modelo suministro
                         </label>
@@ -115,7 +110,7 @@
                         <label class="
                             block mb-2
                             text-sm font-semibold
-                            text-slate-700 dark:text-slate-300
+                            text-gray-300 
                         ">
                             Cantidad
                         </label>
@@ -139,7 +134,7 @@
                         <label class="
                             block mb-2
                             text-sm font-semibold
-                            text-slate-700 dark:text-slate-300
+                            text-gray-300 
                         ">
                             Stock mínimo
                         </label>

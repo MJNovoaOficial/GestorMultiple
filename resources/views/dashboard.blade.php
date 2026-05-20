@@ -248,8 +248,9 @@
             ]) }}"
             class="
                 block
-                bg-yellow-500/10
-                border border-yellow-500/20
+                bg-yellow-100 dark:bg-yellow-500/10
+                border-yellow-300 dark:border-yellow-500/20
+                text-yellow-800 dark:text-yellow-300
                 rounded-2xl
                 p-6
                 hover:bg-yellow-500/20
@@ -263,21 +264,21 @@
 
             <p class="
                 text-sm font-bold uppercase
-                text-yellow-400
+                text-yellow-700 dark:text-yellow-300
             ">
                 Stock crítico
             </p>
 
             <h2 class="
                 mt-3 text-4xl font-bold
-                text-yellow-300
+                text-yellow-800 dark:text-yellow-200
             ">
                 {{ $lowStockSupplies }}
             </h2>
 
             <p class="
                 mt-2 text-sm
-                text-yellow-200/70
+                text-yellow-700 dark:text-yellow-400
             ">
                 suministros con stock bajo
             </p>
@@ -291,8 +292,9 @@
             ]) }}"
             class="
                 block
-                bg-red-500/10
-                border border-red-500/20
+                bg-red-100 dark:bg-red-500/10
+                border-red-300 dark:border-red-500/20
+                text-red-800 dark:text-red-300
                 rounded-2xl
                 p-6
                 hover:bg-red-500/20
@@ -306,21 +308,21 @@
 
             <p class="
                 text-sm font-bold uppercase
-                text-red-400
+                text-red-700 dark:text-red-300
             ">
                 Sin stock
             </p>
 
             <h2 class="
                 mt-3 text-4xl font-bold
-                text-red-300
+                text-red-800 dark:text-red-200
             ">
                 {{ $outOfStockSupplies }}
             </h2>
 
             <p class="
                 mt-2 text-sm
-                text-red-200/70
+                text-red-700 dark:text-red-400
             ">
                 suministros agotados
             </p>
@@ -329,8 +331,9 @@
 
         {{-- ÚLTIMO MOVIMIENTO --}}
         <div class="
-                bg-blue-500/10
-                border border-blue-500/20
+                bg-blue-100 dark:bg-blue-500/10
+                border-blue-300 dark:border-blue-500/20
+                text-blue-800 dark:text-blue-300
                 rounded-2xl
                 p-6
                 h-full
@@ -363,7 +366,7 @@
 
                     <h2 class="
                         mt-2 text-xl font-bold
-                        text-white
+                        text-slate-900 dark:text-white
                     ">
 
                         {{ $lastSupplyMovement->supply?->supply_type }}
@@ -372,7 +375,7 @@
 
                     <p class="
                         mt-2 text-lg
-                        text-slate-300
+                        text-slate-600 dark:text-slate-400
                     ">
                         +{{ $lastSupplyMovement->quantity }} unidades
                     </p>
