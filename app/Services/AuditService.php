@@ -9,7 +9,7 @@ class AuditService
 {
     public static function log(
         string $action,
-        Model $model,
+        ?Model $model = null,
         ?string $description = null,
         ?array $oldValues = null,
         ?array $newValues = null

@@ -26,7 +26,9 @@ class DashboardController extends Controller
         $activeUsers = \App\Models\User::where('is_active', true)
             ->count();
 
-        $usersWithPasswords = \App\Models\EmailCredential::whereNotNull('password')
+        $usersWithPasswords = \App\Models\EmailCredential
+            ::where('is_active', true)
+            ->whereNotNull('password')
             ->count();
 
         $passwordCoverage = $activeUsers > 0

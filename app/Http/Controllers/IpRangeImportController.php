@@ -21,7 +21,7 @@ class IpRangeImportController extends Controller
         ));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
             'start_ip' => 'required|ip',
@@ -32,6 +32,10 @@ class IpRangeImportController extends Controller
 
         $start = ip2long($request->start_ip);
         $end = ip2long($request->end_ip);
+
+        $duplicates = 0;
+        $imported = 0;
+        $lastCreatedIp = null;
 
         for ($ip = $start; $ip <= $end; $ip++) {
 
@@ -45,7 +49,26 @@ class IpRangeImportController extends Controller
 
             $lastOctet = explode('.', $currentIp)[3];
 
-            if ($lastOctet == 0 ) {
+            if ($lastOctet == 0) {
+
+                continue;
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Evitar IPs duplicadas
+            |--------------------------------------------------------------------------
+            */
+
+            $exists = IpAddress::where(
+                'ip_address',
+                $currentIp
+            )->exists();
+
+            if ($exists) {
+
+                $duplicates++;
 
                 continue;
 
@@ -57,16 +80,34 @@ class IpRangeImportController extends Controller
                 'ip_status_id' => $request->ip_status_id,
             ]);
 
+            $imported++;
+
         }
-        AuditService::log(
-            'imported',
-            $range,
-            'Ha importado un rango de IPs'
-        );
+        if ($lastCreatedIp) {
+
+            AuditService::log(
+                'imported',
+                null,
+                'Se importó un rango IP desde ' .
+                $request->start_ip .
+                ' hasta ' .
+                $request->end_ip .
+                '. Importadas: ' . $imported .
+                ', omitidas: ' . $duplicates
+            );
+
+        }
 
         return redirect()
             ->route('dashboard')
-            ->with('success', 'Rango IP importado correctamente.');
+            ->with(
+                'success',
+                'Importación completada. '
+                . $imported .
+                ' IPs importadas y '
+                . $duplicates .
+                ' duplicadas omitidas.'
+            );
     }
 
 

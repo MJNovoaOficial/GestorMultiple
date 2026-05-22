@@ -102,11 +102,24 @@
                                             'class' => 'bg-red-600',
                                         ],
 
+                                        'reactivated' => [
+                                            'label' => 'Reactivado',
+                                            'class' => 'bg-blue-600',
+                                        ],
+
+                                        'released' =>[
+                                            'label' => 'Liberado',
+                                            'class' => 'bg-green-600',
+                                        ],
                                         'revealed' => [
                                             'label' => 'Revelado',
                                             'class' => 'bg-purple-600',
                                         ],
 
+                                        'imported' => [
+                                            'label' => 'Importado',
+                                            'class' => 'bg-purple-600',
+                                        ],
                                     ];
 
                                     $actionData =

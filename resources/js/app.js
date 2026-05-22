@@ -1,6 +1,9 @@
 import './bootstrap';
 
 import Alpine from 'alpinejs';
+import flatpickr from "flatpickr";
+import "flatpickr/dist/themes/dark.css";
+import { Spanish } from "flatpickr/dist/l10n/es.js";
 
 const toggle = document.getElementById('theme-toggle');
 
@@ -57,5 +60,7 @@ const toggle = document.getElementById('theme-toggle');
     }
 
 window.Alpine = Alpine;
+window.flatpickr = flatpickr;
+window.Spanish = Spanish;
 
 Alpine.start();

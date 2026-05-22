@@ -106,10 +106,11 @@ class IpAddressController extends Controller
             'device_type_id' => $request->device_type_id,
             'ip_status_id' => $status->id,
         ]);
+
         AuditService::log(
             'updated',
-            $ip,
-            'Se actualizo la IP: ' . $ip->ip_address
+            $ipAddress,
+            'Se actualizó la IP: ' . $ipAddress->ip_address
         );
 
         return redirect()

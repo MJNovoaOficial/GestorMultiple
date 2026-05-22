@@ -148,7 +148,7 @@
                 text-slate-700 dark:text-slate-300
                 uppercase
             ">
-                Usuarios con contraseña
+                Contraseñas de Correo Generadas
             </p>
 
             <h2 class="mt-3 text-4xl font-bold text-center">

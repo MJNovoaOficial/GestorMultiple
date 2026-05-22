@@ -15,6 +15,7 @@ use App\Http\Controllers\PasswordRevealController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplyController;
+use App\Http\Controllers\EmployeePhoneController;
 
 Route::get('/', function () {
    
@@ -104,7 +105,17 @@ Route::middleware('auth')->group(function () {
             ->name('supplies.remove');
         Route::delete('/supplies/{supply}',[SupplyController::class, 'destroy'])
             ->name('supplies.destroy');
-        
+
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de dispositivos
+        |--------------------------------------------------------------------------
+        */
+        Route::resource('employee-phones',EmployeePhoneController::class);
+        Route::post(
+            '/employee-phones/import',
+            [EmployeePhoneController::class, 'import']
+        )->name('employee-phones.import');
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría

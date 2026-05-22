@@ -33,27 +33,9 @@
     >
 
         {{-- Icono --}}
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-6 h-6 text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.8"
-                d="M17 20h5V4H2v16h5m10 0v-2
-                a4 4 0 00-4-4H9a4 4 0 00-4 4v2m12 0H5
-                m12 0a2 2 0 002-2V6a2 2 0 00-2-2H7
-                a2 2 0 00-2 2v12a2 2 0 002 2m6-12
-                a2 2 0 11-4 0 2 2 0 014 0z"
-            />
-        </svg>
-
+        
         <span class="font-semibold text-sm tracking-wide text-white">
-            Usuarios
+           👤 Usuarios
         </span>
 
     </a>
@@ -79,23 +61,8 @@
             <div class="flex items-center gap-3">
 
                 {{-- Icono --}}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-6 h-6 text-gray-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.8"
-                        d="M3 5h18M9 3v2m6-2v2M4 9h16v10H4V9z"
-                    />
-                </svg>
-
                 <span class="font-semibold text-sm tracking-wide">
-                    Módulo Gestor IP
+                   🌐 Módulo Gestor IP
                 </span>
 
             </div>
@@ -173,23 +140,8 @@
             <div class="flex items-center gap-3">
 
                 {{-- Icono --}}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-6 h-6 text-gray-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.8"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2h-1V9a5 5 0 00-10 0v2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
-                    />
-                </svg>
-
                 <span class="font-semibold text-sm tracking-wide">
-                    Módulo Gestor Contraseñas
+                    🔐 Módulo Gestor Contraseñas
                 </span>
 
             </div>
@@ -269,30 +221,8 @@
                 <div class="flex items-center gap-3">
 
                     {{-- Icono --}}
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-6 h-6 text-gray-300"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="1.8"
-                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.757.426 1.757 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.757-2.924 1.757-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.757-.426-1.757-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                        />
-
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="1.8"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                    </svg>
-
                     <span class="font-semibold text-sm tracking-wide">
-                        Módulos Básicos
+                       ⚙️ Módulos Básicos
                     </span>
 
                 </div>
@@ -395,23 +325,8 @@
             <div class="flex items-center gap-3">
 
                 {{-- Icon --}}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-6 h-6 text-slate-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M20 13V7a2 2 0 00-2-2h-3V3H9v2H6a2 2 0 00-2 2v6m16 0v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6m16 0H4"
-                    />
-                </svg>
-
-                <span>
-                    Gestión Suministros
+                <span class="font-semibold text-sm tracking-wide">
+                    📦 Gestión Suministros
                 </span>
 
             </div>
@@ -475,8 +390,86 @@
         </div>
 
     </div>
+    {{-- Modulo Dispositivos --}}
+    <div x-data="{ openDevices: false }" class="bg-slate-900/80 rounded-2xl shadow-lg overflow-hidden">
 
+        <button
+            @click="openDevices = !openDevices"
 
+            class="w-full flex items-center justify-between
+                    px-4 py-2.5 rounded-none
+                    bg-slate-900/80
+                    dark:border-slate-800
+                    hover:bg-[#1E293B]
+                    transition
+            "
+        >
+
+            <span class="font-semibold text-sm tracking-wide
+            ">
+                📱 Dispositivos
+
+            </span>
+
+            <svg
+                class="
+                    w-4 h-4
+                    transition-transform
+                "
+
+                :class="{
+                    'rotate-180': openDevices
+                }"
+
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+            >
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                />
+
+            </svg>
+
+        </button>
+
+        {{-- SUBMENÚ --}}
+        <div
+            x-show="openDevices"
+            x-transition
+
+            class="
+                mt-2 ml-4
+                flex flex-col gap-1
+            "
+        >
+
+            <a
+                href="{{ route('employee-phones.index') }}"
+
+                class="
+                    px-4 py-2
+                    rounded-lg
+
+                    text-sm
+
+                    hover:bg-slate-800/60
+
+                    transition
+                "
+            >
+
+                Celulares
+
+            </a>
+
+        </div>
+
+    </div>
 
     {{-- Auditoría --}}
         <a
@@ -491,23 +484,8 @@
         >
 
             {{-- Icono --}}
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-6 h-6 text-gray-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1.8"
-                    d="M9 17v-6m3 6V7m3 10v-4m3 8H6a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2v14a2 2 0 01-2 2z"
-                />
-            </svg>
-
             <span class="font-semibold text-sm tracking-wide text-white">
-                Auditoría
+              📋 Auditoría
             </span>
 
         </a>
