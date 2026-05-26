@@ -1,11 +1,18 @@
 <aside class="
+    w-72
+
     bg-[#020817]
     text-white
-    min-h-screen
-    px-3 py-6 pt-4
+
     h-screen
+
+    px-3 py-6 pt-4
+
     sticky
     top-0
+
+    overflow-y-auto
+    overflow-x-hidden
 ">
 
     {{-- Logo --}}
@@ -25,7 +32,7 @@
         href="{{ route('users.index') }}"
         class="flex items-center gap-3
             px-4 py-2.5 rounded-2xl
-            bg-slate-900/80
+            bg-slate-900/80 whitespace-nowrap
             dark:border-slate-800
             hover:bg-[#1E293B]
             transition
@@ -52,7 +59,7 @@
             @click="openIp = !openIp"
             class="w-full flex items-center justify-between
                 px-4 py-2.5 rounded-none
-                bg-slate-900/80
+                bg-slate-900/80 whitespace-nowrap
                 dark:border-slate-800
                 hover:bg-[#1E293B]
                 transition"
@@ -70,7 +77,7 @@
             {{-- Flecha --}}
             <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="w-4 h-4 text-gray-400"
+                class="w-4 h-4 text-gray-400 shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -131,7 +138,7 @@
             @click="openPasswords = !openPasswords"
             class="w-full flex items-center justify-between
                 px-4 py-2.5 rounded-none
-                bg-slate-900/80
+                bg-slate-900/80 whitespace-nowrap
                 dark:border-slate-800
                 hover:bg-[#1E293B]
                 transition"
@@ -149,7 +156,7 @@
             {{-- Flecha --}}
             <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="w-4 h-4 text-gray-400"
+                class="w-4 h-4 text-gray-400 shrink-0"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -211,7 +218,7 @@
                 @click="openBasic = !openBasic"
                 class="w-full flex items-center justify-between
                     px-4 py-2.5 rounded-none
-                    bg-slate-900/80
+                    bg-slate-900/80 whitespace-nowrap
                     dark:border-slate-800
                     hover:bg-[#1E293B]
                     transition"
@@ -230,7 +237,7 @@
                 {{-- Flecha --}}
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    class="w-4 h-4 text-gray-400"
+                    class="w-4 h-4 text-gray-400 shrink-0"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -315,7 +322,7 @@
             class="
                 w-full flex items-center justify-between
                     px-4 py-2.5 rounded-none
-                    bg-slate-900/80
+                    bg-slate-900/80 whitespace-nowrap
                     dark:border-slate-800
                     hover:bg-[#1E293B]
                     transition
@@ -334,7 +341,7 @@
             {{-- Arrow --}}
             <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="w-5 h-5 text-slate-400 transition-transform duration-300"
+                class="w-5 h-5 text-slate-400 transition-transform duration-300 shrink-0"
                 :class="{ 'rotate-180': open }"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -398,7 +405,7 @@
 
             class="w-full flex items-center justify-between
                     px-4 py-2.5 rounded-none
-                    bg-slate-900/80
+                    bg-slate-900/80 whitespace-nowrap
                     dark:border-slate-800
                     hover:bg-[#1E293B]
                     transition
@@ -407,7 +414,7 @@
 
             <span class="font-semibold text-sm tracking-wide
             ">
-                📱 Dispositivos
+                📱 Gestion de Dispositivos
 
             </span>
 
@@ -419,7 +426,7 @@
 
                 :class="{
                     'rotate-180': openDevices
-                }"
+                } shrink-0 "
 
                 fill="none"
                 stroke="currentColor"
@@ -476,7 +483,7 @@
             href="{{ route('audits.index') }}"
             class="flex items-center gap-3
                 px-4 py-2.5 rounded-2xl
-                bg-slate-900/80
+                bg-slate-900/80 whitespace-nowrap
                 dark:border-slate-800
                 hover:bg-[#1E293B]
                 transition

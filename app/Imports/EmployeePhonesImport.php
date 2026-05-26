@@ -10,6 +10,35 @@ class EmployeePhonesImport implements ToModel, WithHeadingRow
 {
     public function model(array $row)
     {
+
+        if (
+            empty(trim((string) $row['numero'])) ||
+            empty(trim((string) $row['nombre'])) ||
+            empty(trim((string) $row['apellido'])) ||
+            empty(trim((string) $row['modelo'])) ||
+            empty(trim((string) $row['fecha_entrega'])) ||
+            empty(trim((string) $row['imei'])) ||
+            empty(trim((string) $row['cargo'])) ||
+            empty(trim((string) $row['departamento'])) ||
+            empty(trim((string) $row['codigo'])) ||
+            empty(trim((string) $row['nombre_empresa'])) ||
+            empty(trim((string) $row['rut'])) ||
+            empty(trim((string) $row['correo']))
+        ) {
+
+            return null;
+        }
+
+        if (!filter_var($row['correo'], FILTER_VALIDATE_EMAIL)) {
+
+            return null;
+        }
+
+        if (!preg_match('/^9\d{8}$/', $row['numero'])) {
+
+            return null;
+        }
+        
         return EmployeePhone::updateOrCreate(
 
             [
