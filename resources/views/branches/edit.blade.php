@@ -16,7 +16,7 @@
                 {{-- Nombre --}}
                 <div class="mb-5">
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Nombre sucursal
+                        Nombre sucursal <span class="text-red-400">*</span>
                     </label>
 
                     <input
@@ -25,6 +25,11 @@
                         value="{{ old('name', $branch->name) }}"
                         class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
                         required
+                        @error('name')
+                            border-red-500 
+                        @else
+                            border-gray-700                            
+                        @enderror
                     >
 
                     @error('name')
@@ -37,14 +42,19 @@
                 {{-- Ciudad --}}
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Ciudad
+                        Ciudad <span class="text-red-400">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="city"
                         value="{{ old('city', $branch->city) }}"
-                        class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
+                        class="w-full rounded-lg bg-gray-800 border text-white"
+                        @error('city')
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
 
                     @error('city')

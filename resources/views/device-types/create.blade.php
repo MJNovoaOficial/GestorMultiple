@@ -17,7 +17,7 @@
                 <div class="mb-6">
 
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Nombre del tipo de dispositivo
+                        Nombre del tipo de dispositivo <span class="text-red-400">*</span>
                     </label>
 
                     <input
@@ -25,8 +25,13 @@
                         name="name"
                         value="{{ old('name') }}"
                         placeholder="Ej: Notebook"
-                        class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
+                        class="w-full rounded-lg bg-gray-800 border text-white"
                         required
+                        @error('name')
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
 
                     @error('name')

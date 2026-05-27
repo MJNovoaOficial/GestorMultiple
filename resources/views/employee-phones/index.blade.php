@@ -1,5 +1,8 @@
 <x-app-layout>
-
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    >
     <div class="w-full max-w-[2400px] mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-8">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
@@ -97,6 +100,21 @@
         </div>
     </div>
     
+    @if(session('success'))
+        <div class="
+            mb-4
+            rounded-xl
+            bg-emerald-500/10
+            border border-emerald-500/20
+            text-emerald-300
+            px-4 py-3
+        ">
+
+            {{ session('success') }}
+
+        </div>
+    @endif
+
     <div class="pb-8">
         <div class="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
             {{-- TABLA --}}
@@ -726,270 +744,358 @@
                     gap-5
                 ">
 
-                    <input
-                        type="text"
-                        name="first_name"
-                        id="edit-first_name"
-                        placeholder="Nombre"
+                    <div>
 
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Nombre <span class="text-red-400">*</span>
+                        </label>
 
-                            bg-slate-900
+                        <input
+                            type="text"
+                            name="first_name"
+                            id="edit-first_name"
 
-                            px-4 py-3
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        >
 
-                            text-white
-                        "
-                    >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Apellido <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="last_name"
+                            id="edit-last_name"
+                            placeholder="Apellido"
 
-                    <input
-                        type="text"
-                        name="last_name"
-                        id="edit-last_name"
-                        placeholder="Apellido"
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                                Modelo <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="phone_model"
+                            id="edit-phone_model"
+                            placeholder="Modelo"
 
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        >
+                    </div>
+                    <div>
 
-                            bg-slate-900
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Número <span class="text-red-400">*</span>
+                        </label>
 
-                            px-4 py-3
+                        <div class="flex">
 
-                            text-white
-                        "
-                    >
+                            <span class="
+                                inline-flex items-center px-4
+                                rounded-l-xl
+                                border border-r-0 border-slate-700
+                                bg-slate-900
+                                text-gray-300
+                            ">
+                                +56
+                            </span>
 
-                    <input
-                        type="text"
-                        name="phone_model"
-                        id="edit-phone_model"
-                        placeholder="Modelo"
+                            <input
+                                type="text"
+                                name="phone_number"
+                                id="edit-phone_number"
 
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
+                                class="
+                                    w-full
+                                    rounded-r-xl
+                                    border border-slate-700
+                                    bg-slate-900
+                                    px-4 py-3
+                                    text-white
+                                    focus:outline-none
+                                    focus:ring-2
+                                    focus:ring-blue-500
+                                "
+                            >
 
-                            bg-slate-900
+                        </div>
 
-                            px-4 py-3
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            IMEI <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="imei"
+                            id="edit-imei"
+                            placeholder="IMEI"
 
-                            text-white
-                        "
-                    >
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Cargo <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="position"
+                            id="edit-position"
+                            placeholder="Cargo"
 
-                    <input
-                        type="text"
-                        name="phone_number"
-                        id="edit-phone_number"
-                        placeholder="Número"
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Área <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="department"
+                            id="edit-department"
+                            placeholder="Área"
 
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        >
+                    </div>
 
-                            bg-slate-900
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Código Vendedor <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="vendor_code"
+                            id="edit-vendor_code"
+                            placeholder="Código vendedor"
 
-                            px-4 py-3
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Empresa <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="company_name"
+                            id="edit-company_name"
+                            placeholder="Empresa"
 
-                            text-white
-                        "
-                    >
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            RUT <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            name="rut"
+                            id="edit-rut"
+                            placeholder="RUT"
 
-                    <input
-                        type="text"
-                        name="imei"
-                        id="edit-imei"
-                        placeholder="IMEI"
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500e
+                            "
+                        >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Correo Electrónico <span class="text-red-400">*</span>
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            id="edit-email"
+                            placeholder="Correo"
 
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500e
+                            "
+                        >
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Fecha Entrega <span class="text-red-400">*</span>
+                        </label>
 
-                            bg-slate-900
+                        <input
+                            type="text"
+                            name="delivery_date"
+                            id="edit-delivery_date"
 
-                            px-4 py-3
+                            placeholder="Seleccione fecha"
 
-                            text-white
-                        "
-                    >
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                            "
+                        >
 
-                    <input
-                        type="text"
-                        name="position"
-                        id="edit-position"
-                        placeholder="Cargo"
+                    </div>
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Estado <span class="text-red-400">*</span>
+                        </label>
+                        <select
+                            name="status"
+                            id="edit-status"
 
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
+                            class="
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500e
+                            "
+                        >
+                            <option value="active">
+                                Activo
+                            </option>
 
-                            bg-slate-900
+                            <option value="returned">
+                                Devuelto
+                            </option>
 
-                            px-4 py-3
-
-                            text-white
-                        "
-                    >
-
-                    <input
-                        type="text"
-                        name="department"
-                        id="edit-department"
-                        placeholder="Área"
-
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
-
-                            bg-slate-900
-
-                            px-4 py-3
-
-                            text-white
-                        "
-                    >
-
-                    <input
-                        type="text"
-                        name="vendor_code"
-                        id="edit-vendor_code"
-                        placeholder="Código vendedor"
-
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
-
-                            bg-slate-900
-
-                            px-4 py-3
-
-                            text-white
-                        "
-                    >
-
-                    <input
-                        type="text"
-                        name="company_name"
-                        id="edit-company_name"
-                        placeholder="Empresa"
-
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
-
-                            bg-slate-900
-
-                            px-4 py-3
-
-                            text-white
-                        "
-                    >
-
-                    <input
-                        type="text"
-                        name="rut"
-                        id="edit-rut"
-                        placeholder="RUT"
-
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
-
-                            bg-slate-900
-
-                            px-4 py-3
-
-                            text-white
-                        "
-                    >
-
-                    <input
-                        type="email"
-                        name="email"
-                        id="edit-email"
-                        placeholder="Correo"
-
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
-
-                            bg-slate-900
-
-                            px-4 py-3
-
-                            text-white
-                        "
-                    >
-
-                    <select
-                        name="status"
-                        id="edit-status"
-
-                        class="
-                            rounded-xl
-                            border
-                            border-slate-700
-
-                            bg-slate-900
-
-                            px-4 py-3
-
-                            text-white
-                        "
-                    >
-                        <option value="active">
-                            Activo
-                        </option>
-
-                        <option value="returned">
-                            Devuelto
-                        </option>
-
-                        <option value="blocked">
-                            Bloqueado
-                        </option>
-
-                    </select>
-
+                            <option value="blocked">
+                                Bloqueado
+                            </option>
+                        </select>
+                    </div>
                 </div>
+                <div class="mt-5">
+                    <label class="block mb-2 text-sm text-gray-300">
+                        Observaciones
+                    </label>
+                    <textarea
+                        name="observations"
+                        id="edit-observations"
 
-                <textarea
-                    name="observations"
-                    id="edit-observations"
+                        placeholder="Observaciones"
 
-                    placeholder="Observaciones"
-
-                    class="
-                        w-full
-
-                        mt-5
-
-                        rounded-xl
-                        border
-                        border-slate-700
-
-                        bg-slate-900
-
-                        px-4 py-3
-
-                        text-white
-                    "
-                ></textarea>
-
+                        class="
+                            w-full
+                            rounded-xl
+                            border border-slate-700
+                            bg-slate-900
+                            px-4 py-3
+                            text-white
+                            focus:outline-none
+                            focus:ring-2
+                            focus:ring-blue-500e
+                        "
+                    ></textarea>
+                </div>
                 {{-- FOOTER --}}
                 <div class="
                     flex
@@ -1017,13 +1123,10 @@
                     >
                         Guardar cambios
                     </button>
-
                 </div>
-
             </form>
-
         </div>
-
+    
     </div>
     <script>
         const importButton = document.getElementById('import-button');
@@ -1073,47 +1176,100 @@
         });
 
         const editButtons = document.querySelectorAll('.edit-device-btn');
-
         const modal = document.getElementById('edit-modal');
-
         const closeModal = document.getElementById('close-edit-modal');
-
         const editForm = document.getElementById('edit-form');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Abrir modal editar
+        |--------------------------------------------------------------------------
+        */
+        
         editButtons.forEach(button => {
-
             button.addEventListener('click', () => {
-
                 modal.classList.remove('hidden');
-
                 modal.classList.add('flex');
 
+                
                 const id = button.dataset.id;
-
+                
+                /*
+                |--------------------------------------------------------------------------
+                | Número teléfono sin +56
+                |--------------------------------------------------------------------------
+                */
+                const phoneNumber =
+                    button.dataset.phone_number
+                        ? button.dataset.phone_number.replace('+56', '')
+                        : '';
+                /*
+                |--------------------------------------------------------------------------
+                | Action form
+                |--------------------------------------------------------------------------
+                */
                 editForm.action = `/employee-phones/${id}`;
+                /*
+                |--------------------------------------------------------------------------
+                | Relleno de Inputs
+                |--------------------------------------------------------------------------
+                */
+                document.getElementById('edit-first_name').value =
+                    button.dataset.first_name ?? '';
+                document.getElementById('edit-last_name').value =
+                    button.dataset.last_name ?? '';
+                document.getElementById('edit-phone_model').value =
+                    button.dataset.phone_model ?? '';
+                document.getElementById('edit-phone_number').value =
+                    phoneNumber;
+                document.getElementById('edit-imei').value =
+                    button.dataset.imei ?? '';
+                document.getElementById('edit-position').value =
+                    button.dataset.position ?? '';
+                document.getElementById('edit-department').value =
+                    button.dataset.department ?? '';
+                document.getElementById('edit-vendor_code').value =
+                    button.dataset.vendor_code ?? '';
+                document.getElementById('edit-company_name').value =
+                    button.dataset.company_name ?? '';
+                document.getElementById('edit-rut').value =
+                    button.dataset.rut ?? '';
+                document.getElementById('edit-email').value =
+                    button.dataset.email ?? '';
+                document.getElementById('edit-observations').value =
+                    button.dataset.observations ?? '';
+                const rawDate = button.dataset.delivery_date ?? '';
+                if (rawDate) {
 
-                document.getElementById('edit-first_name').value = button.dataset.first_name;
-                document.getElementById('edit-last_name').value = button.dataset.last_name;
-                document.getElementById('edit-phone_model').value = button.dataset.phone_model;
-                document.getElementById('edit-phone_number').value = button.dataset.phone_number;
-                document.getElementById('edit-imei').value = button.dataset.imei;
-                document.getElementById('edit-position').value = button.dataset.position;
-                document.getElementById('edit-department').value = button.dataset.department;
-                document.getElementById('edit-vendor_code').value = button.dataset.vendor_code;
-                document.getElementById('edit-company_name').value = button.dataset.company_name;
-                document.getElementById('edit-rut').value = button.dataset.rut;
-                document.getElementById('edit-email').value = button.dataset.email;
-                document.getElementById('edit-observations').value = button.dataset.observations;
-                document.getElementById('edit-status').value = button.dataset.status;
+                    const date = new Date(rawDate);
 
+                    const formattedDate =
+                        date.toLocaleDateString('es-CL');
+
+                    document.getElementById('edit-delivery_date').value =
+                        formattedDate;
+
+                }
+                document.getElementById('edit-status').value =
+                    button.dataset.status ?? '';
+                /*
+                |--------------------------------------------------------------------------
+                | Fecha entrega
+                |--------------------------------------------------------------------------
+                */
+                
             });
-
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cerrar modal
+        |--------------------------------------------------------------------------
+        */
 
         closeModal.addEventListener('click', () => {
 
             modal.classList.add('hidden');
-
             modal.classList.remove('flex');
 
         });

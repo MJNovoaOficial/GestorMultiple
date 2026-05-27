@@ -22,46 +22,64 @@
                 <div class="mb-5">
 
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        IP inicial
+                        IP inicial <span class="text-red-400">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="start_ip"
                         placeholder="ej: 192.168.0.1"
-                        class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
+                        class="w-full rounded-lg bg-gray-800 border text-white"
                         required
+                        @error('start_ip')
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
-
+                        @error('start_ip')
+                            <p class="mt-2 text-sm text-red-400">
+                                {{ $message }}
+                            </p>
+                        @enderror
                 </div>
 
                 {{-- IP final --}}
                 <div class="mb-5">
 
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        IP final
+                        IP final <span class="text-red-400">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="end_ip"
                         placeholder="ej: 192.168.3.255"
-                        class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
+                        class="w-full rounded-lg bg-gray-800 border text-white"
                         required
+                        @error('end_ip')
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
-
+                        @error('end_ip')
+                            <p class="mt-2 text-sm text-red-400">
+                                {{ $message }}
+                            </p>
+                        @enderror
                 </div>
 
                 {{-- Sucursal --}}
                 <div class="mb-5">
 
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Sucursal
+                        Sucursal <span class="text-red-400">*</span>
                     </label>
 
                     <select
                         name="branch_id"
-                        class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
+                        class="w-full rounded-lg bg-gray-800 border text-white"
                         required
                     >
 
@@ -85,12 +103,12 @@
                 <div class="mb-8">
 
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Estado inicial
+                        Estado inicial <span class="text-red-400">*</span>
                     </label>
 
                     <select
                         name="ip_status_id"
-                        class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white"
+                        class="w-full rounded-lg bg-gray-800 border text-white"
                         required
                     >
 
@@ -131,7 +149,9 @@
                     </select>
 
                 </div>
-
+                <p class="text-xs text-gray-400">
+                    <span class="text-red-400">*</span> Campos obligatorios
+                </p>
                 {{-- Botones --}}
                 <div class="flex justify-end gap-3">
 

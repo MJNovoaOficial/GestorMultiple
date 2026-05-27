@@ -116,7 +116,7 @@
                                             'class' => 'bg-purple-600',
                                         ],
 
-                                        'imported' => [
+                                        'import' => [
                                             'label' => 'Importado',
                                             'class' => 'bg-purple-600',
                                         ],

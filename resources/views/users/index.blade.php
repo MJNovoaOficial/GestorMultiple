@@ -443,12 +443,13 @@
                     <label class="
                         block mb-2 text-sm text-gray-300
                     ">
-                        Nombre
+                        Nombre  <span class="text-red-400">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="name"
+                        value="{{ old('name') }}"
                         required
                         class="
                             w-full px-4 py-3
@@ -458,8 +459,17 @@
                             rounded-2xl
                             focus:ring-2 focus:ring-blue-500
                             focus:outline-none
-                        "
-                    >
+                            @error('name')
+                                border-red-500
+                            @else
+                                border-gray-700
+                            @enderror
+                        ">
+                        @error('name')
+                            <p class="mt-2 text-sm text-red-400">
+                                {{ $message }}
+                            </p>
+                        @enderror
 
                 </div>
 
@@ -469,7 +479,7 @@
                     <label class="
                         block mb-2 text-sm text-gray-300
                     ">
-                        Correo
+                        Correo  <span class="text-red-400">*</span>
                     </label>
 
                     <input
@@ -484,9 +494,18 @@
                             rounded-2xl
                             focus:ring-2 focus:ring-blue-500
                             focus:outline-none
+                            @error('email')
+                                border-red-500
+                            @else
+                                border-gray-700
+                            @enderror
                         "
                     >
-
+                    @error('email')
+                            <p class="mt-2 text-sm text-red-400">
+                                {{ $message }}
+                            </p>
+                    @enderror
                 </div>
 
                 {{-- Rol --}}
@@ -495,7 +514,7 @@
                     <label class="
                         block mb-2 text-sm text-gray-300
                     ">
-                        Rol
+                        Rol <span class="text-red-400">*</span>
                     </label>
 
                     <select
@@ -526,7 +545,9 @@
                     </select>
 
                 </div>
-
+                <p class="text-xs text-gray-400">
+                    <span class="text-red-400">*</span> Campos obligatorios
+                </p>
                 {{-- Info --}}
                 <div
                     class="
@@ -557,7 +578,6 @@
                             a1 1 0 00-1.74 0z"
                         />
                     </svg>
-
                     {{-- Texto --}}
                     <p
                         class="text-sm leading-relaxed"

@@ -54,7 +54,7 @@
                 <div>
 
                     <label class="block mb-2 text-sm text-gray-300">
-                        Nombre Usuario
+                        Nombre Usuario <span class="text-red-400">*</span>
                     </label>
 
                     <input
@@ -63,15 +63,24 @@
                         value="{{ old('full_name') }}"
                         required
                         class="w-full px-4 py-3 text-white bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        @error('full_name')
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
-
+                        @error('full_name')
+                            <p class="mt-2 text-sm text-red-400">
+                                {{ $message }}
+                            </p>
+                        @enderror
                 </div>
 
                 {{-- Correo --}}
                 <div>
 
                     <label class="block mb-2 text-sm text-gray-300">
-                        Correo
+                        Correo <span class="text-red-400">*</span>
                     </label>
 
                     <input
@@ -80,15 +89,24 @@
                         value="{{ old('email') }}"
                         required
                         class="w-full px-4 py-3 text-white bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        @error('email')
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
-
+                        @error('email')
+                            <p class="mt-2 text-sm text-red-400">
+                                {{ $message }}
+                            </p>
+                        @enderror
                 </div>
 
                 {{-- Sucursal --}}
                 <div>
 
                     <label class="block mb-2 text-sm text-gray-300">
-                        Sucursal
+                        Sucursal <span class="text-red-400">*</span>
                     </label>
 
                     <select
@@ -97,7 +115,7 @@
                     >
 
                         <option value="">
-                            Seleccionar sucursal
+                            Seleccionar sucursal 
                         </option>
 
                         @foreach($branches as $branch)
@@ -119,7 +137,7 @@
                 <div>
 
                     <label class="block mb-2 text-sm text-gray-300">
-                        Departamento
+                        Departamento <span class="text-red-400">*</span>
                     </label>
 
                     <select
@@ -145,7 +163,9 @@
                     </select>
 
                 </div>
-
+                <p class="text-xs text-gray-400">
+                    <span class="text-red-400">*</span> Campos obligatorios
+                </p>
             </div>
 
         </div>
@@ -197,8 +217,7 @@
                             class="text-blue-600 bg-gray-800 border-gray-700"
                         >
 
-                        Generar nueva contraseña
-
+                        Generar nueva contraseña 
                     </label>
 
                 </div>
@@ -212,7 +231,7 @@
             >
 
                 <label class="block mb-2 text-sm text-gray-300">
-                    Contraseña existente
+                    Contraseña existente <span class="text-red-400">*</span>
                 </label>
 
                 <div class="relative">
@@ -222,12 +241,21 @@
                         name="password"
                         x-model="password"
                         class="w-full px-4 py-3 pr-12 text-white bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        @error("password")
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
-
-                    <button
-                        type="button"
-                        @click="showPassword = !showPassword"
-                        class="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2 hover:text-white"
+                        @error("password")
+                            <p class="mt-2 text-sm text-red-400">
+                                {{ $message }}
+                            </p>
+                        @enderror
+                        <button
+                            type="button"
+                            @click="showPassword = !showPassword"
+                            class="absolute text-gray-400 -translate-y-1/2 right-3 top-1/2 hover:text-white"
                     >
 
                         👁
@@ -275,7 +303,7 @@
                 <div>
 
                     <label class="block mb-2 text-sm text-gray-300">
-                        Contraseña generada
+                        Contraseña generada <span class="text-red-400">*</span>
                     </label>
 
                     <div class="flex flex-col gap-3 md:flex-row">
@@ -287,8 +315,17 @@
                                 name="password"
                                 x-model="password"
                                 class="w-full px-4 py-3 pr-12 text-white bg-gray-800 border border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                @error("password")
+                                    border-red-500
+                                @else
+                                    border-gray-700
+                                @enderror
                             >
-
+                            @error("password")
+                                <p class="mt-2 text-sm text-red-400">
+                                    {{ $message }}
+                                </p>
+                            @enderror
                             {{-- Mostrar/Ocultar --}}
                             <button
                                 type="button"

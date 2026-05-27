@@ -68,9 +68,15 @@ class UserController extends Controller
             'role' => [
                 'required',
                 'in:admin,superadmin',
-            ],
+            ],[
 
-        ]);
+            'name.required' => 'Debes ingresar el nombre.',
+            'email.required' => 'Debes ingresar el correo.',
+            'email.email' => 'El correo no es válido.',
+            'email.unique' => 'Ya existe un usuario con este correo.',
+            'role.required' => 'Debes seleccionar un rol.',
+
+        ]]);
 
         $temporaryPassword = 'Inicio.2026';
 

@@ -12,17 +12,21 @@
                 {{-- Nombre sucursal --}}
                 <div class="mb-5">
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Nombre sucursal
+                        Nombre sucursal <span class="text-red-400">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="name"
                         placeholder="Ej: CT Talca"
-                        class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                        class="w-full rounded-lg bg-gray-800 border text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
                         required
+                        @error('name')
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
-
                     @error('name')
                         <p class="text-red-400 text-sm mt-2">
                             {{ $message }}
@@ -33,14 +37,19 @@
                 {{-- Ciudad --}}
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-300 mb-2">
-                        Ciudad
+                        Ciudad <span class="text-red-400">*</span>
                     </label>
 
                     <input
                         type="text"
                         name="city"
                         placeholder="Ej: Talca"
-                        class="w-full rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                        class="w-full rounded-lg bg-gray-800 border text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                        @error('city')
+                            border-red-500
+                        @else
+                            border-gray-700
+                        @enderror
                     >
 
                     @error('city')

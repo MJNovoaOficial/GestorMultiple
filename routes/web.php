@@ -112,10 +112,9 @@ Route::middleware('auth')->group(function () {
         |--------------------------------------------------------------------------
         */
         Route::resource('employee-phones',EmployeePhoneController::class);
-        Route::post(
-            '/employee-phones/import',
-            [EmployeePhoneController::class, 'import']
-        )->name('employee-phones.import');
+        Route::post('/employee-phones/import',[EmployeePhoneController::class, 'import'])
+            ->name('employee-phones.import');
+
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría

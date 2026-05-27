@@ -94,17 +94,15 @@ class IpAddressController extends Controller
             $request->filled('device_type_id')
         );
 
-        $statusName = $assigned
-            ? 'Asignado'
-            : 'Disponible';
-
-        $status = IpStatus::where('name', $statusName)->first();
+        $statusId = $assigned
+            ? 2 // Ocupada
+            : 1; // Disponible
 
         $ipAddress->update([
             'user_assigned' => $request->user_assigned,
             'department_id' => $request->department_id,
             'device_type_id' => $request->device_type_id,
-            'ip_status_id' => $status->id,
+            'ip_status_id' => $statusId,
         ]);
 
         AuditService::log(

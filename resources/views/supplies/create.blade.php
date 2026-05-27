@@ -43,7 +43,7 @@
                             text-sm font-semibold
                             text-gray-300
                         ">
-                            Marca de Impresora
+                            Marca de Impresora <span class="text-red-400">*</span>
                         </label>
 
                         <input
@@ -54,8 +54,17 @@
                                 w-full rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500
                             "
                             required
+                            @error('brand')
+                                border-red-500
+                            @else
+                                border-gray-700
+                            @enderror
                         >
-
+                        @error('brand')
+                            <p class="text-red-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
                     {{-- Modelo --}}
@@ -66,7 +75,7 @@
                             text-sm font-semibold
                             text-slate-300
                         ">
-                            Modelo impresora
+                            Modelo impresora <span class="text-red-400">*</span>
                         </label>
 
                         <input
@@ -77,8 +86,17 @@
                                 w-full rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500
                             "
                             required
+                            @error('printer_model')
+                                border-red-500
+                            @else
+                                border-gray-700
+                            @enderror
                         >
-
+                        @error('printer_model')
+                            <p class="text-red-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
                     {{-- Tipo --}}
@@ -89,7 +107,7 @@
                             text-sm font-semibold
                             text-slate-300 
                         ">
-                            Modelo suministro
+                            Modelo suministro <span class="text-red-400">*</span>
                         </label>
 
                         <input
@@ -100,8 +118,17 @@
                                 w-full rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500
                             "
                             required
+                            @error('supply_type')
+                                border-red-500
+                            @else
+                                border-gray-700                                
+                            @enderror
                         >
-
+                        @error('supply_type')
+                            <p class="text-red-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
                     {{-- Cantidad --}}
@@ -112,7 +139,7 @@
                             text-sm font-semibold
                             text-gray-300 
                         ">
-                            Cantidad
+                            Cantidad <span class="text-red-400">*</span>
                         </label>
 
                         <input
@@ -124,8 +151,17 @@
                                 w-full rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500
                             "
                             required
+                            @error('quantity')
+                                border-red-500
+                            @else
+                                border-gray-700
+                            @enderror
                         >
-
+                        @error('quantity')
+                            <p class="text-red-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
                     {{-- Stock mínimo --}}
@@ -136,7 +172,7 @@
                             text-sm font-semibold
                             text-gray-300 
                         ">
-                            Stock mínimo
+                            Stock mínimo <span class="text-red-400">*</span>
                         </label>
 
                         <input
@@ -148,8 +184,17 @@
                                 w-full rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500  
                             "
                             required
+                            @error('minimum_stock')
+                                border-red-500
+                            @else
+                                border-gray-700
+                            @enderror
                         >
-
+                        @error('minimum_stock')
+                            <p class="text-red-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
 
                 </div>

@@ -78,21 +78,30 @@ class EmployeePhoneController extends Controller
             'file' => 'required|mimes:xlsx,xls',
         ]);
 
-        Excel::import(
-            new EmployeePhonesImport,
-            $request->file('file')
-        );
+        $import = new EmployeePhonesImport();
+
+        Excel::import($import, $request->file('file'));
 
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'import',
-            'module' => 'employee_phones',
             'description' => 'Importó celulares corporativos desde Excel.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
         ]);
 
         return redirect()
-            ->route('employee-phones.index')
-            ->with('success', 'Excel importado correctamente.');
+            ->back()
+            ->with('success',
+
+                "Importación finalizada. "
+
+                . "Importados: {$import->imported}. "
+
+                . "Ignorados: {$import->skipped}. "
+
+                . "Duplicados: {$import->duplicates}."
+            );
     }
 
     public function create()
@@ -186,12 +195,105 @@ class EmployeePhoneController extends Controller
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'create',
-            'module' => 'employee_phones',
             'description' => 'Creó un nuevo celular corporativo: ' . $device->phone_number,
+            'ip_address' => $request->ip(),
         ]);
 
         return redirect()
             ->route('employee-phones.index')
             ->with('success', 'Registro creado correctamente.');
+    }
+
+    public function update(Request $request, EmployeePhone $employeePhone)
+    {
+        $validated = $request->validate([
+
+            'phone_number' => [
+                'required',
+                'regex:/^9\d{8}$/'
+            ],
+
+            'first_name' => 'required|string|max:255',
+
+            'last_name' => 'required|string|max:255',
+
+            'phone_model' => 'required|string|max:255',
+            
+            'delivery_date' => 'required|date_format:d/m/Y',
+
+            'imei' => 'required|string|max:255',
+
+            'position' => 'required|string|max:255',
+
+            'department' => 'required|string|max:255',
+
+            'vendor_code' => 'required|string|max:255',
+
+            'company_name' => 'required|string|max:255',
+
+            'rut' => [
+                'required',
+                'string',
+                'max:255',
+                new ValidRut
+            ],
+
+            'email' => 'required|email|max:255',
+
+            'status' => 'required|in:active,returned,blocked',
+
+            'observations' => 'nullable|string',
+
+        ], [
+
+            '*.required' => 'Este campo es obligatorio.',
+
+            'phone_number.regex' =>
+                'El número debe contener exactamente 9 dígitos y comenzar con 9.',
+
+            'email.email' =>
+                'Ingrese un correo válido.',
+            
+            'delivery_date.date' =>
+                'Ingrese una fecha válida.',
+
+        ]);
+
+        // Normalizar teléfono
+        $validated['phone_number'] =
+            '+56' . $validated['phone_number'];
+
+        // Normalizar RUT
+        if (!empty($validated['rut'])) {
+
+            $rut = preg_replace(
+                '/[^0-9kK]/',
+                '',
+                $validated['rut']
+            );
+
+            $body = substr($rut, 0, -1);
+
+            $dv = strtoupper(substr($rut, -1));
+            $validated['rut'] = $body . '-' . $dv;
+        }
+
+        $employeePhone->update($validated);
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'update',
+            'description' =>
+                'Actualizó celular corporativo: '
+                . $employeePhone->phone_number,
+            'ip_address' => $request->ip(),
+        ]);
+
+        return redirect()
+            ->route('employee-phones.index')
+            ->with(
+                'success',
+                'Registro actualizado correctamente.'
+            );
     }
 }
