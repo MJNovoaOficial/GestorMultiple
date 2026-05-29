@@ -425,7 +425,7 @@
                                             data-company_name="{{ $device->company_name }}"
                                             data-rut="{{ $device->rut }}"
                                             data-email="{{ $device->email }}"
-                                            data-observations="{{ $device->observations }}"
+                                            data-observations="{{ e($device->observations) }}"
                                             data-status="{{ $device->status }}"
                                         >
                                             ✏️

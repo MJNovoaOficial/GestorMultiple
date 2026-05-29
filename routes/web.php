@@ -16,6 +16,7 @@ use App\Http\Controllers\AuditController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplyController;
 use App\Http\Controllers\EmployeePhoneController;
+use App\Http\Controllers\NotebookController;
 
 Route::get('/', function () {
    
@@ -114,6 +115,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('employee-phones',EmployeePhoneController::class);
         Route::post('/employee-phones/import',[EmployeePhoneController::class, 'import'])
             ->name('employee-phones.import');
+        Route::resource('notebooks',NotebookController::class);
+        
 
         /*
         |--------------------------------------------------------------------------

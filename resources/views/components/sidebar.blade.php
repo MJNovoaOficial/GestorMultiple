@@ -473,6 +473,24 @@
                 Celulares
 
             </a>
+            <a
+                href="{{ route('notebooks.index') }}"
+
+                class="
+                    px-4 py-2
+                    rounded-lg
+
+                    text-sm
+
+                    hover:bg-slate-800/60
+
+                    transition
+                "
+            >
+
+                Notebooks
+
+            </a>
 
         </div>
 
