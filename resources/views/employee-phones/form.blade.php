@@ -316,7 +316,7 @@
                 text-white
             "
         >
-        @error('phone_number')
+        @error('delivery_date')
 
             <p class="
                 mt-2
@@ -368,7 +368,7 @@
                 text-white
             "
         >
-        @error('first_name')
+        @error('imei')
 
             <p class="
                 mt-2

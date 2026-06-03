@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Validation\Rule;
 use App\Models\Notebook;
 use App\Models\AuditLog;
 use App\Models\Brand;
@@ -17,7 +18,7 @@ class NotebookController extends Controller
 
         if($request -> filled('search')){
             
-            $terms = explode('', $request->search);
+            $terms = explode(' ', $request->search);
 
             $query ->where(function ($q) use ($terms){
                 
@@ -70,29 +71,51 @@ class NotebookController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'purchase_value' => str_replace(
+                '.',
+                '',
+                $request->purchase_value
+            ),
+        ]);
+
         $validated = $request->validate([
 
-            'user_name' => 'required|string|max:255',
+            'user_name' => 'required_if:status,assigned|nullable|string|max:255',
 
             'model' => 'required|string|max:255',
             
-            'delivery_date' => 'required|date',
+            'delivery_date' => 'required_if:status,assigned|nullable|date',
 
-            'serial_number' => 'required|string|max:255',
+            'position' => 'required_if:status,assigned|nullable|string|max:255',
+
+            'company_name' => 'required_if:status,assigned|nullable|string|max:255',
+
+            'purchase_value' => 'required|numeric|min:0',
+
+            'observations' => 'nullable|string',
+
+            'serial_number' => [
+                'required',
+                'string',
+                'max:255',
+                'unique:notebooks,serial_number',
+            ],
             
             'user_rut' => [
-                'required',
+                'nullable',
+                'required_if:status,assigned',
                 'string',
                 'max:255',
                 new ValidRut
             ],
 
             'condition' => [
-                'required', 'in:available,assigned,retired',
+                'required', 'in:new,refurbished',
             ],
 
             'status' =>[
-                'required', 'in:new,refurbished'
+                'required', 'in:available,assigned,retired',
             ],
 
             'brand_id' => [
@@ -109,7 +132,7 @@ class NotebookController extends Controller
         //Aquí validamos el rut
         if (!empty($validated['user_rut'])){
 
-            $rut = preg_replace('/[^0-9kK]/', $validated['user_rut']);
+            $rut = preg_replace('/[^0-9kK]/','', $validated['user_rut']);
 
             $body = substr($rut, 0, -1);
 
@@ -126,40 +149,68 @@ class NotebookController extends Controller
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'create',
-            'description' => 'Creó un nuevo notebook para el usuario: ' . $notebook->user_name,
+            'description' =>
+                'Creó notebook corporativo: '
+                . $notebook->serial_number,
             'ip_address' => $request->ip(),
         ]);
         
         return redirect()
             ->route('notebooks.index')
-            ->with('success', 'Registro creado correctamente.');
+            ->with(
+                'success',
+                'Registro creado correctamente.'
+            );
     }
 
     public function update (Request $request, Notebook $notebook)
     {
+        $request->merge([
+            'purchase_value' => str_replace(
+                '.',
+                '',
+                $request->purchase_value
+            ),
+        ]);
+
         $validated = $request->validate([
 
-            'user_name' => 'required|string|max:255',
+            'user_name' => 'required_if:status,assigned|nullable|string|max:255',
 
             'model' => 'required|string|max:255',
             
-            'delivery_date' => 'required|date',
+            'delivery_date' => 'required_if:status,assigned|nullable|date',
 
-            'serial_number' => 'required|string|max:255',
+            'position' => 'required_if:status,assigned|nullable|string|max:255',
+
+            'company_name' => 'required_if:status,assigned|nullable|string|max:255',
+
+            'purchase_value' => 'required|numeric|min:0',
+
+            'observations' => 'nullable|string',
+
+            'serial_number' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('notebooks', 'serial_number')
+                    ->ignore($notebook->id),
+            ],
             
             'user_rut' => [
-                'required',
+                'nullable',
+                'required_if:status,assigned',
                 'string',
                 'max:255',
                 new ValidRut
             ],
 
             'condition' => [
-                'required', 'in:available,assigned,retired',
+                'required', 'in:new,refurbished',
             ],
 
             'status' =>[
-                'required', 'in:new,refurbished'
+                'required', 'in:available,assigned,retired',
             ],
 
             'brand_id' => [
@@ -171,9 +222,6 @@ class NotebookController extends Controller
         ],[
             '*.required' => 'Este campo es obligatorio.',
 
-            'email.email' =>
-                'Ingrese un correo válido.',
-
             'delivery_date.date' =>
                 'Ingrese una fecha válida.',
         ]);
@@ -181,9 +229,7 @@ class NotebookController extends Controller
         // Validar Rut user
         if (!empty($validated['user_rut'])){
 
-            $rut = preg_replace(
-                '/[^0-9kK]/', '' , $validated['user_rut']
-            );
+            $rut = preg_replace('/[^0-9kK]/','',$validated['user_rut']);
 
             $body = substr($rut, 0, -1);
 
@@ -198,8 +244,16 @@ class NotebookController extends Controller
             'action' => 'update',
             'description' =>
                 'Actualizó notebook corporativo: '
-                .
+                . $notebook->serial_number,
+            'ip_address' => $request->ip(),
         ]);
+
+        return redirect()
+            ->route('notebooks.index')
+            ->with(
+                'success',
+                'Registro actualizado correctamente.'
+            );
 
     }
 

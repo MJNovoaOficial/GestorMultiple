@@ -223,6 +223,17 @@
                                     tracking-wider
                                     text-slate-500
                                     whitespace-nowrap">
+                                    Valor
+                                </th>
+
+                                <th class="px-6 py-4
+                                    text-center
+                                    text-xs
+                                    font-bold
+                                    uppercase
+                                    tracking-wider
+                                    text-slate-500
+                                    whitespace-nowrap">
                                     Estado
                                 </th>
 
@@ -246,6 +257,17 @@
                                     text-slate-500
                                     whitespace-nowrap">
                                     Empresa
+                                </th>
+
+                                <th class="px-6 py-4
+                                    text-center
+                                    text-xs
+                                    font-bold
+                                    uppercase
+                                    tracking-wider
+                                    text-slate-500
+                                    whitespace-nowrap">
+                                    Cargo
                                 </th>
 
                                 <th class="px-6 py-4
@@ -321,12 +343,24 @@
 
                                     {{-- Usuario --}}
                                     <td class="px-4 py-4">
+                                    @if($notebook->status === 'available')
+                                        Libre
+                                    @elseif($notebook->status === 'retired')
+                                        Dado de baja
+                                    @else
                                         {{ $notebook->user_name }}
+                                    @endif
                                     </td>
 
                                     {{-- RUT --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4">                                    
+                                    @if($notebook->status === 'available')
+                                        Libre
+                                    @elseif($notebook->status === 'retired')
+                                        Dado de baja
+                                    @else
                                         {{ $notebook->user_rut }}
+                                    @endif
                                     </td>
 
                                     {{-- Marca --}}
@@ -337,6 +371,9 @@
                                     {{-- Modelo --}}
                                     <td class="px-4 py-4">
                                         {{ $notebook->model }}
+                                    </td>
+                                    <td class="px-4 py-4">
+                                        {{ number_format($notebook->purchase_value, 0, ',', '.') }}
                                     </td>
 
                                     {{-- Serial --}}
@@ -410,12 +447,35 @@
 
                                     {{-- Empresa --}}
                                     <td class="px-4 py-4">
-                                        {{ $notebook->company_name }}
+                                        @if($notebook->status === 'available')
+                                            Libre
+                                        @elseif($notebook->status === 'retired')
+                                            Dado de baja
+                                        @else
+                                            {{ $notebook->company_name }}
+                                        @endif
+                                    </td>
+                                    
+                                    {{-- Cargo --}}
+                                    <td class="px-4 py-4">
+                                        @if($notebook->status === 'available')
+                                            Libre
+                                        @elseif($notebook->status === 'retired')
+                                            Dado de baja
+                                        @else
+                                            {{ $notebook->position }}
+                                        @endif
                                     </td>
 
                                     {{-- Fecha --}}
                                     <td class="px-4 py-4">
-                                        {{ \Carbon\Carbon::parse($notebook->delivery_date)->format('d/m/Y') }}
+                                        @if($notebook->status === 'available')
+                                            Libre
+                                        @elseif($notebook->status === 'retired')
+                                            Dado de baja
+                                        @else
+                                            {{ \Carbon\Carbon::parse($notebook->delivery_date)->format('d/m/Y') }}
+                                        @endif
                                     </td>
 
                                 </tr>

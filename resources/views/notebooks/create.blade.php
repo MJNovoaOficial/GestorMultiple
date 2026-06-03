@@ -42,7 +42,7 @@
                 <form
                     action="{{ route('notebooks.store') }}"
                     method="POST"
-                >
+                >                
 
                     @include('notebooks.form', [
                         'device' => null
@@ -61,7 +61,7 @@
                     ">
 
                         <a
-                            href="{{ route('employee-phones.index') }}"
+                            href="{{ route('notebooks.index') }}"
 
                             class="
                                 px-5 py-3
@@ -112,6 +112,20 @@
 
     </div>
 
+    <style>
+    /* Chrome, Edge, Opera */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+    </style>
+
     <script>
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -150,10 +164,21 @@
 
             return `${body}-${dv}`;
         }
+    
+        document.getElementById('purchase_value')
+        .addEventListener('input', function () {
+
+            let value = this.value.replace(/\D/g, '');
+
+            this.value = new Intl.NumberFormat(
+                'es-CL'
+            ).format(value);
+
+        });
 
         document.addEventListener('DOMContentLoaded', () => {
 
-            const rutInput = document.getElementById('rut');
+            const rutInput = document.getElementById('user_rut');
 
             rutInput.addEventListener('blur', () => {
 

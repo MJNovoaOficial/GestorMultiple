@@ -66,15 +66,16 @@
             block
             mb-2
             text-sm
+            font-medium
             text-gray-300
         ">
-            RUT Usuario
-            <span class="text-red-400">*</span>
+            RUT <span class="text-red-400">*</span>
         </label>
 
         <input
             type="text"
             name="user_rut"
+            id="user_rut"
 
             value="{{ old('user_rut', $notebook->user_rut ?? '') }}"
 
@@ -88,26 +89,11 @@
                 @else
                     border-slate-700
                 @enderror
-
                 bg-slate-900
-
                 px-4 py-3
-
                 text-white
             "
         >
-
-        @error('user_rut')
-
-            <p class="
-                mt-2
-                text-sm
-                text-red-400
-            ">
-                {{ $message }}
-            </p>
-
-        @enderror
 
     </div>
 
@@ -289,8 +275,11 @@
         </label>
 
         <input
-            type="date"
+            type="text"
+            id="delivery_date"
             name="delivery_date"
+            placeholder="Seleccione fecha"
+            readonly
 
             value="{{ old('delivery_date', isset($notebook?->delivery_date) ? $notebook->delivery_date->format('Y-m-d') : '') }}"
 
@@ -298,13 +287,8 @@
                 w-full
                 rounded-xl
                 border
-
-                @error('delivery_date')
-                    border-red-500
-                @else
-                    border-slate-700
-                @enderror
-
+                border-slate-700
+                
                 bg-slate-900
 
                 px-4 py-3
@@ -312,46 +296,60 @@
                 text-white
             "
         >
-
+        @error('delivery_date')
+            <p class="
+                mt-2 
+                text-sm 
+                text-red-400
+            ">
+                {{ $message }}
+            </p>
+        @enderror
     </div>
 
     {{-- Valor --}}
     <div>
 
-        <label class="
-            block
-            mb-2
-            text-sm
-            text-gray-300
-        ">
+        <label class="block mb-2 text-sm text-gray-300">
             Valor Equipo
             <span class="text-red-400">*</span>
         </label>
 
-        <input
-            type="number"
-            name="purchase_value"
+        <div class="flex">
 
-            value="{{ old('purchase_value', $notebook->purchase_value ?? '') }}"
-
-            class="
-                w-full
-                rounded-xl
+            <span class="
+                inline-flex
+                items-center
+                px-4
+                rounded-l-xl
                 border
-
-                @error('purchase_value')
-                    border-red-500
-                @else
-                    border-slate-700
-                @enderror
-
-                bg-slate-900
-
-                px-4 py-3
-
+                border-slate-700
+                bg-slate-800
                 text-white
-            "
-        >
+            ">
+                $
+            </span>
+
+            <input
+                type="number"
+                id="purchase_value"
+                name="purchase_value"
+
+                value="{{ old('purchase_value') }}"
+
+                class="
+                    flex-1
+                    rounded-r-xl
+                    border
+                    border-slate-700
+                    bg-slate-900
+                    px-4
+                    py-3
+                    text-white
+                "
+            >
+
+        </div>
 
     </div>
 
@@ -626,4 +624,47 @@
         "
     >{{ old('observations', $notebook->observations ?? '') }}</textarea>
 
+    <p class="text-xs text-gray-400">
+        <span class="text-red-400">*</span> Campos obligatorios
+    </p>
+    {{-- Info --}}
+    <div
+        class="
+            flex items-start gap-3
+            p-4 rounded-2xl
+            border border-yellow-300
+            mb-10
+            "
+            style="
+                background-color: #FFF2CC;
+                "
+            >
+
+            {{-- Icono --}}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5 mt-0.5 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    style="color: #B45309;"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v2m0 4h.01M10.29 3.86l-7.5 13
+                        A1 1 0 003.66 18h16.68a1 1 0 00.87-1.5l-7.5-13
+                        a1 1 0 00-1.74 0z"
+                    />
+                        </svg>
+                        {{-- Texto --}}
+                        <p
+                            class="text-sm leading-relaxed"
+                            style="color: #78350F;"
+                        >
+
+                            Si tu dispositivo no tiene asignación no es necesario que ingreses los campos de nombre de usuario, rut, fecha de entrega, cargo y empresa. Solo completa los campos de modelo y valor de compra, selecciona el estado "Disponible" o "Dado de Baja" y guarda el registro.
+                        </p>
+    </div>
 </div>
