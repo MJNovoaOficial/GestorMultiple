@@ -103,7 +103,104 @@ class NotebookController extends Controller
 
             //aquí van los mensajes de required
             '*.required' => 'Este campo es obligatorio.',
-            
+
         ]);
+
+        //Aquí validamos el rut
+        if (!empty($validated['user_rut'])){
+
+            $rut = preg_replace('/[^0-9kK]/', $validated['user_rut']);
+
+            $body = substr($rut, 0, -1);
+
+            $dv = strtoupper(substr($rut, -1));
+
+            $validated['user_rut'] = $body . '-' . $dv;
+        }
+
+        // Crear Notebook
+
+        $notebook = Notebook::create($validated);
+
+        //Rellena la tabla de auditoria
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'create',
+            'description' => 'Creó un nuevo notebook para el usuario: ' . $notebook->user_name,
+            'ip_address' => $request->ip(),
+        ]);
+        
+        return redirect()
+            ->route('notebooks.index')
+            ->with('success', 'Registro creado correctamente.');
     }
+
+    public function update (Request $request, Notebook $notebook)
+    {
+        $validated = $request->validate([
+
+            'user_name' => 'required|string|max:255',
+
+            'model' => 'required|string|max:255',
+            
+            'delivery_date' => 'required|date',
+
+            'serial_number' => 'required|string|max:255',
+            
+            'user_rut' => [
+                'required',
+                'string',
+                'max:255',
+                new ValidRut
+            ],
+
+            'condition' => [
+                'required', 'in:available,assigned,retired',
+            ],
+
+            'status' =>[
+                'required', 'in:new,refurbished'
+            ],
+
+            'brand_id' => [
+                'required',
+                'exists:brands,id',
+            ]
+
+
+        ],[
+            '*.required' => 'Este campo es obligatorio.',
+
+            'email.email' =>
+                'Ingrese un correo válido.',
+
+            'delivery_date.date' =>
+                'Ingrese una fecha válida.',
+        ]);
+
+        // Validar Rut user
+        if (!empty($validated['user_rut'])){
+
+            $rut = preg_replace(
+                '/[^0-9kK]/', '' , $validated['user_rut']
+            );
+
+            $body = substr($rut, 0, -1);
+
+            $dv = strtoupper(substr($rut,-1));
+            $validated['user_rut'] = $body . '-' . $dv;
+        }
+
+        $notebook->update($validated);
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'update',
+            'description' =>
+                'Actualizó notebook corporativo: '
+                .
+        ]);
+
+    }
+
 }
