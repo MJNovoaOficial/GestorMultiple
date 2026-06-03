@@ -138,7 +138,7 @@ class NotebookController extends Controller
 
             $dv = strtoupper(substr($rut, -1));
 
-            $validated['user_rut'] = $body . '-' . $dv;
+            $validated['user_rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
 
         // Crear Notebook
@@ -234,7 +234,8 @@ class NotebookController extends Controller
             $body = substr($rut, 0, -1);
 
             $dv = strtoupper(substr($rut,-1));
-            $validated['user_rut'] = $body . '-' . $dv;
+
+            $validated['user_rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
 
         $notebook->update($validated);

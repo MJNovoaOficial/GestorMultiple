@@ -342,7 +342,7 @@
                                 </td>
 
                                     {{-- Usuario --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
                                     @if($notebook->status === 'available')
                                         Libre
                                     @elseif($notebook->status === 'retired')
@@ -353,7 +353,7 @@
                                     </td>
 
                                     {{-- RUT --}}
-                                    <td class="px-4 py-4">                                    
+                                    <td class="px-4 py-4 text-center">                                    
                                     @if($notebook->status === 'available')
                                         Libre
                                     @elseif($notebook->status === 'retired')
@@ -364,25 +364,25 @@
                                     </td>
 
                                     {{-- Marca --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
                                         {{ $notebook->brand->name }}
                                     </td>
 
                                     {{-- Modelo --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
                                         {{ $notebook->model }}
                                     </td>
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
                                         {{ number_format($notebook->purchase_value, 0, ',', '.') }}
                                     </td>
 
                                     {{-- Serial --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
                                         {{ $notebook->serial_number }}
                                     </td>
 
                                     {{-- Estado --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
 
                                         @if($notebook->status === 'available')
 
@@ -431,7 +431,7 @@
                                     </td>
 
                                     {{-- Condición --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
 
                                         @if($notebook->condition === 'new')
 
@@ -446,7 +446,7 @@
                                     </td>
 
                                     {{-- Empresa --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
                                         @if($notebook->status === 'available')
                                             Libre
                                         @elseif($notebook->status === 'retired')
@@ -457,7 +457,7 @@
                                     </td>
                                     
                                     {{-- Cargo --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
                                         @if($notebook->status === 'available')
                                             Libre
                                         @elseif($notebook->status === 'retired')
@@ -468,7 +468,7 @@
                                     </td>
 
                                     {{-- Fecha --}}
-                                    <td class="px-4 py-4">
+                                    <td class="px-4 py-4 text-center">
                                         @if($notebook->status === 'available')
                                             Libre
                                         @elseif($notebook->status === 'retired')

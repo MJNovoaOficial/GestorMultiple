@@ -185,7 +185,7 @@ class EmployeePhoneController extends Controller
 
             $dv = strtoupper(substr($rut, -1));
 
-            $validated['rut'] = $body . '-' . $dv;
+            $validated['rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
 
         // Crear dispositivo
@@ -275,7 +275,7 @@ class EmployeePhoneController extends Controller
             $body = substr($rut, 0, -1);
 
             $dv = strtoupper(substr($rut, -1));
-            $validated['rut'] = $body . '-' . $dv;
+            $validated['rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
 
         $employeePhone->update($validated);
