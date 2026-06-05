@@ -281,6 +281,16 @@
                                     Entrega
                                 </th>
 
+                                <th class="px-6 py-4
+                                    text-center
+                                    text-xs
+                                    font-bold
+                                    uppercase
+                                    tracking-wider
+                                    text-slate-500
+                                    whitespace-nowrap">
+                                    Observaciones
+                                </th>
                             </tr>
 
                         </thead>
@@ -478,7 +488,11 @@
                                             {{ \Carbon\Carbon::parse($notebook->delivery_date)->format('d/m/Y') }}
                                         @endif
                                     </td>
-
+                                    
+                                    {{-- Observaciones --}}
+                                    <td class="px-4 py-4 text-center">
+                                        {{ $notebook->observations ?? '-' }}
+                                    </td>
                                 </tr>
 
                             @empty

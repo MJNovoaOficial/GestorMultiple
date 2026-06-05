@@ -30,12 +30,10 @@ class BranchController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'city' => 'nullable|string|max:255',
         ]);
 
         Branch::create([
             'name' => $request->name,
-            'city' => $request->city,
         ]);
 
         return redirect()
@@ -67,12 +65,10 @@ class BranchController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'city' => 'nullable|string|max:255',
         ]);
 
         $branch->update([
             'name' => $request->name,
-            'city' => $request->city,
         ]);
 
         return redirect()
