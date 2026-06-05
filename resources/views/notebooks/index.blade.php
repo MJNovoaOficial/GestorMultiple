@@ -334,7 +334,6 @@
                                             data-position="{{ $notebook->position }}"
                                             data-company_name="{{ $notebook->company_name }}"
                                             data-observations="{{ e($notebook->observations) }}"
-                                            
                                         >
                                             ✏️
                                         </button>
@@ -372,13 +371,15 @@
                                     <td class="px-4 py-4 text-center">
                                         {{ $notebook->model }}
                                     </td>
-                                    <td class="px-4 py-4 text-center">
-                                        {{ number_format($notebook->purchase_value, 0, ',', '.') }}
-                                    </td>
-
+                                    
                                     {{-- Serial --}}
                                     <td class="px-4 py-4 text-center">
                                         {{ $notebook->serial_number }}
+                                    </td>
+
+                                    {{-- Valor --}}
+                                    <td class="px-4 py-4 text-center">
+                                       <span>$</span> {{ number_format($notebook->purchase_value, 0, ',', '.') }}
                                     </td>
 
                                     {{-- Estado --}}
@@ -509,11 +510,10 @@
 
         {{-- PAGINACIÓN --}}
         <div class="mt-6">
-
             {{ $notebooks->links() }}
-
         </div>
-
     </div>
+
+    
 
 </x-app-layout>
