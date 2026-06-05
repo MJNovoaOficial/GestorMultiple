@@ -92,7 +92,17 @@
                                             'class' => 'bg-blue-600',
                                         ],
 
+                                        'update' => [
+                                            'label' => 'Actualizado',
+                                            'class' => 'bg-blue-600',
+                                        ],
+
                                         'created' => [
+                                            'label' => 'Creado',
+                                            'class' => 'bg-green-600',
+                                        ],
+
+                                        'create' => [
                                             'label' => 'Creado',
                                             'class' => 'bg-green-600',
                                         ],
@@ -192,7 +202,5 @@
         </div>
 
     </div>
-
 </div>
-
 </x-app-layout>

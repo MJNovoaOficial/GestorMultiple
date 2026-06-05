@@ -417,7 +417,7 @@
                                             data-first_name="{{ $device->first_name }}"
                                             data-last_name="{{ $device->last_name }}"
                                             data-phone_model="{{ $device->phone_model }}"
-                                            data-delivery_date="{{ $device->delivery_date }}"
+                                            data-delivery_date="{{ \Carbon\Carbon::parse($device->delivery_date)->format('Y-m-d') }}"
                                             data-imei="{{ $device->imei }}"
                                             data-position="{{ $device->position }}"
                                             data-department="{{ $device->department }}"
@@ -473,7 +473,7 @@
                                     text-slate-700
                                     dark:text-slate-300
                                 ">
-                                    {{ $device->delivery_date->format('d/m/Y') }}
+                                    {{ \Carbon\Carbon::parse($device->delivery_date)->format('d/m/Y') }}
                                 </td>
                                     
                                 <td class="
@@ -1022,11 +1022,9 @@
                         </label>
 
                         <input
-                            type="text"
+                            type="date"
                             name="delivery_date"
                             id="edit-delivery_date"
-
-                            placeholder="Seleccione fecha"
 
                             class="
                                 w-full
@@ -1129,6 +1127,30 @@
     
     </div>
     <script>
+        function formatRut(value) {
+
+            let rut = value.replace(/[^0-9kK]/g, '');
+
+            // 8 dígitos + DV
+            if (rut.length > 9) {
+                rut = rut.substring(0, 9);
+            }
+
+            if (rut.length <= 1) {
+                return rut;
+            }
+
+            let body = rut.slice(0, -1);
+            let dv = rut.slice(-1).toUpperCase();
+
+            body = body.replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                '.'
+            );
+
+            return `${body}-${dv}`;
+        }
+
         const importButton = document.getElementById('import-button');
         const fileInput = document.getElementById('excel-file-input');
         const importForm = document.getElementById('excel-import-form');
@@ -1191,8 +1213,19 @@
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
 
-                
                 const id = button.dataset.id;
+                const rutInput = document.getElementById('edit-rut');
+
+                if(rutInput) {
+                    rutInput.addEventListener(
+                        'input',
+                        function () {
+                            this.value = formatRut(
+                                this.value
+                            );
+                        }
+                    );
+                }
                 
                 /*
                 |--------------------------------------------------------------------------
@@ -1233,31 +1266,19 @@
                 document.getElementById('edit-company_name').value =
                     button.dataset.company_name ?? '';
                 document.getElementById('edit-rut').value =
-                    button.dataset.rut ?? '';
+                    formatRut(
+                        button.dataset.rut ?? ''
+                    );
+                console.log(button.dataset.delivery_date);
+                document.getElementById('edit-delivery_date').value =
+                    button.dataset.delivery_date ?? '';
                 document.getElementById('edit-email').value =
                     button.dataset.email ?? '';
                 document.getElementById('edit-observations').value =
                     button.dataset.observations ?? '';
-                const rawDate = button.dataset.delivery_date ?? '';
-                if (rawDate) {
-
-                    const date = new Date(rawDate);
-
-                    const formattedDate =
-                        date.toLocaleDateString('es-CL');
-
-                    document.getElementById('edit-delivery_date').value =
-                        formattedDate;
-
-                }
                 document.getElementById('edit-status').value =
                     button.dataset.status ?? '';
-                /*
-                |--------------------------------------------------------------------------
-                | Fecha entrega
-                |--------------------------------------------------------------------------
-                */
-                
+                                
             });
         });
 

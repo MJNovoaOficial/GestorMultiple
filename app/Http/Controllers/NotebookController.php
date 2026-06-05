@@ -53,20 +53,22 @@ class NotebookController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        return view('notebooks.index',compact(
-            'notebooks'
-            ));
+        $brands = Brand::orderBy('name')->get();
+
+        return view(
+            'notebooks.index',
+            compact(
+                'notebooks',
+                'brands'
+            )
+        );
     }
 
     public function create()
     {
-        $brands = Brand::orderBy('name')
-            ->get();
+        $brands = Brand::orderBy('name')->get();
 
-        return view(
-            'notebooks.create',
-            compact('brands')
-        );
+        return view('notebooks.create', compact('brands'));
     }
 
     public function store(Request $request)
@@ -141,8 +143,24 @@ class NotebookController extends Controller
             $validated['user_rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
 
-        // Crear Notebook
+        if (
+            in_array(
+                $validated['status'],
+                ['available', 'retired']
+            )
+            ) {
+                $validated['user_name'] = null;
 
+                $validated['user_rut'] = null;
+
+                $validated['position'] = null;
+
+                $validated['company_name'] = null;
+
+                $validated['delivery_date'] = null;
+            }
+
+        // Crear Notebook
         $notebook = Notebook::create($validated);
 
         //Rellena la tabla de auditoria
@@ -165,6 +183,7 @@ class NotebookController extends Controller
 
     public function update (Request $request, Notebook $notebook)
     {
+        
         $request->merge([
             'purchase_value' => str_replace(
                 '.',
@@ -172,7 +191,7 @@ class NotebookController extends Controller
                 $request->purchase_value
             ),
         ]);
-
+        
         $validated = $request->validate([
 
             'user_name' => 'required_if:status,assigned|nullable|string|max:255',
@@ -238,6 +257,25 @@ class NotebookController extends Controller
             $validated['user_rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
 
+        if (
+            in_array(
+                $validated['status'],
+                ['available', 'retired']
+            )
+        ) {
+
+            $validated['user_name'] = null;
+
+            $validated['user_rut'] = null;
+
+            $validated['position'] = null;
+
+            $validated['company_name'] = null;
+
+            $validated['delivery_date'] = null;
+        }
+
+        
         $notebook->update($validated);
 
         AuditLog::create([

@@ -219,7 +219,7 @@ class EmployeePhoneController extends Controller
 
             'phone_model' => 'required|string|max:255',
             
-            'delivery_date' => 'required|date_format:d/m/Y',
+            'delivery_date' => 'required|date',
 
             'imei' => 'required|string|max:255',
 
