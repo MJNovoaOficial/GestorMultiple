@@ -17,6 +17,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplyController;
 use App\Http\Controllers\EmployeePhoneController;
 use App\Http\Controllers\NotebookController;
+use App\Http\Controllers\RadioFrequencyController;
 
 Route::get('/', function () {
    
@@ -116,7 +117,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/employee-phones/import',[EmployeePhoneController::class, 'import'])
             ->name('employee-phones.import');
         Route::resource('notebooks',NotebookController::class);
-        
+        Route::resource('radio-frequencies', RadioFrequencyController::class);
 
         /*
         |--------------------------------------------------------------------------

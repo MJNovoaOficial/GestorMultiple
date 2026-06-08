@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\RadioFrequency;
 
 class Branch extends Model
 {
@@ -10,6 +11,12 @@ class Branch extends Model
         'name',
         'city',
     ];
+    public function radioFrequencies()
+    {
+        return $this->hasMany(
+            RadioFrequency::class
+        );
+    }
     
 }
 

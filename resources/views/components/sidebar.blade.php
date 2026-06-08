@@ -491,6 +491,24 @@
                 Notebooks
 
             </a>
+            <a
+                href="{{ route('radio-frequencies.index') }}"
+
+                class="
+                    px-4 py-2
+                    rounded-lg
+
+                    text-sm
+
+                    hover:bg-slate-800/60
+
+                    transition
+                "
+            >
+
+                Radiofrecuencias
+
+            </a>
 
         </div>
 
