@@ -206,108 +206,6 @@
 
     </div>
     
-    {{-- Módulo Básicos --}}
-    @if(auth()->user()->role === 'superadmin')
-        <div
-            x-data="{ openBasic: false }"
-            class="bg-slate-900/80 rounded-2xl shadow-lg overflow-hidden"
-        >
-
-            {{-- Header --}}
-            <button
-                @click="openBasic = !openBasic"
-                class="w-full flex items-center justify-between
-                    px-4 py-2.5 rounded-none
-                    bg-slate-900/80 whitespace-nowrap
-                    dark:border-slate-800
-                    hover:bg-[#1E293B]
-                    transition"
-                    
-            >
-
-                <div class="flex items-center gap-3">
-
-                    {{-- Icono --}}
-                    <span class="font-semibold text-sm tracking-wide">
-                       ⚙️ Módulos Básicos
-                    </span>
-
-                </div>
-
-                {{-- Flecha --}}
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-4 h-4 text-gray-400 shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 9l-7 7-7-7"
-                    />
-                </svg>
-
-            </button>
-
-            {{-- Submenú --}}
-            <div
-                x-show="openBasic"
-                x-transition
-                class="border-t border-slate-800 px-4 py-2.5 space-y-1"
-            >
-
-                <a
-                    href="{{ route('branches.index') }}"
-                    class="block px-4 py-2 rounded-xl
-                        text-sm text-gray-300
-                        hover:bg-[#1E293B]
-                        hover:text-white
-                        transition-all duration-200"
-                >
-                    Sucursales
-                </a>
-
-                <a
-                    href="{{ route('departments.index') }}"
-                    class="block px-4 py-2 rounded-xl
-                        text-sm text-gray-300
-                        hover:bg-[#1E293B]
-                        hover:text-white
-                        transition-all duration-200"
-                >
-                    Departamentos
-                </a>
-
-                <a
-                    href="{{ route('device-types.index') }}"
-                    class="block px-4 py-2 rounded-xl
-                        text-sm text-gray-300
-                        hover:bg-[#1E293B]
-                        hover:text-white
-                        transition-all duration-200"
-                >
-                    Tipos de dispositivos
-                </a>
-
-                <a
-                    href="{{ route('ip-statuses.index') }}"
-                    class="block px-4 py-2 rounded-xl
-                        text-sm text-gray-300
-                        hover:bg-[#1E293B]
-                        hover:text-white
-                        transition-all duration-200"
-                >
-                    Estados IP
-                </a>
-
-            </div>
-
-        </div>
-    @endif
-    
     {{-- Gestión Suministros --}}
     <div
         x-data="{
@@ -424,9 +322,10 @@
                     transition-transform
                 "
 
+                class="shrink-0"
                 :class="{
                     'rotate-180': openDevices
-                } shrink-0 "
+                }"
 
                 fill="none"
                 stroke="currentColor"
@@ -513,6 +412,108 @@
         </div>
 
     </div>
+
+     {{-- Módulo Básicos --}}
+    @if(auth()->user()->role === 'superadmin')
+        <div
+            x-data="{ openBasic: false }"
+            class="bg-slate-900/80 rounded-2xl shadow-lg overflow-hidden"
+        >
+
+            {{-- Header --}}
+            <button
+                @click="openBasic = !openBasic"
+                class="w-full flex items-center justify-between
+                    px-4 py-2.5 rounded-none
+                    bg-slate-900/80 whitespace-nowrap
+                    dark:border-slate-800
+                    hover:bg-[#1E293B]
+                    transition"
+                    
+            >
+
+                <div class="flex items-center gap-3">
+
+                    {{-- Icono --}}
+                    <span class="font-semibold text-sm tracking-wide">
+                       ⚙️ Módulos Básicos
+                    </span>
+
+                </div>
+
+                {{-- Flecha --}}
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4 text-gray-400 shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                    />
+                </svg>
+
+            </button>
+
+            {{-- Submenú --}}
+            <div
+                x-show="openBasic"
+                x-transition
+                class="border-t border-slate-800 px-4 py-2.5 space-y-1"
+            >
+
+                <a
+                    href="{{ route('branches.index') }}"
+                    class="block px-4 py-2 rounded-xl
+                        text-sm text-gray-300
+                        hover:bg-[#1E293B]
+                        hover:text-white
+                        transition-all duration-200"
+                >
+                    Sucursales
+                </a>
+
+                <a
+                    href="{{ route('departments.index') }}"
+                    class="block px-4 py-2 rounded-xl
+                        text-sm text-gray-300
+                        hover:bg-[#1E293B]
+                        hover:text-white
+                        transition-all duration-200"
+                >
+                    Departamentos
+                </a>
+
+                <a
+                    href="{{ route('device-types.index') }}"
+                    class="block px-4 py-2 rounded-xl
+                        text-sm text-gray-300
+                        hover:bg-[#1E293B]
+                        hover:text-white
+                        transition-all duration-200"
+                >
+                    Tipos de dispositivos
+                </a>
+
+                <a
+                    href="{{ route('ip-statuses.index') }}"
+                    class="block px-4 py-2 rounded-xl
+                        text-sm text-gray-300
+                        hover:bg-[#1E293B]
+                        hover:text-white
+                        transition-all duration-200"
+                >
+                    Estados IP
+                </a>
+
+            </div>
+
+        </div>
+    @endif
 
     {{-- Auditoría --}}
         <a

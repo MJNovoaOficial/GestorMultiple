@@ -152,7 +152,7 @@
                                     class="flex items-center gap-3"
                                 >
 
-                                    <span x-text="revealed ? password : '••••••••••••'"></span>
+                                    <span x-text="revealed ? password : '••••••••••••••'"></span>
 
                                     <button
                                         type="button"
@@ -351,7 +351,7 @@
 
                     setTimeout(() => {
                         this.revealed = false;
-                    }, 10000);
+                    }, 15000);
 
                 } catch (error) {
 

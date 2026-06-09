@@ -13,11 +13,21 @@ class PasswordRevealController extends Controller
         AuditService::log(
             'revealed',
             $password,
-            'Visualizó la contraseña de:' . $password->email
+            'Visualizó la contraseña de: ' . $password->email
         );
 
-        return response()->json([
-            'password' => $password->password
-        ]);
+        try {
+
+            return response()->json([
+                'password' => decrypt($password->password)
+            ]);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'password' => 'Error al desencriptar'
+            ], 500);
+
+        }
     }
 }

@@ -651,6 +651,10 @@
 
         }
 
+        //modal de ping
+        const stopPingBtn = document.getElementById('stopPingBtn');
+        const closePingModal = document.getElementById('closePingBtn');
+
         globalSearch.addEventListener(
             'input',
             filterTable
@@ -661,20 +665,180 @@
             filterTable
         );
 
-        // MODAL PING
-        let pingInterval = null;
+        function stopPing() {
 
-        const pingModal = document.getElementById('pingModal');
-        const pingOutput = document.getElementById('pingOutput');
-        const pingTitle = document.getElementById('pingTitle');
+            console.log('DETENIENDO');
 
-        function closePingModal() {
+            pingRunning = false;
 
-            clearInterval(pingInterval);
-
-            pingOutput.innerHTML = '';
+            pingOutput.innerHTML +=
+                '<div class="text-yellow-400">Ping detenido.</div>';
 
             pingModal.classList.add('hidden');
+
+        }
+
+        let pingRunning = false;
+
+        function addPingLine(success, ip, message = '') {
+
+            const line = document.createElement('div');
+
+            const time = new Date().toLocaleTimeString(
+                'es-CL',
+                {
+                    hour12: false
+                }
+            );
+
+            line.textContent = success
+                ? `[${time}] ✅ Respuesta desde ${ip}`
+                : `[${time}] ❌ ${message}`;
+
+            pingOutput.appendChild(line);
+
+            pingOutput.scrollTop =
+                pingOutput.scrollHeight;
+        }
+
+        function addErrorLine(message = 'Error ejecutando ping') {
+
+            const line = document.createElement('div');
+
+            const time = new Date().toLocaleTimeString(
+                'es-CL',
+                {
+                    hour12: false
+                }
+            );
+
+            line.textContent =
+                `[${time}] ❌ ${message}`;
+
+            pingOutput.appendChild(line);
+
+            pingOutput.scrollTop =
+                pingOutput.scrollHeight;
+        }
+
+        async function startPing(ip) {
+
+            pingRunning = true;
+
+            while (pingRunning) {
+
+                try {
+
+                    const response = await fetch(
+                        "{{ route('ip-addresses.ping') }}",
+                        {
+                            method: 'POST',
+
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+
+                            body: JSON.stringify({
+                                ip
+                            })
+                        }
+                    );
+
+                    if (!response.ok) {
+
+                        addErrorLine(
+                            `Error HTTP ${response.status}`
+                        );
+
+                        await new Promise(
+                            resolve => setTimeout(resolve, 2000)
+                        );
+
+                        continue;
+
+                    }
+
+                    const data = await response.json();
+
+                    let message = 'Tiempo de espera agotado';
+
+                    switch (data.state) {
+
+                        case 'success':
+
+                            addPingLine(
+                                true,
+                                ip
+                            );
+
+                            break;
+
+                        case 'unreachable':
+
+                            message =
+                                'Host de destino inaccesible';
+
+                            addPingLine(
+                                false,
+                                ip,
+                                message
+                            );
+
+                            break;
+
+                        case 'timeout':
+
+                            message =
+                                'Tiempo de espera agotado';
+
+                            addPingLine(
+                                false,
+                                ip,
+                                message
+                            );
+
+                            break;
+
+                        case 'invalid':
+
+                            message =
+                                'IP inválida';
+
+                            addPingLine(
+                                false,
+                                ip,
+                                message
+                            );
+
+                            break;
+
+                        default:
+
+                            addPingLine(
+                                false,
+                                ip,
+                                'Error desconocido'
+                            );
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+                        'ERROR PING:',
+                        error
+                    );
+
+                    addErrorLine();
+
+                }
+
+                await new Promise(
+                    resolve => setTimeout(resolve, 2000)
+                );
+
+            }
 
         }
 
@@ -684,65 +848,36 @@
 
                 const ip = button.dataset.ip;
 
+                if (!ip) return;
+
                 pingModal.classList.remove('hidden');
 
-                pingTitle.innerText = `📡 Ping ${ip}`;
+                pingTitle.innerText =
+                    `📡 Ping ${ip}`;
 
                 pingOutput.innerHTML = '';
 
-                clearInterval(pingInterval);
+                pingRunning = false;
 
-                pingInterval = setInterval(async () => {
+                setTimeout(() => {
 
-                    try {
+                    startPing(ip);
 
-                        const response = await fetch(
-                            "{{ route('ip-addresses.ping') }}",
-                            {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                },
-                                body: JSON.stringify({ ip })
-                            }
-                        );
-
-                        const data = await response.json();
-
-                        const line = document.createElement('div');
-
-                        const time = new Date().toLocaleTimeString();
-
-                        line.innerHTML = data.success
-                            ? `[${time}] ✅ Respuesta desde ${ip}`
-                            : `[${time}] ❌ Tiempo de espera agotado para ${ip}`;
-
-                        pingOutput.appendChild(line);
-
-                        pingOutput.scrollTop = pingOutput.scrollHeight;
-
-                    } catch (error) {
-
-                        const line = document.createElement('div');
-
-                        line.innerHTML = `❌ Error ejecutando ping`;
-
-                        pingOutput.appendChild(line);
-
-                    }
-
-                }, 2000);
+                }, 100);
 
             });
 
         });
 
-        document.getElementById('stopPingBtn')
-            .addEventListener('click', closePingModal);
+        closePingModal.addEventListener(
+            'click',
+            stopPing
+        );
 
-        document.getElementById('closePingBtn')
-            .addEventListener('click', closePingModal);
+        stopPingBtn.addEventListener(
+            'click',
+            stopPing
+        );
 
         // LIBERAR IP
         document.querySelectorAll('.release-btn').forEach(button => {

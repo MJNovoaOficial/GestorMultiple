@@ -118,21 +118,73 @@ class IpAddressController extends Controller
 
     public function ping(Request $request)
     {
-        $ip = $request->ip;
+        try {
 
-        $os = strtoupper(substr(PHP_OS, 0, 3));
+            $ip = $request->ip;
 
-        if ($os === 'WIN') {
-            $command = "ping -n 1 $ip";
-        } else {
-            $command = "ping -c 1 $ip";
+            if (!filter_var($ip, FILTER_VALIDATE_IP)) {
+
+                return response()->json([
+                    'success' => false,
+                    'state'   => 'invalid',
+                    'message' => 'IP inválida'
+                ]);
+
+            }
+
+            $os = strtoupper(substr(PHP_OS, 0, 3));
+
+            if ($os === 'WIN') {
+                $command = "ping -n 1 " . escapeshellarg($ip);
+            } else {
+                $command = "ping -c 1 " . escapeshellarg($ip);
+            }
+
+            exec($command, $output, $status);
+
+            $text = implode("\n", $output);
+
+            // Convertir desde Windows-1252 para evitar errores UTF-8
+            $text = iconv('Windows-1252', 'UTF-8//IGNORE', $text);
+
+            /*
+            * Detectar el resultado real del ping.
+            * NO confiar únicamente en $status.
+            */
+            $state = 'timeout';
+
+            if (
+                str_contains($text, 'Host de destino inaccesible') ||
+                str_contains($text, 'Destination host unreachable')
+            ) {
+
+                $state = 'unreachable';
+
+            } elseif (
+                str_contains($text, 'TTL=') ||
+                str_contains($text, 'ttl=')
+            ) {
+
+                $state = 'success';
+
+            }
+
+            return response()->json([
+                'success' => $state === 'success',
+                'state'   => $state,
+                'status'  => $status,
+                'output'  => $text,
+            ]);
+
+        } catch (\Throwable $e) {
+
+            return response()->json([
+                'success' => false,
+                'state'   => 'error',
+                'error'   => $e->getMessage(),
+            ], 500);
+
         }
-
-        exec($command, $output, $status);
-
-        return response()->json([
-            'success' => $status === 0
-        ]);
     }
 
     public function release(IpAddress $ip)

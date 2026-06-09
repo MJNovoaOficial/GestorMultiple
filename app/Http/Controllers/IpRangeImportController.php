@@ -99,7 +99,7 @@ class IpRangeImportController extends Controller
         }
 
         return redirect()
-            ->route('dashboard')
+            ->route('ip-addresses.index')
             ->with(
                 'success',
                 'Importación completada. '

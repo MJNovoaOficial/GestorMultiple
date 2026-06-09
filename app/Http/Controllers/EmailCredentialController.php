@@ -110,6 +110,8 @@ class EmailCredentialController extends Controller
                 'is_active' => true,
 
             ]);
+
+
             AuditService::log(
                 'reactivated',
                 $existingCredential,
@@ -124,6 +126,33 @@ class EmailCredentialController extends Controller
                     'Credencial agregada correctamente.'
                 );
         }
+
+        $credential = EmailCredential::create([
+
+            'full_name' => $validated['full_name'],
+            'email' => $validated['email'],
+            'password' => encrypt($validated['password']),
+            'branch_id' => $validated['branch_id'],
+            'department_id' => $validated['department_id'],
+            'notes' => $validated['notes'] ?? null,
+            'created_by' => auth()->id(),
+            'is_active' => true,
+
+        ]);
+
+        AuditService::log(
+            'created',
+            $credential,
+            'Se creó la credencial para '
+                . $credential->email
+        );
+
+        return redirect()
+            ->route('passwords.index')
+            ->with(
+                'success',
+                'Credencial creada correctamente.'
+            );
     }
 
     /**
