@@ -113,8 +113,8 @@
                     text-gray-300
                 ">
                     <thead class="
-                        bg-slate-900
-                        text-gray-400
+                        bg-slate-100
+                        dark:bg-slate-900
                     ">
                         <tr>
                             <th class="
@@ -268,8 +268,11 @@
                     <tbody>
                     @forelse($notebooks as $notebook)
                         <tr class="
-                            border-t border-slate-800
-                            hover:bg-slate-900/50
+                            border-t border-slate-200
+                            dark:border-slate-800
+                            hover:bg-slate-50
+                            dark:hover:bg-slate-900/50
+                            transition 
                         ">
                             <td class="
                                 px-6 py-4
@@ -316,7 +319,8 @@
                             </td>
 
                             {{-- Usuario --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                             @if($notebook->status === 'available')
                                 Libre
                             @elseif($notebook->status === 'retired')
@@ -327,7 +331,8 @@
                             </td>
 
                             {{-- RUT --}}
-                            <td class="px-4 py-4 text-center">                                    
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                             @if($notebook->status === 'available')
                                 Libre
                             @elseif($notebook->status === 'retired')
@@ -338,27 +343,32 @@
                             </td>
 
                             {{-- Marca --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                                 {{ $notebook->brand->name }}
                             </td>
 
                             {{-- Modelo --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                                 {{ $notebook->model }}
                             </td>
                                     
                             {{-- Serial --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                                 {{ $notebook->serial_number }}
                             </td>
 
                             {{-- Valor --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                                <span>$</span> {{ number_format($notebook->purchase_value, 0, ',', '.') }}
                             </td>
 
                             {{-- Estado --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
 
                                 @if($notebook->status === 'available')
 
@@ -398,7 +408,8 @@
                             </td>
 
                             {{-- Condición --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
 
                                 @if($notebook->condition === 'new')
                                     Nuevo
@@ -408,7 +419,8 @@
                             </td>
 
                             {{-- Empresa --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                                 @if($notebook->status === 'available')
                                     Libre
                                 @elseif($notebook->status === 'retired')
@@ -419,7 +431,8 @@
                             </td>
                                     
                             {{-- Cargo --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                                 @if($notebook->status === 'available')
                                     Libre
                                 @elseif($notebook->status === 'retired')
@@ -430,7 +443,8 @@
                             </td>
 
                             {{-- Fecha --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                                 @if($notebook->status === 'available')
                                     Libre
                                 @elseif($notebook->status === 'retired')
@@ -441,7 +455,8 @@
                             </td>
                                     
                             {{-- Observaciones --}}
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center text-sm
+                                font-medium text-slate-900 dark:text-white">
                                 {{ $notebook->observations ?? '-' }}
                             </td>
                         </tr>
@@ -991,7 +1006,7 @@
 
         });
 
-        //Cerrar el Modal al hacer click en el botón de cerrar
+        //Cerrar el Modal al hacer click en el botón X
         closeModal.addEventListener('click', () => {
 
         modal.classList.add('hidden');

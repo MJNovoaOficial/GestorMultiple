@@ -54,8 +54,13 @@
                 placeholder="Buscar marca, modelo o suministro..."
                 class="
                     w-full px-4 py-3
-                    text-white bg-gray-900
-                    border border-gray-800
+                    border-slate-300
+                    dark:border-slate-700
+                    bg-white
+                    dark:bg-slate-900
+                    text-sm
+                    text-slate-900
+                    dark:text-white
                     rounded-2xl
                     focus:ring-2 focus:ring-blue-500
                     focus:outline-none
@@ -76,78 +81,114 @@
 
             {{-- Table --}}
             <div class="
-                overflow-hidden
-                bg-gray-900
-                border border-gray-800
-                rounded-2xl
+                overflow-x-auto
+                border
+                border-slate-200
+                dark:border-slate-800
+                overflow-y-auto
+                max-h-[70vh]
             ">
 
-                <table class="min-w-full divide-y divide-gray-800">
+                <table class="w-full
+                    text-sm
+                    text-left
+                    text-gray-300
+                    bg-slate-100
+                    dark:bg-slate-900">
 
                     {{-- Header --}}
-                    <thead class="bg-[#0F172A]">
+                    <thead class="bg-slate-100
+                            dark:bg-slate-900">
 
                         <tr>
 
                             <th class="
                                 px-6 py-4
-                                text-xs font-semibold
-                                tracking-wider text-center
-                                text-gray-400 uppercase
+                                text-center
+                                text-xs
+                                font-bold
+                                uppercase
+                                tracking-wider
+                                text-slate-500
+                                whitespace-nowrap
                             ">
                                 Marca Impresora
                             </th>
 
                             <th class="
                                 px-6 py-4
-                                text-xs font-semibold
-                                tracking-wider text-center
-                                text-gray-400 uppercase
+                                text-center
+                                text-xs
+                                font-bold
+                                uppercase
+                                tracking-wider
+                                text-slate-500
+                                whitespace-nowrap
                             ">
                                 Modelo de impresora
                             </th>
 
                             <th class="
                                 px-6 py-4
-                                text-xs font-semibold
-                                tracking-wider text-center
-                                text-gray-400 uppercase
+                                text-center
+                                text-xs
+                                font-bold
+                                uppercase
+                                tracking-wider
+                                text-slate-500
+                                whitespace-nowrap
                             ">
                                 Modelo de Tóner
                             </th>
 
                             <th class="
                                 px-6 py-4
-                                text-xs font-semibold
-                                tracking-wider text-center
-                                text-gray-400 uppercase
+                                text-center
+                                text-xs
+                                font-bold
+                                uppercase
+                                tracking-wider
+                                text-slate-500
+                                whitespace-nowrap
                             ">
                                 Cantidad
                             </th>
 
                             <th class="
                                 px-6 py-4
-                                text-xs font-semibold
-                                tracking-wider text-center
-                                text-gray-400 uppercase
+                                text-center
+                                text-xs
+                                font-bold
+                                uppercase
+                                tracking-wider
+                                text-slate-500
+                                whitespace-nowrap
                             ">
                                 Estado
                             </th>
 
                             <th class="
                                 px-6 py-4
-                                text-xs font-semibold
-                                tracking-wider text-center
-                                text-gray-400 uppercase
+                                text-center
+                                text-xs
+                                font-bold
+                                uppercase
+                                tracking-wider
+                                text-slate-500
+                                whitespace-nowrap
                             ">
                                 Última modificación
                             </th>
 
                             <th class="
                                 px-6 py-4
-                                text-xs font-semibold
-                                tracking-wider text-center
-                                text-gray-400 uppercase
+                                text-center
+                                text-xs
+                                font-bold
+                                uppercase
+                                tracking-wider
+                                text-slate-500
+                                whitespace-nowrap
                             ">
                                 Acciones
                             </th>
@@ -187,41 +228,45 @@
 
                             <tr class="
                                 user-row
-                                hover:bg-gray-800/40
+                                border-t
+                                border-slate-200
+                                dark:border-slate-800
+                                hover:bg-slate-50
+                                dark:hover:bg-slate-900/50
                                 transition
                             ">
 
                                 <td class="
-                                    px-6 py-4
-                                    text-sm text-center text-white
+                                    px-6 py-4 text-center
+                                    text-sm font-medium text-slate-900 dark:text-white
                                 ">
                                     {{ $supply->brand }}
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
-                                    text-sm text-center text-white
+                                    px-6 py-4 text-center
+                                    text-sm font-medium text-slate-900 dark:text-white
                                 ">
                                     {{ $supply->printer_model }}
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
-                                    text-sm text-center text-white
+                                    px-6 py-4 text-center
+                                    text-sm font-medium text-slate-900 dark:text-white
                                 ">
                                     {{ $supply->supply_type }}
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
-                                    text-sm text-center text-white
+                                    px-6 py-4 text-center
+                                    text-sm font-medium text-slate-900 dark:text-white
                                 ">
                                     {{ $supply->quantity }}
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
-                                    text-center
+                                    px-6 py-4 text-center
+                                    text-sm font-medium text-slate-900 dark:text-white
                                 ">
 
                                     <span class="
@@ -238,17 +283,16 @@
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
-                                    text-center
-                                    text-slate-500 dark:text-slate-400
+                                    px-6 py-4 text-center
+                                    text-sm font-medium text-slate-900 dark:text-white
                                 ">
                                     {{ $supply->updated_at->diffForHumans() }}
                                 </td>
 
                                 {{-- Actions --}}
                                 <td class="
-                                    px-6 py-4
-                                    text-center
+                                    px-6 py-4 text-center
+                                    text-sm font-medium text-slate-900 dark:text-white
                                 ">
 
                                     <div class="

@@ -47,16 +47,18 @@
                 class="
                     rounded-2xl
                     border
-                    border-slate-700
-                    bg-slate-900
+                    bg-white
+                    dark:bg-slate-900
+                    border-slate-200
+                    dark:border-slate-700
                     p-4
                     hover:border-blue-500
                     transition
                 "
             >
                 <div class="
-                    text-slate-400
-                    text-sm    
+                    text-slate-700
+                    dark:text-slate-400 
                 ">
                     Todas
                 </div>
@@ -64,7 +66,8 @@
                 <div class="
                     text-lg
                     font-bold
-                    text-white
+                    text-blue-600
+                    dark:text-blue-400
                     text-center
                 ">
                     {{ $totalRadioFrequencies }}
@@ -82,8 +85,10 @@
                     class="
                         rounded-2xl
                         border
-                        border-slate-700
-                        bg-slate-900
+                        bg-white
+                        dark:bg-slate-900
+                        border-slate-200
+                        dark:border-slate-700
                         p-4
                         hover:border-blue-500
                         transition
@@ -91,8 +96,8 @@
                 >
 
                     <div class="
-                        text-slate-400
-                        text-sm
+                        text-slate-700
+                        dark:text-slate-400
                     ">
                         {{ $branch->name }}
                     </div>
@@ -100,7 +105,8 @@
                     <div class="
                         text-lg
                         font-bold
-                        text-blue-400
+                        text-blue-600
+                        dark:text-blue-400
                         text-center
                     ">
                         {{ $branch->radio_frequencies_count }}
@@ -274,10 +280,12 @@
                     text-sm
                     text-left
                     text-gray-300
+                    bg-slate-100
+                    dark:bg-slate-900
                 ">
                     <thead class="
-                            bg-slate-900
-                            text-gray-400
+                            bg-slate-100
+                            dark:bg-slate-900
                     ">
                         <tr>
                             <th class="
@@ -407,8 +415,12 @@
                     @forelse($radioFrequencies as $radio)
 
                         <tr class="
-                            border-t border-slate-800
-                            hover:bg-slate-900/50
+                            border-t
+                            border-slate-200
+                            dark:border-slate-800
+                            hover:bg-slate-50
+                            dark:hover:bg-slate-900/50
+                            transition
                         ">
 
                             <td class="
@@ -442,7 +454,7 @@
                                         data-mac="{{ $radio->mac }}"
                                         data-ip="{{ $radio->ip }}"
                                         data-area="{{ $radio->area }}"
-                                        data-branch_id="{{ $radio->branch_id }}"
+                                        data-branch-id="{{ $radio->branch_id }}"
                                         data-type="{{ $radio->type }}"
                                         data-status="{{ $radio->status }}"
                                         data-blocked="{{ $radio->blocked }}"
@@ -454,31 +466,38 @@
                                 </div>
                             </td>
 
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center
+                            text-sm font-medium text-slate-900 dark:text-white">
                                 {{ $radio->number }}
                             </td>
 
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center
+                            text-sm font-medium text-slate-900 dark:text-white">
                                 {{ $radio->serial }}
                             </td>
 
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center
+                            text-sm font-medium text-slate-900 dark:text-white">
                                 {{ $radio->mac }}
                             </td>
 
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center
+                            text-sm font-medium text-slate-900 dark:text-white">
                                 {{ $radio->ip }}
                             </td>
 
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center
+                            text-sm font-medium text-slate-900 dark:text-white">
                                 {{ $radio->area }}
                             </td>
 
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center
+                            text-sm font-medium text-slate-900 dark:text-white">
                                 {{ $radio->branch->name }}
                             </td>
 
-                            <td class="px-4 py-4 text-center">
+                            <td class="px-4 py-4 text-center
+                            text-sm font-medium text-slate-900 dark:text-white">
                                 {{ ucfirst($radio->type) }}
                             </td>
 
@@ -521,11 +540,12 @@
 
                         </td>
 
-                        <td class="px-4 py-4 text-center">
+                        <td class="px-4 py-4 text-center text-sm text-slate-700 dark:text-slate-400">
                             {{ $radio->observations ?? '-' }}
                         </td>
 
-                        <td class="px-4 py-4 text-center">
+                        <td class="px-4 py-4 text-center text-sm
+                        font-medium text-slate-900 dark:text-white">
 
                             @if($radio->blocked)
                                 Sí
@@ -535,7 +555,8 @@
 
                         </td>
 
-                        <td class="px-4 py-4 text-center">
+                        <td class="px-4 py-4 text-center text-sm
+                        font-medium text-slate-900 dark:text-white">
 
                             @if($radio->warranty)
                                 Sí
@@ -568,7 +589,345 @@
             {{ $radioFrequencies->links() }}
         </div>
     </div>
+    {{-- MODAL EDITAR RADIOFRECUENCIA --}}
+    <div
+        id="edit-modal"
+        class="
+            hidden
+            fixed
+            inset-0
+            z-50
+            bg-black/60
+            items-center
+            justify-center
+            p-6
+        "
+    >
+        <div
+            class="
+                w-full
+                max-w-5xl
+                rounded-2xl
+                border
+                border-slate-800
+                bg-[#020817]
+                p-6
+            "
+        >
 
+            {{-- HEADER --}}
+            <div class="
+                flex
+                items-center
+                justify-between
+                mb-6
+            ">
+                <div>
+                    <h2 class="
+                        text-3xl
+                        font-bold
+                        text-white
+                    ">
+                        Editar Radiofrecuencia
+                    </h2>
+
+                    <p class="text-gray-400 mt-1">
+                        Modificar información del equipo
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="close-edit-modal"
+                    class="
+                        text-slate-400
+                        hover:text-white
+                        text-xl
+                        transition
+                    "
+                >
+                    ✕
+                </button>
+            </div>
+
+            <form
+                id="edit-form"
+                method="POST"
+            >
+                @csrf
+                @method('PUT')
+
+                <div class="
+                    grid
+                    grid-cols-1
+                    md:grid-cols-2
+                    xl:grid-cols-3
+                    gap-5
+                ">
+
+                    {{-- Número --}}
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Número <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            type="number"
+                            id="edit-number"
+                            name="number"
+                            readonly
+                            class="
+                                cursor-not-allowed
+                                w-full
+                                rounded-xl
+                                border border-slate-700
+                                bg-slate-800
+                                px-4 py-3
+                                text-slate-400
+                            "
+                        >
+                    </div>
+
+                    {{-- Serial --}}
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Serial <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="edit-serial"
+                            name="serial"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white"
+                        >
+                    </div>
+
+                    {{-- MAC --}}
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            MAC <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="edit-mac"
+                            name="mac"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white"
+                        >
+                    </div>
+
+                    {{-- IP --}}
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            IP <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="edit-ip"
+                            name="ip"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white"
+                        >
+                    </div>
+
+                    {{-- Área --}}
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Área <span class="text-red-500">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="edit-area"
+                            name="area"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white"
+                        >
+                    </div>
+
+                    {{-- Sucursal --}}
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Sucursal <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="edit-branch-id"
+                            name="branch_id"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white"
+                        >
+                            @foreach($branches as $branch)
+
+                                <option value="{{ $branch->id }}">
+                                    {{ $branch->name }}
+                                </option>
+
+                            @endforeach
+                        </select>
+                    </div>
+
+                    {{-- Tipo --}}
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Tipo <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="edit-type"
+                            name="type"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white"
+                        >
+                            <option value="windows">Windows</option>
+                            <option value="android">Android</option>
+                            <option value="cellphone">Celular</option>
+                        </select>
+                    </div>
+
+                    {{-- Estado --}}
+                    <div>
+                        <label class="block mb-2 text-sm text-gray-300">
+                            Estado <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            id="edit-status"
+                            name="status"
+                            class="w-full rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-white"
+                        >
+                            <option value="operative">Operativa</option>
+                            <option value="repair">Reparación</option>
+                            <option value="retired">Dado de baja</option>
+                        </select>
+                    </div>
+
+                    {{-- Opciones --}}
+                    <div class="flex items-center gap-6 mt-8">
+
+                        <label class="inline-flex items-center cursor-pointer">
+
+                            <input type="hidden" name="blocked" value="0">
+
+                            <input
+                                id="edit-blocked"
+                                type="checkbox"
+                                name="blocked"
+                                value="1"
+                                class="sr-only peer"
+                            >
+
+                            <div class="
+                                relative
+                                w-11 h-6
+                                bg-slate-700
+                                rounded-full
+                                transition-colors
+                                peer-checked:bg-blue-600
+
+                                after:content-['']
+                                after:absolute
+                                after:top-[2px]
+                                after:left-[2px]
+                                after:bg-white
+                                after:rounded-full
+                                after:h-5
+                                after:w-5
+                                after:transition-all
+                                peer-checked:after:translate-x-full
+                            "></div>
+
+                            <span class="ml-3 text-white">
+                                Bloqueada
+                            </span>
+
+                        </label>
+
+                        <label class="inline-flex items-center cursor-pointer">
+
+                            <input type="hidden" name="warranty" value="0">
+
+                            <input
+                                id="edit-warranty"
+                                type="checkbox"
+                                name="warranty"
+                                value="1"
+                                class="sr-only peer"
+                            >
+
+                            <div class="
+                                relative
+                                w-11 h-6
+                                bg-slate-700
+                                rounded-full
+                                transition-colors
+                                peer-checked:bg-blue-600
+
+                                after:content-['']
+                                after:absolute
+                                after:top-[2px]
+                                after:left-[2px]
+                                after:bg-white
+                                after:rounded-full
+                                after:h-5
+                                after:w-5
+                                after:transition-all
+                                peer-checked:after:translate-x-full
+                            "></div>
+
+                            <span class="ml-3 text-white">
+                                Posee garantía
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                    {{-- Observaciones --}}
+                    <div class="md:col-span-3">
+
+                        <label class="block text-white mb-2">
+                            Observaciones
+                        </label>
+
+                        <textarea
+                            id="edit-observations"
+                            name="observations"
+                            rows="4"
+                            class="
+                                w-full
+                                rounded-xl
+                                border
+                                border-slate-700
+                                bg-slate-900
+                                px-4 py-3
+                                text-white
+                            "
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+                <div class="
+                    mt-8
+                    flex
+                    justify-end
+                ">
+                    <button
+                        type="submit"
+                        class="
+                            px-5 py-3
+                            rounded-xl
+                            bg-indigo-600
+                            hover:bg-indigo-700
+                            text-white
+                            font-semibold
+                        "
+                    >
+                        Guardar cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.getElementById('search-input');
@@ -579,6 +938,66 @@
             timeout = setTimeout(() => {
                 searchForm.submit();
             }, 1200);
+        });
+    });
+
+    const editButtons = document.querySelectorAll('.edit-device-btn');
+    const modal = document.getElementById('edit-modal');
+    const closeModal = document.getElementById('close-edit-modal');
+    const editForm = document.getElementById('edit-form');
+
+    editButtons.forEach(button => {
+
+        button.addEventListener('click', () => {
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const id = button.dataset.id;
+
+            editForm.action = `/radio-frequencies/${id}`;
+
+            document.getElementById('edit-number').value =
+                button.dataset.number ?? '';
+
+            document.getElementById('edit-serial').value =
+                button.dataset.serial ?? '';
+
+            document.getElementById('edit-mac').value =
+                button.dataset.mac ?? '';
+
+            document.getElementById('edit-ip').value =
+                button.dataset.ip ?? '';
+
+            document.getElementById('edit-area').value =
+                button.dataset.area ?? '';
+
+            document.getElementById('edit-branch-id').value =
+                button.dataset.branchId ?? '';
+
+            document.getElementById('edit-type').value =
+                button.dataset.type ?? '';
+
+            document.getElementById('edit-status').value =
+                button.dataset.status ?? '';
+
+            document.getElementById('edit-blocked').checked =
+                button.dataset.blocked == 1;
+
+            document.getElementById('edit-warranty').checked =
+                button.dataset.warranty == 1;
+
+            document.getElementById('edit-observations').value =
+                button.dataset.observations ?? '';
+
+        });
+
+        //cerramos el modal cuando hacemos click en la "X"
+        closeModal.addEventListener('click', () => {
+
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+
         });
     });
 

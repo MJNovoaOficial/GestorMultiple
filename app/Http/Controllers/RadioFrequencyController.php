@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\RadioFrequency;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Models\AuditLog;
 
 class RadioFrequencyController extends Controller
@@ -206,15 +207,105 @@ class RadioFrequencyController extends Controller
      */
     public function edit(RadioFrequency $radioFrequency)
     {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, RadioFrequency $radioFrequency)
+    public function update(Request $request,RadioFrequency $radioFrequency)
     {
-        //
+        $validated = $request->validate([
+
+            'number' => [
+                'required',
+                'numeric',
+
+                Rule::unique(
+                    'radio_frequencies',
+                    'number'
+                )->ignore($radioFrequency->id),
+            ],
+
+            'serial' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'mac' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'ip' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'area' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'branch_id' => [
+                'required',
+                'exists:branches,id',
+            ],
+
+            'type' => [
+                'required',
+                'in:windows,android,cellphone',
+            ],
+
+            'status' => [
+                'required',
+                'in:operative,repair,retired',
+            ],
+
+            'blocked' => [
+                'required',
+                'boolean',
+            ],
+
+            'warranty' => [
+                'required',
+                'boolean',
+            ],
+
+            'observations' => [
+                'nullable',
+                'string',
+            ],
+
+        ], [
+
+            '*.required' => 'Este campo es obligatorio.',
+
+        ]);
+
+        $radioFrequency->update($validated);
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+
+            'action' => 'update',
+
+            'description' =>
+                'Actualizó radiofrecuencia N° '
+                . $radioFrequency->number,
+
+            'ip_address' => $request->ip(),
+        ]);
+
+        return redirect()
+            ->route('radio-frequencies.index')
+            ->with(
+                'success',
+                'Registro actualizado correctamente.'
+            );
     }
 
     /**
