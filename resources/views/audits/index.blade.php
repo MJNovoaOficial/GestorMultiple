@@ -130,6 +130,16 @@
                                             'label' => 'Importado',
                                             'class' => 'bg-purple-600',
                                         ],
+
+                                        'SCANNER_STOCK_AGREGADO' => [
+                                            'label' => 'Agregado',
+                                            'class' => 'bg-green-600',
+                                        ],
+
+                                        'SCANNER_STOCK_DESCONTADO' => [
+                                            'label' => 'Descontado',
+                                            'class' => 'bg-red-600',
+                                        ],
                                     ];
 
                                     $actionData =

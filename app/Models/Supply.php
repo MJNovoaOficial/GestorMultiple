@@ -14,6 +14,7 @@ class Supply extends Model
         'supply_type',
         'quantity',
         'minimum_stock',
+        'barcode',
         'created_by',
         'updated_by',
 

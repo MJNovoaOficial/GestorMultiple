@@ -107,7 +107,12 @@ Route::middleware('auth')->group(function () {
             ->name('supplies.remove');
         Route::delete('/supplies/{supply}',[SupplyController::class, 'destroy'])
             ->name('supplies.destroy');
-
+        Route::get('/supplies/scanner',[SupplyController::class, 'scanner'])
+            ->name('supplies.scanner');
+        Route::post('/supplies/scanner/find',[SupplyController::class, 'findByBarcode']) 
+            ->name('supplies.scanner.find');
+        Route::post('/supplies/scanner/process',[SupplyController::class, 'processScannerMovement'])
+            ->name('supplies.scanner.process');
         /*
         |--------------------------------------------------------------------------
         | Módulo de dispositivos

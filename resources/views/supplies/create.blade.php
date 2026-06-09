@@ -98,6 +98,40 @@
                             </p>
                         @enderror
                     </div>
+                    {{-- Código de barras --}}
+                    <div>
+
+                        <label class="
+                            block mb-2
+                            text-sm font-semibold
+                            text-slate-300
+                        ">
+                            Código de barras
+                        </label>
+
+                        <input
+                            type="text"
+                            name="barcode"
+                            value="{{ old('barcode') }}"
+                            class="
+                                w-full rounded-lg
+                                bg-gray-800
+                                border border-gray-700
+                                text-white
+                                placeholder-gray-400
+                                focus:border-blue-500
+                                focus:ring-blue-500
+                            "
+                            placeholder="Escanea o ingresa el código"
+                        >
+
+                        @error('barcode')
+                            <p class="text-red-400 text-sm mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
+
+                    </div>
 
                     {{-- Tipo --}}
                     <div>

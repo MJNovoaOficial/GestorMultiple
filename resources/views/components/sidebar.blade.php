@@ -280,6 +280,19 @@
             </a>
 
             <a
+                href="{{ route('supplies.scanner') }}"
+                class="
+                    block px-4 py-2 rounded-xl
+                    text-sm text-gray-300
+                    hover:bg-[#1E293B]
+                    hover:text-white
+                    transition-all duration-200
+                "
+            >
+                Movimiento por Escáner
+            </a>
+
+            <a
                 href="{{ route('supplies.create') }}"
                 class="
                     block px-4 py-2 rounded-xl

@@ -51,18 +51,11 @@ class SupplyController extends Controller
         );
     }
     
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('supplies.create');
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -76,6 +69,8 @@ class SupplyController extends Controller
             'quantity' => 'required|integer|min:0',
 
             'minimum_stock' => 'required|integer|min:0',
+
+            'barcode' => 'nullable|string|max:100|unique:supplies,barcode',
 
         ]);
 
@@ -210,30 +205,6 @@ class SupplyController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Supply $supply)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Supply $supply)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Supply $supply)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Supply $supply)
@@ -276,5 +247,120 @@ class SupplyController extends Controller
             'success',
             'Suministro eliminado correctamente.'
         );
+    }
+
+    public function scanner()
+    {
+        return view('supplies.scanner');
+    }
+
+    public function findByBarcode(Request $request)
+    {
+        $request->validate([
+            'barcode' => 'required'
+        ]);
+
+        $supply = Supply::where(
+            'barcode',
+            $request->barcode
+        )->first();
+
+        if (!$supply) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Suministro no encontrado.'
+            ]);
+
+        }
+
+        return response()->json([
+            'success' => true,
+            'supply' => $supply
+        ]);
+    }
+
+    public function processScannerMovement(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:add,remove',
+            'items' => 'required|array|min:1',
+        ]);
+
+        foreach ($request->items as $item) {
+
+            $supply = Supply::find($item['id']);
+
+            if (!$supply) {
+                continue;
+            }
+
+            $quantity = (int) $item['quantity'];
+
+            $oldQuantity = $supply->quantity;
+
+            if ($request->type === 'add') {
+
+                $supply->increment(
+                    'quantity',
+                    $quantity
+                );
+
+            } else {
+
+                if ($quantity > $supply->quantity) {
+
+                    return response()->json([
+                        'success' => false,
+                        'message' =>
+                            "No hay suficiente stock para {$supply->supply_type}"
+                    ], 422);
+
+                }
+
+                $supply->decrement(
+                    'quantity',
+                    $quantity
+                );
+            }
+
+            $newQuantity = $supply->fresh()->quantity;
+
+            SupplyMovement::create([
+
+                'supply_id' => $supply->id,
+
+                'user_id' => auth()->id(),
+
+                'type' => $request->type,
+
+                'quantity' => $quantity,
+
+                'old_quantity' => $oldQuantity,
+
+                'new_quantity' => $newQuantity,
+
+            ]);
+        }
+
+        AuditLog::create([
+
+            'user_id' => auth()->id(),
+
+            'action' =>
+                $request->type === 'add'
+                    ? 'SCANNER_STOCK_AGREGADO'
+                    : 'SCANNER_STOCK_DESCONTADO',
+
+            'description' =>
+                'Movimiento realizado mediante escáner',
+
+            'ip_address' => request()->ip(),
+
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
     }
 }
