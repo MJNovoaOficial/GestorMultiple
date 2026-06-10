@@ -329,7 +329,6 @@
                                 </td>
 
                                 <td class="
-                                    whitespace-nowrap
                                     px-6 py-4
                                     text-sm
                                     font-medium
@@ -363,7 +362,6 @@
                                 </td>
 
                                 <td class="
-                                    whitespace-nowrap
                                     px-6 py-4
                                     text-sm
                                     text-slate-700
@@ -373,7 +371,6 @@
                                 </td>
 
                                 <td class="
-                                    whitespace-nowrap
                                     px-6 py-4
                                     text-sm
                                     text-slate-700
@@ -393,7 +390,6 @@
                                 </td>
 
                                 <td class="
-                                    whitespace-nowrap
                                     px-6 py-4
                                     text-sm
                                     text-slate-700
@@ -403,7 +399,6 @@
                                 </td>
 
                                 <td class="
-                                    whitespace-nowrap
                                     px-6 py-4
                                     text-sm
                                     text-slate-700
@@ -413,7 +408,6 @@
                                 </td>
 
                                 <td class="
-                                    whitespace-nowrap
                                     px-6 py-4
                                     text-sm
                                     text-slate-700
@@ -423,7 +417,6 @@
                                 </td>
 
                                 <td class="
-                                    whitespace-nowrap
                                     px-6 py-4
                                     text-sm
                                     text-slate-700
@@ -433,7 +426,6 @@
                                 </td>
                                 
                                 <td class="
-                                    whitespace-nowrap
                                     px-6 py-4
                                     text-sm
                                     text-slate-700
