@@ -116,7 +116,7 @@
     @endif
 
     <div class="pb-8">
-        <div class="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full px-4 sm:px-6 lg:px-8">
             <div class="
                 overflow-x-auto
                 overflow-y-visible
@@ -191,12 +191,12 @@
                     id="table-scroll"
                     class="
                         w-full
-                        overflow-x-scroll
+                        overflow-x-auto
                         overflow-y-auto
                         max-h-[70vh]
                     "
                 >
-                    <table class="min-w-[1800px] w-full">
+                    <table class="min-w-max w-full">
                         <thead class="bg-slate-100 dark:bg-slate-900">
                             <tr>
                                 <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
