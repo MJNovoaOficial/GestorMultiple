@@ -77,7 +77,7 @@ class EmployeePhoneController extends Controller
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
-        ]);
+        ]); 
 
         $import = new EmployeePhonesImport();
 
@@ -87,8 +87,8 @@ class EmployeePhoneController extends Controller
 
         dd([
             'pathname' => $file->getPathname(),
-            'realpath' => $file->getRealPath(),
-            'tmp_name' => $file->getFilename(),
+            'exists' => file_exists($file->getPathname()),
+            'realpath_php' => realpath($file->getPathname()),
         ]);
 
         Excel::import(
