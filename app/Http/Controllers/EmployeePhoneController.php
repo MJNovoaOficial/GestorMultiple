@@ -83,9 +83,9 @@ class EmployeePhoneController extends Controller
         //Excel::import($import, $request->file('file'));
 
         dd(
-            $request->hasFile('file'),
-            $request->file('file'),
-            $request->file('file')?->getRealPath()
+            $file->getPathname(),
+            file_exists($file->getPathname()),
+            is_readable($file->getPathname())
         );
 
         AuditLog::create([
