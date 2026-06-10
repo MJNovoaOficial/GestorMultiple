@@ -117,8 +117,6 @@
 
     <div class="pb-8">
         <div class="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
-            {{-- TABLA --}}
-
             <div class="
                 overflow-x-auto
                 overflow-y-visible
@@ -191,15 +189,15 @@
                 {{-- TABLE --}}
                 <div
                     id="table-scroll"
-
                     class="
-                        overflow-x-auto
+                        w-full
+                        overflow-x-scroll
                         overflow-y-auto
                         max-h-[70vh]
                     "
                 >
                     <table
-                        class="w-full"
+                        class="min-w-[2400px]"
                     >
                         <thead class="bg-slate-100 dark:bg-slate-900">
                             <tr>
@@ -213,6 +211,14 @@
 
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Nombre
+                                </th>
+                                
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                    RUT
+                                </th>
+                                
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                    Código
                                 </th>
 
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
@@ -233,6 +239,18 @@
 
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Área
+                                </th>
+                                
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                    Empresa
+                                </th>
+                                
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                    Correo
+                                </th>
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                    Observaciones
                                 </th>
 
                                 <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
@@ -326,6 +344,28 @@
                                     whitespace-nowrap
                                     px-6 py-4
                                     text-sm
+                                    font-medium
+                                    text-slate-900
+                                    dark:text-white
+                                ">
+                                    {{ $device->rut }}
+                                </td>
+
+                                <td class="
+                                    whitespace-nowrap
+                                    px-6 py-4
+                                    text-sm
+                                    font-medium
+                                    text-slate-900
+                                    dark:text-white
+                                ">
+                                    {{ $device->vendor_code }}
+                                </td>
+
+                                <td class="
+                                    whitespace-nowrap
+                                    px-6 py-4
+                                    text-sm
                                     text-slate-700
                                     dark:text-slate-300
                                 ">
@@ -370,6 +410,36 @@
                                     dark:text-slate-300
                                 ">
                                     {{ $device->department ?? '—' }}
+                                </td>
+
+                                <td class="
+                                    whitespace-nowrap
+                                    px-6 py-4
+                                    text-sm
+                                    text-slate-700
+                                    dark:text-slate-300
+                                ">
+                                    {{ $device->company_name }}
+                                </td>
+
+                                <td class="
+                                    whitespace-nowrap
+                                    px-6 py-4
+                                    text-sm
+                                    text-slate-700
+                                    dark:text-slate-300
+                                ">
+                                    {{ $device->email}}
+                                </td>
+                                
+                                <td class="
+                                    whitespace-nowrap
+                                    px-6 py-4
+                                    text-sm
+                                    text-slate-700
+                                    dark:text-slate-300
+                                ">
+                                    {{ $device->observations ?? '—' }}
                                 </td>
 
                                 <td class="

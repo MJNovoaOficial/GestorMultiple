@@ -169,7 +169,9 @@ class EmployeePhoneController extends Controller
             '*.required' => 'Este campo es obligatorio.',
 
             // CUSTOM
-
+            'imei.unique' => 
+                'Ya existe un dispositivo registrado con este IMEI.',
+            
             'phone_number.regex' =>
                 'El número debe contener exactamente 9 dígitos y comenzar con 9.',
 
