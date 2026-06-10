@@ -85,12 +85,18 @@ class EmployeePhoneController extends Controller
         
         $file = $request->file('file');
 
-        dd([
-            'pathname' => $file->getPathname(),
-            'exists' => file_exists($file->getPathname()),
-            'realpath_php' => realpath($file->getPathname()),
-        ]);
+        $origen = $file->getPathname();
 
+        $destino = storage_path('app/import-test.xlsx');
+
+        $resultado = copy($origen, $destino);
+
+        dd([
+            'copy' => $resultado,
+            'destino_existe' => file_exists($destino),
+            'destino' => $destino,
+        ]);
+        
         Excel::import(
             $import,
             storage_path('app/private/' . $path)
