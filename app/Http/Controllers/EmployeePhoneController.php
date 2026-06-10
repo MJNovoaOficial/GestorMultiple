@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\EmployeePhone;
 use App\Models\AuditLog;
 use App\Rules\ValidRut;
+use Illuminate\Support\Facades\Storage;
 
 class EmployeePhoneController extends Controller
 {
@@ -77,6 +78,12 @@ class EmployeePhoneController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]);
+  
+        dd(
+            env('FILESYSTEM_DISK'),
+            config('filesystems.default'),
+            array_keys(config('filesystems.disks'))
+        );
 
         $import = new EmployeePhonesImport();
 
@@ -85,12 +92,6 @@ class EmployeePhoneController extends Controller
 
         $file = $request->file('file');
 
-        $path = $file->storeAs(
-            'imports',
-            $file->getClientOriginalName()
-        );
-
-        dd(storage_path('app/private/' . $path));
 
         Excel::import(
             $import,
