@@ -427,7 +427,7 @@
                                     break-all
                                     max-w-[280px]
                                 ">
-                                    {{ $device->email}}
+                                    {{ $device->email ?? 'No tiene'}}
                                 </td>
                                 
                                 <td class="
