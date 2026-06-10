@@ -78,29 +78,24 @@ class EmployeePhoneController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]); 
-
+        
         $import = new EmployeePhonesImport();
 
-        //Excel::import($import, $request->file('file'));
-        
         $file = $request->file('file');
 
-        $origen = $file->getPathname();
-
-        $destino = storage_path('app/import-test.xlsx');
-
-        $resultado = copy($origen, $destino);
-
-        dd([
-            'copy' => $resultado,
-            'destino_existe' => file_exists($destino),
-            'destino' => $destino,
-        ]);
-        
-        Excel::import(
-            $import,
-            storage_path('app/private/' . $path)
+        $tempFile = storage_path(
+            'app/imports/' . uniqid() . '.xlsx'
         );
+
+        if (!is_dir(dirname($tempFile))) {
+            mkdir(dirname($tempFile), 0777, true);
+        }
+
+        copy($file->getPathname(), $tempFile);
+
+        Excel::import($import, $tempFile);
+
+        unlink($tempFile);
 
         AuditLog::create([
             'user_id' => auth()->id(),
