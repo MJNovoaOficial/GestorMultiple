@@ -20,9 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (DB::getDriverName() === 'sqlsrv') {
-            DB::statement("SET LANGUAGE Spanish");
-            DB::statement("SET DATEFORMAT ymd");
-        }
+        //
     }
 }

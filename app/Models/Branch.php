@@ -11,8 +11,6 @@ class Branch extends Model
         'name',
         'city',
     ];
-
-    protected $dateFormat = 'Y-m-d H:i:s';
     
     public function radioFrequencies()
     {
