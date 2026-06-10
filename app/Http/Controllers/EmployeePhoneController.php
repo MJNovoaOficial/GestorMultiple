@@ -80,7 +80,13 @@ class EmployeePhoneController extends Controller
 
         $import = new EmployeePhonesImport();
 
-        Excel::import($import, $request->file('file'));
+        //Excel::import($import, $request->file('file'));
+
+        dd(
+            $request->hasFile('file'),
+            $request->file('file'),
+            $request->file('file')?->getRealPath()
+        );
 
         AuditLog::create([
             'user_id' => auth()->id(),
