@@ -39,9 +39,14 @@ class IpAddressController extends Controller
             );
 
         }
-        
+        //SUBSTRING_INDEX(ip_address, '.', 3) as subnet --> reemplazar para my sql, elimina la línea left y reemplazalo por esto.
+
+        //Version SQL SERVER
         $subnets = IpAddress::selectRaw("
-                SUBSTRING_INDEX(ip_address, '.', 3) as subnet
+                LEFT(
+                    ip_address,
+                    LEN(ip_address) - CHARINDEX('.', REVERSE(ip_address))
+                ) as subnet
             ")
             ->when($request->branch_id, function ($q) use ($request) {
 
@@ -51,13 +56,21 @@ class IpAddressController extends Controller
             ->distinct()
             ->orderBy('subnet')
             ->pluck('subnet');
-
-
+        /* Esta es la versión para MYSQL
         $ipAddresses = $query
             ->orderByRaw('INET_ATON(ip_address)')
             ->get();
-
-
+        */
+        //Esta es la versión para SQL Server
+        $ipAddresses = $query
+            ->orderByRaw("
+                CAST(PARSENAME(ip_address, 4) AS BIGINT),
+                CAST(PARSENAME(ip_address, 3) AS BIGINT),
+                CAST(PARSENAME(ip_address, 2) AS BIGINT),
+                CAST(PARSENAME(ip_address, 1) AS BIGINT)
+            ")
+            ->get();
+        
         $departments = Department::orderBy('name')->get();
 
         $deviceTypes = DeviceType::orderBy('name')->get();
