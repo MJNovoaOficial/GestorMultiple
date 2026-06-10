@@ -593,7 +593,7 @@
             font-medium
             text-slate-300
         ">
-            Correo <span class="text-red-400">*</span>
+            Correo
         </label>
 
         <input

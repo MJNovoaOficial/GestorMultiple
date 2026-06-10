@@ -158,7 +158,7 @@ class EmployeePhoneController extends Controller
                 new ValidRut
             ],
 
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
 
             'observations' => 'nullable|string',
 
@@ -255,7 +255,7 @@ class EmployeePhoneController extends Controller
                 new ValidRut
             ],
 
-            'email' => 'required|email|max:255',
+            'email' => 'nullable|email|max:255',
 
             'status' => 'required|in:active,returned,blocked',
 

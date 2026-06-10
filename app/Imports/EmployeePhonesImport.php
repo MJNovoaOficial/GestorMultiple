@@ -34,7 +34,11 @@ class EmployeePhonesImport implements ToModel, WithHeadingRow
             $numero = substr($numero, 2);
         }
 
-        $email = trim(strtolower((string) ($row['correo'] ?? '')));
+        $email = trim(
+            strtolower(
+                (string) ($row['correo'] ?? '')
+            )
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -53,8 +57,8 @@ class EmployeePhonesImport implements ToModel, WithHeadingRow
             empty(trim((string) ($row['departamento'] ?? ''))) ||
             empty(trim((string) ($row['codigo'] ?? ''))) ||
             empty(trim((string) ($row['nombre_empresa'] ?? ''))) ||
-            empty(trim((string) ($row['rut'] ?? ''))) ||
-            empty($email)
+            empty(trim((string) ($row['rut'] ?? ''))) 
+            
         ) {
 
             $this->skipped++;
@@ -68,8 +72,10 @@ class EmployeePhonesImport implements ToModel, WithHeadingRow
         |--------------------------------------------------------------------------
         */
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
+        if (
+            !empty($email) &&
+            !filter_var($email, FILTER_VALIDATE_EMAIL)
+        ) {
             $this->skipped++;
 
             return null;

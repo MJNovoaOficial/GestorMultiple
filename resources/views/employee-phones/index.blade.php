@@ -425,7 +425,7 @@
                                     text-slate-700
                                     dark:text-slate-300
                                     break-all
-                                    max-w-[220px]
+                                    max-w-[280px]
                                 ">
                                     {{ $device->email}}
                                 </td>
@@ -882,7 +882,7 @@
                     </div>
                     <div>
                         <label class="block mb-2 text-sm text-gray-300">
-                            Correo Electrónico <span class="text-red-400">*</span>
+                            Correo Electrónico 
                         </label>
                         <input
                             type="email"
