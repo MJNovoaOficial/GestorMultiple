@@ -81,6 +81,8 @@ class EmployeePhoneController extends Controller
         $import = new EmployeePhonesImport();
 
         //Excel::import($import, $request->file('file'));
+        
+        $file = $request->file('file');
 
         dd(
             $file->getPathname(),
