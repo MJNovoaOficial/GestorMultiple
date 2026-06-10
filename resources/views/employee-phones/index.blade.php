@@ -116,7 +116,7 @@
     @endif
 
     <div class="pb-8">
-        <div class="w-full max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
             {{-- TABLA --}}
 
             <div class="
@@ -630,16 +630,17 @@
                             @endforelse
                         </tbody>
                     </table>
+
+                    {{-- PAGINATION --}}
+                    <div class="
+                        p-5
+                        border-t
+                        border-slate-200
+                        dark:border-slate-800
+                    ">
+                        {{ $devices->links() }}
+                    </div>
                 </div>
-            </div>
-                {{-- PAGINATION --}}
-            <div class="
-                p-5
-                border-t
-                border-slate-200
-                dark:border-slate-800
-            ">
-                {{ $devices->links() }}
             </div>
         </div>
     </div>
