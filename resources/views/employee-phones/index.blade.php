@@ -196,64 +196,62 @@
                         max-h-[70vh]
                     "
                 >
-                    <table
-                        class="min-w-[2400px]"
-                    >
+                    <table class="min-w-[1800px] w-full">
                         <thead class="bg-slate-100 dark:bg-slate-900">
                             <tr>
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Acciones
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Número
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Nombre
                                 </th>
                                 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     RUT
                                 </th>
                                 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Código
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Modelo
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Fecha Entrega
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     IMEI
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Cargo
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Área
                                 </th>
                                 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Empresa
                                 </th>
                                 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Correo
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Observaciones
                                 </th>
 
-                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
+                                <th class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider">
                                     Estado
                                 </th>
                             </tr>
@@ -269,7 +267,7 @@
                                 transition
                             ">
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     whitespace-nowrap
                                 ">
 
@@ -319,7 +317,7 @@
 
                                 <td class="
                                     whitespace-nowrap
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     font-medium
                                     text-slate-900
@@ -329,11 +327,12 @@
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     font-medium
                                     text-slate-900
                                     dark:text-white
+                                    max-w-[220px]
                                 ">
                                     {{ $device->first_name }}
                                     {{ $device->last_name }}
@@ -341,7 +340,7 @@
 
                                 <td class="
                                     whitespace-nowrap
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     font-medium
                                     text-slate-900
@@ -352,7 +351,7 @@
 
                                 <td class="
                                     whitespace-nowrap
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     font-medium
                                     text-slate-900
@@ -362,7 +361,7 @@
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     text-slate-700
                                     dark:text-slate-300
@@ -371,7 +370,8 @@
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
+                                    whitespace-nowrap
+                                    px-3 py-3
                                     text-sm
                                     text-slate-700
                                     dark:text-slate-300
@@ -381,7 +381,7 @@
 
                                 <td class="
                                     whitespace-nowrap
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     text-slate-700
                                     dark:text-slate-300
@@ -390,52 +390,58 @@
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     text-slate-700
                                     dark:text-slate-300
+                                    max-w-[140px]
                                 ">
                                     {{ $device->position ?? '—' }}
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     text-slate-700
                                     dark:text-slate-300
+                                    max-w-[180px]
                                 ">
                                     {{ $device->department ?? '—' }}
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     text-slate-700
                                     dark:text-slate-300
+                                    max-w-[220px]
                                 ">
                                     {{ $device->company_name }}
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     text-slate-700
                                     dark:text-slate-300
+                                    break-all
+                                    max-w-[220px]
                                 ">
                                     {{ $device->email}}
                                 </td>
                                 
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     text-sm
                                     text-slate-700
                                     dark:text-slate-300
+                                    max-w-[320px]
                                 ">
                                     {{ $device->observations ?? '—' }}
                                 </td>
 
                                 <td class="
-                                    px-6 py-4
+                                    px-3 py-3
                                     whitespace-nowrap
                                     text-center
                                 ">
@@ -493,7 +499,7 @@
 
                             <tr>
                                 <td
-                                    colspan="9"
+                                    colspan="14"
                                     class="
                                         px-6 py-10
                                         whitespace-nowrap
