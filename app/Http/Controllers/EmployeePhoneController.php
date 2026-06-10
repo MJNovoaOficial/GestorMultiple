@@ -85,17 +85,16 @@ class EmployeePhoneController extends Controller
 
         $file = $request->file('file');
 
-        $tempDir = storage_path('framework/cache/laravel-excel');
-
-        dd(
-            $tempDir,
-            file_exists($tempDir),
-            is_dir($tempDir)
+        $path = $file->storeAs(
+            'imports',
+            $file->getClientOriginalName()
         );
+
+        dd(storage_path('app/private/' . $path));
 
         Excel::import(
             $import,
-            $file->getPathname()
+            storage_path('app/private/' . $path)
         );
 
         AuditLog::create([
