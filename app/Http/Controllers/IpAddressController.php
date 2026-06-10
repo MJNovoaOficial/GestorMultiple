@@ -69,7 +69,7 @@ class IpAddressController extends Controller
                 CAST(PARSENAME(ip_address, 2) AS BIGINT),
                 CAST(PARSENAME(ip_address, 1) AS BIGINT)
             ")
-            ->get();
+            ->paginate(254);
         
         $departments = Department::orderBy('name')->get();
 
