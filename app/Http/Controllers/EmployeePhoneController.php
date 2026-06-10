@@ -78,20 +78,18 @@ class EmployeePhoneController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]);
-  
-        dd(
-            env('FILESYSTEM_DISK'),
-            config('filesystems.default'),
-            array_keys(config('filesystems.disks'))
-        );
 
         $import = new EmployeePhonesImport();
 
         //Excel::import($import, $request->file('file'));
         
-
         $file = $request->file('file');
 
+        dd([
+            'pathname' => $file->getPathname(),
+            'realpath' => $file->getRealPath(),
+            'tmp_name' => $file->getFilename(),
+        ]);
 
         Excel::import(
             $import,
