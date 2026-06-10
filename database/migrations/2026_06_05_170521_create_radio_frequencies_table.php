@@ -39,7 +39,7 @@ return new class extends Migration
 
             $table->boolean('warranty')->default(false);
 
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('GETDATE()'));
         });
     }
 

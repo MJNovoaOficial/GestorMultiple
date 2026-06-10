@@ -40,7 +40,7 @@ return new class extends Migration
 
             $table->text('description')->nullable();
 
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('GETDATE()'));
         });
     }
 

@@ -33,7 +33,7 @@ return new class extends Migration
 
             $table->integer('new_quantity');
 
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('GETDATE()'));
 
         });
     }

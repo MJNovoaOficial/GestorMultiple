@@ -14,7 +14,7 @@ return new class extends Migration
 
             $table->string('name')->unique();
 
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('GETDATE()'));
 
         });
     }

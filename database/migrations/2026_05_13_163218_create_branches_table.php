@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('city')->nullable();
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('GETDATE()'));
         });
     }
 

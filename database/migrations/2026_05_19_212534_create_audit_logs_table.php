@@ -36,7 +36,7 @@ return new class extends Migration
             $table->text('user_agent')
                 ->nullable();
 
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('GETDATE()'));
 
         });
     }

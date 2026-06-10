@@ -34,7 +34,7 @@ return new class extends Migration
                 ->constrained('users')
                 ->nullOnDelete();
 
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('GETDATE()'));
         });
     }
 

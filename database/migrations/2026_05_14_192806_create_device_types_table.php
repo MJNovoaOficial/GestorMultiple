@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('device_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->timestamps();
+            $table->dateTime('created_at')->default(DB::raw('GETDATE()'));
         });
     }
 
