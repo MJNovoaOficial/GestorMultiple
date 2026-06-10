@@ -473,7 +473,7 @@
                                     text-slate-700
                                     dark:text-slate-300
                                 ">
-                                    {{ \Carbon\Carbon::parse($device->delivery_date)->format('d/m/Y') }}
+                                    {{ \Carbon\Carbon::parse($device->delivery_date)}}
                                 </td>
                                     
                                 <td class="

@@ -76,7 +76,7 @@
 
                             {{-- Creado --}}
                             <td class="px-6 py-4 text-gray-300 text-center">
-                                {{ $ipStatus->created_at->format('d/m/Y') }}
+                                {{ $ipStatus->created_at
                             </td>
 
                             {{-- Actualizado --}}
@@ -90,7 +90,7 @@
 
                                 @else
 
-                                    {{ $ipStatus->updated_at->format('d/m/Y') }}
+                                    {{ $ipStatus->updated_at }}
 
                                 @endif
 

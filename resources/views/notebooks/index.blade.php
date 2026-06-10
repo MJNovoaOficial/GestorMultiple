@@ -450,7 +450,7 @@
                                 @elseif($notebook->status === 'retired')
                                     Dado de baja
                                 @else
-                                    {{ \Carbon\Carbon::parse($notebook->delivery_date)->format('d/m/Y') }}
+                                    {{ \Carbon\Carbon::parse($notebook->delivery_date) }}
                                 @endif
                             </td>
                                     

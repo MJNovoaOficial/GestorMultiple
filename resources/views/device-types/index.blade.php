@@ -58,7 +58,7 @@
                             </td>
 
                             <td class="px-6 py-4 text-gray-300 text-center">
-                                {{ $deviceType->created_at->format('d/m/Y') }}
+                                {{ $deviceType->created_at }}
                             </td>
 
                             <td class="px-6 py-4 text-gray-300 text-center">
@@ -67,7 +67,7 @@
                                         Sin actualización
                                     </span>
                                 @else
-                                    {{ $deviceType->updated_at->format('d/m/Y') }}
+                                    {{ $deviceType->updated_at }}
                                 @endif
                             </td>
 
