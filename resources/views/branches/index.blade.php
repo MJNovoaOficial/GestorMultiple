@@ -46,7 +46,7 @@
                         </td>
 
                         <td class="p-4 text-center">
-                            {{ $branch->created_at->format('d/m/Y') }}
+                            {{ $branch->created_at }}
                         </td>
 
                         <td class="p-4 text-center">
@@ -55,7 +55,7 @@
                                 Sin actualización
                             </span>
                             @else
-                                {{ $branch->updated_at->format('d/m/Y') }}
+                                {{ $branch->updated_at }}
                             @endif
                         </td>    
                         <td class="px-6 py-4 text-center">
