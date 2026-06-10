@@ -76,7 +76,7 @@
 
                             {{-- Creado --}}
                             <td class="px-6 py-4 text-gray-300 text-center">
-                                {{ $ipStatus->created_at
+                                {{ $ipStatus->created_at }}
                             </td>
 
                             {{-- Actualizado --}}
