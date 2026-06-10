@@ -201,176 +201,41 @@
                     <table
                         class="w-full"
                     >
-                        <thead class="
-                            bg-slate-100
-                            dark:bg-slate-900
-                        ">
+                        <thead class="bg-slate-100 dark:bg-slate-900">
                             <tr>
-                                <th class="
-                                    px-6 py-4
-                                    text-center
-                                    text-xs
-                                    font-bold
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                    whitespace-nowrap
-                                ">
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Acciones
                                 </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    whitespace-nowrap
-                                    text-xs
-                                    font-bold
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500">
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Número
                                 </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                    ">
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Nombre
                                 </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    whitespace-nowrap
-                                    font-bold
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Modelo
                                 </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    uppercase
-                                    whitespace-nowrap
-                                    tracking-wider
-                                    text-slate-500
-                                ">
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Fecha Entrega
                                 </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     IMEI
                                 </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Cargo
                                 </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    whitespace-nowrap
-                                    font-bold
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Área
                                 </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
-                                    Código Vendedor
-                                </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
-                                    Empresa
-                                </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
-                                    Rut
-                                </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
-                                    Correo
-                                </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-left
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
-                                    Observaciones
-                                </th>
-                                <th class="
-                                    px-6 py-4
-                                    text-center
-                                    text-xs
-                                    font-bold
-                                    whitespace-nowrap
-                                    uppercase
-                                    tracking-wider
-                                    text-slate-500
-                                ">
+
+                                <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">
                                     Estado
                                 </th>
                             </tr>
@@ -430,6 +295,7 @@
                                         >
                                             ✏️
                                         </button>
+
                                     </div>
                                 </td>
 
@@ -443,7 +309,7 @@
                                 ">
                                     {{ preg_replace('/^\+56/', '', $device->phone_number) }}
                                 </td>
-                                    
+
                                 <td class="
                                     whitespace-nowrap
                                     px-6 py-4
@@ -465,7 +331,7 @@
                                 ">
                                     {{ $device->phone_model }}
                                 </td>
-                                    
+
                                 <td class="
                                     whitespace-nowrap
                                     px-6 py-4
@@ -473,9 +339,9 @@
                                     text-slate-700
                                     dark:text-slate-300
                                 ">
-                                    {{ \Carbon\Carbon::parse($device->delivery_date)}}
+                                    {{ \Carbon\Carbon::parse($device->delivery_date)->format('d-m-Y') }}
                                 </td>
-                                    
+
                                 <td class="
                                     whitespace-nowrap
                                     px-6 py-4
@@ -483,7 +349,7 @@
                                     text-slate-700
                                     dark:text-slate-300
                                 ">
-                                    {{ $device->imei}}
+                                    {{ $device->imei }}
                                 </td>
 
                                 <td class="
@@ -507,60 +373,10 @@
                                 </td>
 
                                 <td class="
-                                    whitespace-nowrap
-                                    px-6 py-4
-                                    text-sm
-                                    text-slate-700
-                                    dark:text-slate-300
-                                ">
-                                    {{ $device->vendor_code ?? '—' }}
-                                </td>
-
-                                <td class="
-                                    whitespace-nowrap
-                                    px-6 py-4
-                                    text-sm
-                                    text-slate-700
-                                    dark:text-slate-300
-                                ">
-                                    {{ $device->company_name ?? '—' }}
-                                </td>
-
-                                <td class="
-                                    px-6 py-4
-                                    text-sm
-                                    text-slate-700
-                                    dark:text-slate-300
-                                    whitespace-nowrap
-                                ">
-                                    {{ $device->rut }}
-                                </td>
-                                    
-                                <td class="
-                                    px-6 py-4
-                                    text-sm
-                                    text-slate-700
-                                    whitespace-nowrap
-                                    dark:text-slate-300
-                                ">
-                                    {{ $device->email }}
-                                </td>
-                                    
-                                <td class="
-                                    px-6 py-4
-                                    text-sm
-                                    text-slate-700
-                                    whitespace-nowrap
-                                    dark:text-slate-300
-                                ">
-                                    {{ $device->observations ?? '—' }}
-                                </td>    
-
-                                <td class="
                                     px-6 py-4
                                     whitespace-nowrap
                                     text-center
-                                    ">
+                                ">
 
                                     @if($device->status === 'active')
                                         <span class="
@@ -606,27 +422,29 @@
                                         ">
                                             BLOQUEADO
                                         </span>
-
                                     @endif
+
                                 </td>
                             </tr>
+
                             @empty
+
                             <tr>
                                 <td
-                                    colspan="7"
+                                    colspan="9"
                                     class="
                                         px-6 py-10
                                         whitespace-nowrap
                                         text-center
-                                        justify-center
                                         text-sm
                                         text-slate-500
                                         dark:text-slate-400
-                                    ">
-                                        No existen registros.
+                                    "
+                                >
+                                    No existen registros.
                                 </td>
-
                             </tr>
+
                             @endforelse
                         </tbody>
                     </table>
