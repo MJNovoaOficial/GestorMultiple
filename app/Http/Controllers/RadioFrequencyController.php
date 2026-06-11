@@ -59,6 +59,7 @@ class RadioFrequencyController extends Controller
         }
 
         $radioFrequencies = $query
+            ->orderBy('number', 'asc')
             ->with('branch')
             ->latest()
             ->paginate(25)
