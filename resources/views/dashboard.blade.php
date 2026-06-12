@@ -175,16 +175,16 @@
             </p>
 
             <div class="stat-value text-warning">
-                {{ $totalDevices }}
+                {{ number_format($totalDevices) }}
             </div>
 
-            <div class="mt-2 small text-muted">
+            <div class="small text-muted text-center mt-2">
                 C: {{ $totalCellphones }}
-                |
+                &nbsp;•&nbsp;
                 N: {{ $totalNotebooks }}
-                |
+                &nbsp;•&nbsp;
                 RF: {{ $totalRadiofrequencies }}
-                |
+                &nbsp;•&nbsp;
                 DVR: {{ $totalDvrs }}
             </div>
         </div>
