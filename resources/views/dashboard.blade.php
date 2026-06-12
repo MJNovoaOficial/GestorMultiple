@@ -171,12 +171,19 @@
                 text-slate-700 dark:text-slate-300
                 uppercase
             ">
-                Cobertura passwords
+                Dispositivos Registrados
             </p>
 
-            <h2 class="mt-3 text-4xl font-bold text-amber-500 text-center">
-                {{ $passwordCoverage }}%
-            </h2>
+            <div class="stat-value text-warning">
+                {{ $totalDevices }}
+            </div>
+
+            <small class="text-muted">
+                C: {{ $totalCellphones }}
+                | N: {{ $totalNotebooks }}
+                | RF: {{ $totalRadiofrequencies }}
+                | DVR: {{ $totalDvrs }}
+            </small>
         </div>
 
         <div class="

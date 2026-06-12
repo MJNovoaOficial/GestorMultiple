@@ -52,8 +52,8 @@
             >
                 <div class="
                     text-slate-700
-                    dark:text-slate-400 text-center
-                    justify-center
+                    justify-center text-center
+                    dark:text-slate-400 
                     ">
                     Todas
                 </div>
