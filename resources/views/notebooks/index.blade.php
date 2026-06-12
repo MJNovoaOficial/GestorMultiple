@@ -468,6 +468,7 @@
                                     px-4 py-10
                                     text-center
                                     text-gray-500
+                                    justify-center
                             ">
                                 No hay notebooks registrados.
                             </td>
