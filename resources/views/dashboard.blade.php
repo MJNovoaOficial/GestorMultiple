@@ -5,12 +5,13 @@
             justify-content: center;
             gap: 20px;
             margin-top: 10px;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+            color: #94a3b8;
         }
 
         .device-breakdown i {
+            color: #60a5fa;
             margin-right: 5px;
-            color: #3b82f6;
         }
     </style>
 
