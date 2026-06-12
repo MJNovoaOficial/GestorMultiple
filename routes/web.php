@@ -18,6 +18,7 @@ use App\Http\Controllers\SupplyController;
 use App\Http\Controllers\EmployeePhoneController;
 use App\Http\Controllers\NotebookController;
 use App\Http\Controllers\RadioFrequencyController;
+use App\Http\Controllers\DvrController;
 
 Route::get('/', function () {
    
@@ -123,6 +124,10 @@ Route::middleware('auth')->group(function () {
             ->name('employee-phones.import');
         Route::resource('notebooks',NotebookController::class);
         Route::resource('radio-frequencies', RadioFrequencyController::class);
+        Route::resource('dvrs', DvrController::class);
+        Route::get('/dvrs/{dvr}/password',[DvrController::class, 'password']);
+        Route::patch('/dvrs/{dvr}/retire',[DvrController::class, 'retire'])
+            ->name('dvrs.retire');
 
         /*
         |--------------------------------------------------------------------------

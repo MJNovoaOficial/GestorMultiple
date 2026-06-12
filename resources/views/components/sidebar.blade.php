@@ -421,7 +421,24 @@
                 Radiofrecuencias
 
             </a>
+            <a
+                href="{{ route('dvrs.index') }}"
 
+                class="
+                    px-4 py-2
+                    rounded-lg
+
+                    text-sm
+
+                    hover:bg-slate-800/60
+
+                    transition
+                "
+            >
+
+                DVRs
+
+            </a>
         </div>
 
     </div>
