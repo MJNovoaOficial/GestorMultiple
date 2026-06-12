@@ -174,11 +174,11 @@
                 Dispositivos Registrados
             </p>
 
-            <div class="stat-value text-warning">
+            <div class="stat-value text-center text-blue-500 text-warning">
                 {{ number_format($totalDevices) }}
             </div>
 
-            <div class="small text-muted text-center mt-2">
+            <div class="small text-muted font-semibold text-center mt-2">
                 C: {{ $totalCellphones }}
                 &nbsp;•&nbsp;
                 N: {{ $totalNotebooks }}
