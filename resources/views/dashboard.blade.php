@@ -178,12 +178,15 @@
                 {{ $totalDevices }}
             </div>
 
-            <small class="text-muted">
+            <div class="mt-2 small text-muted">
                 C: {{ $totalCellphones }}
-                | N: {{ $totalNotebooks }}
-                | RF: {{ $totalRadiofrequencies }}
-                | DVR: {{ $totalDvrs }}
-            </small>
+                |
+                N: {{ $totalNotebooks }}
+                |
+                RF: {{ $totalRadiofrequencies }}
+                |
+                DVR: {{ $totalDvrs }}
+            </div>
         </div>
 
         <div class="
