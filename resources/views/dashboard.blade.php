@@ -174,7 +174,7 @@
                 Dispositivos Registrados
             </p>
 
-            <div class="stat-value text-center text-blue-500 text-warning">
+            <div class="stat-value text-center font-semibold text-blue-500 text-warning">
                 {{ number_format($totalDevices) }}
             </div>
 
