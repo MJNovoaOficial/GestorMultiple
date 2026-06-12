@@ -58,6 +58,7 @@
             >
                 <div class="
                     text-slate-700
+                    justify-center text-center
                     dark:text-slate-400 
                 ">
                     Todas
@@ -68,7 +69,7 @@
                     font-bold
                     text-blue-600
                     dark:text-blue-400
-                    text-center
+                    text-center justify-center
                 ">
                     {{ $totalRadioFrequencies }}
                 </div>
@@ -97,6 +98,7 @@
 
                     <div class="
                         text-slate-700
+                        justify-center text-center
                         dark:text-slate-400
                     ">
                         {{ $branch->name }}
@@ -107,7 +109,7 @@
                         font-bold
                         text-blue-600
                         dark:text-blue-400
-                        text-center
+                        text-center justify-center
                     ">
                         {{ $branch->radio_frequencies_count }}
                     </div>
@@ -928,78 +930,78 @@
             </form>
         </div>
     </div>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('search-input');
-        const searchForm = document.getElementById('search-form');
-        let timeout = null;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                searchForm.submit();
-            }, 1200);
-        });
-    });
-
-    const editButtons = document.querySelectorAll('.edit-device-btn');
-    const modal = document.getElementById('edit-modal');
-    const closeModal = document.getElementById('close-edit-modal');
-    const editForm = document.getElementById('edit-form');
-
-    editButtons.forEach(button => {
-
-        button.addEventListener('click', () => {
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
-            const id = button.dataset.id;
-
-            editForm.action = `/radio-frequencies/${id}`;
-
-            document.getElementById('edit-number').value =
-                button.dataset.number ?? '';
-
-            document.getElementById('edit-serial').value =
-                button.dataset.serial ?? '';
-
-            document.getElementById('edit-mac').value =
-                button.dataset.mac ?? '';
-
-            document.getElementById('edit-ip').value =
-                button.dataset.ip ?? '';
-
-            document.getElementById('edit-area').value =
-                button.dataset.area ?? '';
-
-            document.getElementById('edit-branch-id').value =
-                button.dataset.branchId ?? '';
-
-            document.getElementById('edit-type').value =
-                button.dataset.type ?? '';
-
-            document.getElementById('edit-status').value =
-                button.dataset.status ?? '';
-
-            document.getElementById('edit-blocked').checked =
-                button.dataset.blocked == 1;
-
-            document.getElementById('edit-warranty').checked =
-                button.dataset.warranty == 1;
-
-            document.getElementById('edit-observations').value =
-                button.dataset.observations ?? '';
-
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('search-input');
+            const searchForm = document.getElementById('search-form');
+            let timeout = null;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    searchForm.submit();
+                }, 1200);
+            });
         });
 
-        //cerramos el modal cuando hacemos click en la "X"
-        closeModal.addEventListener('click', () => {
+        const editButtons = document.querySelectorAll('.edit-device-btn');
+        const modal = document.getElementById('edit-modal');
+        const closeModal = document.getElementById('close-edit-modal');
+        const editForm = document.getElementById('edit-form');
 
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
+        editButtons.forEach(button => {
 
+            button.addEventListener('click', () => {
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                const id = button.dataset.id;
+
+                editForm.action = `/radio-frequencies/${id}`;
+
+                document.getElementById('edit-number').value =
+                    button.dataset.number ?? '';
+
+                document.getElementById('edit-serial').value =
+                    button.dataset.serial ?? '';
+
+                document.getElementById('edit-mac').value =
+                    button.dataset.mac ?? '';
+
+                document.getElementById('edit-ip').value =
+                    button.dataset.ip ?? '';
+
+                document.getElementById('edit-area').value =
+                    button.dataset.area ?? '';
+
+                document.getElementById('edit-branch-id').value =
+                    button.dataset.branchId ?? '';
+
+                document.getElementById('edit-type').value =
+                    button.dataset.type ?? '';
+
+                document.getElementById('edit-status').value =
+                    button.dataset.status ?? '';
+
+                document.getElementById('edit-blocked').checked =
+                    button.dataset.blocked == 1;
+
+                document.getElementById('edit-warranty').checked =
+                    button.dataset.warranty == 1;
+
+                document.getElementById('edit-observations').value =
+                    button.dataset.observations ?? '';
+
+            });
+
+            //cerramos el modal cuando hacemos click en la "X"
+            closeModal.addEventListener('click', () => {
+
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+
+            });
         });
-    });
 
-</script>
+    </script>
 </x-app-layout> 

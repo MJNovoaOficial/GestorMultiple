@@ -10,9 +10,7 @@ use App\Services\AuditService;
 
 class EmailCredentialController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+   
     public function index(Request $request)
     {
         $query = EmailCredential::query()
@@ -55,9 +53,6 @@ class EmailCredentialController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('passwords.create', [
@@ -65,9 +60,7 @@ class EmailCredentialController extends Controller
             'departments' => Department::all(),
         ]);
     }
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -155,17 +148,6 @@ class EmailCredentialController extends Controller
             );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(EmailCredential $password)
     {
         return view('passwords.edit', [
@@ -175,9 +157,6 @@ class EmailCredentialController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, EmailCredential $password)
     {
         $validated = $request->validate([
@@ -224,9 +203,6 @@ class EmailCredentialController extends Controller
             ->with('success', 'Credencial actualizada.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(EmailCredential $password)
     {
         AuditService::log(

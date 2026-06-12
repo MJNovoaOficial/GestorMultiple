@@ -9,9 +9,6 @@ use App\Models\AuditLog;
 
 class SupplyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     
     public function index(Request $request)
     {
@@ -204,9 +201,6 @@ class SupplyController extends Controller
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Supply $supply)
     {
         SupplyMovement::create([

@@ -19,9 +19,6 @@ class IpStatusController extends Controller
         return view('ip-statuses.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -39,26 +36,12 @@ class IpStatusController extends Controller
             ->with('success', 'Estado de IP creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(IpStatus $ipStatus)
     {
 
         return view('ip-statuses.edit', compact('ipStatus'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, IpStatus $ipStatus)
     {
         $request->validate([
@@ -74,10 +57,7 @@ class IpStatusController extends Controller
             ->route('ip-statuses.index')
             ->with('success', 'Estado de IP actualizado correctamente.');
     }
-
-    /**
-     * Remove the specified resource from storage.
-     */
+    
     public function destroy(IpStatus $ipStatus)
     {
         $ipStatus->delete();

@@ -10,9 +10,7 @@ use App\Models\AuditLog;
 
 class RadioFrequencyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index(Request $request)
     {
         $query = RadioFrequency::query();
@@ -88,9 +86,6 @@ class RadioFrequencyController extends Controller
         );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $branches = Branch::orderBy('name')->get();
@@ -101,9 +96,6 @@ class RadioFrequencyController extends Controller
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -195,24 +187,6 @@ class RadioFrequencyController extends Controller
             );
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(RadioFrequency $radioFrequency)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(RadioFrequency $radioFrequency)
-    {
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request,RadioFrequency $radioFrequency)
     {
         $validated = $request->validate([
@@ -309,11 +283,4 @@ class RadioFrequencyController extends Controller
             );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(RadioFrequency $radioFrequency)
-    {
-        //
-    }
 }

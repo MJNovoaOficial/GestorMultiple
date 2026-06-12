@@ -274,7 +274,6 @@ class NotebookController extends Controller
 
             $validated['delivery_date'] = null;
         }
-
         
         $notebook->update($validated);
 

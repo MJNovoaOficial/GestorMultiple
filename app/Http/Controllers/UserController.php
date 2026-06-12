@@ -9,9 +9,7 @@ use App\Services\AuditService;
 
 class UserController extends Controller
 {
-    /**
-     * Listado usuarios
-     */
+
     public function index(Request $request)
     {
         $status = $request->get('status', 'active');
@@ -46,9 +44,6 @@ class UserController extends Controller
         );
     }
 
-    /**
-     * Crear usuario
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -111,9 +106,6 @@ class UserController extends Controller
             );
     }
 
-    /**
-     * Deshabilitar usuario
-     */
     public function destroy(User $user)
     {
         // Evitar auto eliminación
@@ -151,9 +143,6 @@ class UserController extends Controller
             );
     }
 
-    /**
- * Actualizar usuario
- */
     public function update(Request $request, User $user)
     {
         // Evitar auto modificación peligrosa

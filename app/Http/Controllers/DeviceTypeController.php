@@ -19,9 +19,6 @@ class DeviceTypeController extends Controller
         return view('device-types.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -37,26 +34,12 @@ class DeviceTypeController extends Controller
             ->with('success', 'Tipo de dispositivo creado correctamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(DeviceType $deviceType)
     {
 
         return view('device-types.edit', compact('deviceType'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, DeviceType $deviceType)
     {
         $request->validate([
@@ -71,9 +54,6 @@ class DeviceTypeController extends Controller
             ->with('success', 'Tipo de dispositivo actualizado correctamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(DeviceType $deviceType)
     {
         $deviceType->delete();
