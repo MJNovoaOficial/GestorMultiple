@@ -1,20 +1,17 @@
-<aside class="
-    w-72
-
-    bg-[#020817]
-    text-white
-
-    h-screen
-
-    px-3 py-6 pt-4
-
-    sticky
-    top-0
-
-    overflow-y-auto
-    overflow-x-hidden
-">
-
+<aside
+    id="sidebar"
+    class="
+        w-72
+        bg-[#020817]
+        text-white
+        h-screen
+        px-3 py-6 pt-4
+        sticky
+        top-0
+        overflow-y-auto
+        overflow-x-hidden
+    "
+>
     {{-- Logo --}}
     <a
         href="{{ route('dashboard') }}"

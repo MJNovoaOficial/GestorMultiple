@@ -34,12 +34,15 @@
             <x-sidebar />
 
             {{-- Content --}}
-            <main class="
-                flex-1 p-6
-                bg-slate-100 dark:bg-[#0F172A]
-                text-slate-900 dark:text-white
-                transition-colors duration-300
-            ">
+            <main
+                id="mainContent"
+                class="
+                    flex-1 p-6
+                    bg-slate-100 dark:bg-[#0F172A]
+                    text-slate-900 dark:text-white
+                    transition-all duration-300
+                "
+            >
                 {{ $slot }}
             </main>
 

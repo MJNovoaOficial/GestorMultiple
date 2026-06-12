@@ -1,5 +1,25 @@
 <x-app-layout>
 
+    <div class="flex justify-end mb-4">
+
+        <button
+            id="toggleSidebarBtn"
+            type="button"
+            class="
+                px-4 py-2
+                rounded-xl
+                bg-slate-700
+                hover:bg-slate-600
+                text-white
+                flex items-center gap-2
+            "
+        >
+            <i class="bi bi-layout-sidebar"></i>
+            Menú
+        </button>
+
+    </div>
+
     <div class="max-w-5xl mx-auto">
 
         <div class="mb-8">
@@ -495,5 +515,43 @@
 
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const sidebar =
+                document.getElementById('sidebar');
+
+            const button =
+                document.getElementById('toggleSidebarBtn');
+
+            if (!sidebar || !button) {
+                return;
+            }
+
+            let hidden = false;
+
+            button.addEventListener('click', () => {
+
+                hidden = !hidden;
+
+                if (hidden) {
+
+                    sidebar.style.display = 'none';
+
+                    button.innerHTML =
+                        '<i class="bi bi-layout-sidebar"></i> Mostrar menú';
+
+                } else {
+
+                    sidebar.style.display = '';
+
+                    button.innerHTML =
+                        '<i class="bi bi-layout-sidebar"></i> Ocultar menú';
+
+                }
+
+            });
+
+        });
     </script>
 </x-app-layout>
