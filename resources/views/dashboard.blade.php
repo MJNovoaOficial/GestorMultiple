@@ -1,4 +1,18 @@
 <x-app-layout>
+    <style>
+        .device-breakdown {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .device-breakdown i {
+            margin-right: 5px;
+            color: #3b82f6;
+        }
+    </style>
 
     <div class="mb-6">
         <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
@@ -174,18 +188,15 @@
                 Dispositivos Registrados
             </p>
 
-            <div class="stat-value text-center font-semibold text-blue-500 p-6 text-warning">
+            <div class="device-total">
                 {{ number_format($totalDevices) }}
             </div>
 
-            <div class="small text-muted font-semibold text-center mt-2">
-                C: {{ $totalCellphones }}
-                &nbsp;•&nbsp;
-                N: {{ $totalNotebooks }}
-                &nbsp;•&nbsp;
-                RF: {{ $totalRadiofrequencies }}
-                &nbsp;•&nbsp;
-                DVR: {{ $totalDvrs }}
+            <div class="device-breakdown">
+                <span><i class="bi bi-phone"></i> C: {{ $totalCellphones }}</span>
+                <span><i class="bi bi-laptop"></i> N: {{ $totalNotebooks }}</span>
+                <span><i class="bi bi-broadcast"></i> RF: {{ $totalRadiofrequencies }}</span>
+                <span><i class="bi bi-camera-video"></i> DVR: {{ $totalDvrs }}</span>
             </div>
         </div>
 
