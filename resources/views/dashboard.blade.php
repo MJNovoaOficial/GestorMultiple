@@ -189,11 +189,7 @@
                 Dispositivos Registrados
             </p>
 
-            <div class="device-total text-sm text-center
-                font-semibold
-                tracking-wide
-                text-slate-700 dark:text-slate-300
-                uppercase">
+            <div class="mt-3 text-3xl font-bold text-blue-500 text-center">
                 {{ number_format($totalDevices) }}
             </div>
 
