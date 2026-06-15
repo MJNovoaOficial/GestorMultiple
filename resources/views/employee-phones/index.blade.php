@@ -432,7 +432,7 @@
                                 
                                 <td class="
                                     px-2 py-2
-                                    text-sm
+                                    text-sm text-center
                                     text-slate-700
                                     dark:text-slate-300
                                     max-w-[320px]
