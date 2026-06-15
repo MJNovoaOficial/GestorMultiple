@@ -169,9 +169,6 @@ class EmployeePhoneController extends Controller
             '*.required' => 'Este campo es obligatorio.',
 
             // CUSTOM
-            'imei.unique' => 
-                'Ya existe un dispositivo registrado con este IMEI.',
-            
             'phone_number.regex' =>
                 'El número debe contener exactamente 9 dígitos y comenzar con 9.',
 
@@ -180,18 +177,35 @@ class EmployeePhoneController extends Controller
 
         ]);
 
+        $existingDevice = EmployeePhone::where(
+            'imei',
+            $validated['imei']
+        )->first();
+
+        if ($existingDevice) {
+
+            $status = match ($existingDevice->status) {
+                'active' => 'Activo',
+                'inactive' => 'Inactivo',
+                'returned' => 'Devuelto',
+                default => $existingDevice->status,
+            };
+
+            return back()
+                ->withErrors([
+                    'imei' =>
+                        'Este IMEI ya está registrado. '
+                        . 'Titular: '
+                        . $existingDevice->first_name . ' '
+                        . $existingDevice->last_name
+                        . ' (' . $existingDevice->phone_number . '). '
+                        . 'Estado: ' . $status . '.'
+                ])
+                ->withInput();
+        }
+
         // Estado automático
         $validated['status'] = 'active';
-
-        //valida el número de teléfono
-        $request->validate([
-            'phone_number' => [
-                'required',
-                'regex:/^9\d{8}$/'
-            ],
-        ], [
-            'phone_number.regex' => 'El número debe contener exactamente 9 dígitos y comenzar con 9.',
-        ]);
         
         //valida el rut       
         if (!empty($validated['rut'])) {
@@ -204,7 +218,6 @@ class EmployeePhoneController extends Controller
 
             $validated['rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
-
         // Crear dispositivo
         $device = EmployeePhone::create($validated);
 
