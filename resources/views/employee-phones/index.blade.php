@@ -357,7 +357,7 @@
                                     text-slate-900
                                     dark:text-white
                                 ">
-                                    {{ $device->vendor_code }}
+                                    {{ $device->vendor_code ?? '-'}}
                                 </td>
 
                                 <td class="
