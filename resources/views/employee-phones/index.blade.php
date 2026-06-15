@@ -3,8 +3,8 @@
         rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
     >
-    <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-8">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="
                     text-3xl font-bold text-slate-700 dark:text-slate-200
