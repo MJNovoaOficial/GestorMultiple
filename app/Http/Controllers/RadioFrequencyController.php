@@ -58,7 +58,7 @@ class RadioFrequencyController extends Controller
 
         $radioFrequencies = $query
             ->with('branch')
-            ->orderByRaw('CAST(number AS UNSIGNED) ASC')
+            ->orderBy('number')
             ->paginate(25)
             ->withQueryString();
 
