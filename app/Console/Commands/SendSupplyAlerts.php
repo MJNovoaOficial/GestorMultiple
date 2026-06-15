@@ -15,7 +15,7 @@ class SendSupplyAlerts extends Command
      *
      * @var string
      */
-    protected $signature = 'app:send-supply-alerts';
+    protected $signature = 'supplies:alerts';
 
     /**
      * The console command description.
@@ -29,19 +29,44 @@ class SendSupplyAlerts extends Command
      */
     public function handle()
     {
-        $criticalSupplies = Supply::whereColumn(
+       $criticalSupplies = Supply::whereColumn(
             'quantity',
             '<=',
             'minimum_stock'
         )
         ->where('quantity', '>', 0)
+        ->where(function ($query) {
+
+            $query->whereNull(
+                'last_critical_alert_at'
+            )
+            ->orWhere(
+                'last_critical_alert_at',
+                '<=',
+                now()->subDays(3)
+            );
+
+        })
         ->get();
 
         $outSupplies = Supply::where(
             'quantity',
             '<=',
             0
-        )->get();
+        )
+        ->where(function ($query) {
+
+            $query->whereNull(
+                'last_out_alert_at'
+            )
+            ->orWhere(
+                'last_out_alert_at',
+                '<=',
+                now()->subDay()
+            );
+
+        })
+        ->get();
 
         if ($criticalSupplies->isNotEmpty()) {
 
@@ -53,6 +78,14 @@ class SendSupplyAlerts extends Command
                     $criticalSupplies
                 )
             );
+
+            foreach ($criticalSupplies as $supply) {
+
+                $supply->update([
+                    'last_critical_alert_at' => now()
+                ]);
+
+            }
 
         }
 
@@ -67,8 +100,13 @@ class SendSupplyAlerts extends Command
                 )
             );
 
-        }
+            foreach ($outSupplies as $supply) {
 
+                $supply->update([
+                    'last_out_alert_at' => now()
+                ]);
+            }
+        }
         $this->info('Alertas enviadas correctamente.');
     }
 }

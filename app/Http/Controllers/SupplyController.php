@@ -101,7 +101,9 @@ class SupplyController extends Controller
         );
 
         $supply->update([
-            'updated_by' => auth()->id()
+            'updated_by' => auth()->id(),
+            'last_critical_alert_at' => null,
+            'last_out_alert_at' => null,
         ]);
 
         SupplyMovement::create([
