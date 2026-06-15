@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Imports\EmployeePhonesImport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\EmployeePhonesImport;
+use App\Exports\EmployeePhonesExport;
 use App\Models\EmployeePhone;
 use App\Models\AuditLog;
 use App\Rules\ValidRut;
@@ -325,5 +326,13 @@ class EmployeePhoneController extends Controller
                 'success',
                 'Registro actualizado correctamente.'
             );
+    }
+
+    public function export()
+    {
+        return Excel::download(
+            new EmployeePhonesExport(),
+            'celulares-corporativos.xlsx'
+        );
     }
 }

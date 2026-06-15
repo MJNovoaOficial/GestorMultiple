@@ -122,6 +122,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('employee-phones',EmployeePhoneController::class);
         Route::post('/employee-phones/import',[EmployeePhoneController::class, 'import'])
             ->name('employee-phones.import');
+        Route::get('/employee-phones/export',[EmployeePhoneController::class, 'export'])
+            ->name('employee-phones.export');
         Route::resource('notebooks',NotebookController::class);
         Route::resource('radio-frequencies', RadioFrequencyController::class);
         Route::resource('dvrs', DvrController::class);

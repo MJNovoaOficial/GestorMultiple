@@ -19,6 +19,28 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
+                {{-- Exportar Excel --}}
+                <a href="{{ route('employee-phones.export') }}"
+                    class="
+                        inline-flex
+                        items-center
+                        gap-2
+
+                        px-4 py-2.5
+
+                        rounded-xl
+
+                        bg-indigo-600
+                        hover:bg-indigo-700
+
+                        text-white
+                        text-sm
+                        font-semibold
+
+                        transition"
+                >
+                    Exportar Excel
+                </a>
 
                 {{-- IMPORTAR EXCEL --}}
 
