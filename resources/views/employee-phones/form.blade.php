@@ -486,7 +486,7 @@
             font-medium
             text-slate-300
         ">
-            Código Vendedor <span class="text-red-400">*</span>
+            Código Vendedor
         </label>
 
         <input

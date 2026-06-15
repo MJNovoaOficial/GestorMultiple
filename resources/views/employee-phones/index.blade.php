@@ -813,7 +813,7 @@
 
                     <div>
                         <label class="block mb-2 text-sm text-gray-300">
-                            Código Vendedor <span class="text-red-400">*</span>
+                            Código Vendedor
                         </label>
                         <input
                             type="text"

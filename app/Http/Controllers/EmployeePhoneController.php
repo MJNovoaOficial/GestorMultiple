@@ -147,7 +147,7 @@ class EmployeePhoneController extends Controller
 
             'department' => 'required|string|max:255',
 
-            'vendor_code' => 'required|string|max:255',
+            'vendor_code' => 'nullable|string|max:255',
 
             'company_name' => 'required|string|max:255',
 
@@ -257,7 +257,7 @@ class EmployeePhoneController extends Controller
 
             'department' => 'required|string|max:255',
 
-            'vendor_code' => 'required|string|max:255',
+            'vendor_code' => 'nullable|string|max:255',
 
             'company_name' => 'required|string|max:255',
 
