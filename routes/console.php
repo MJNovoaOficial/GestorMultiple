@@ -10,5 +10,5 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command(
-    'app:send-supply-alerts'
+    'supplies:alerts'
 )->dailyAt('08:00');
