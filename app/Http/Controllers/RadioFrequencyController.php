@@ -7,6 +7,7 @@ use App\Models\RadioFrequency;
 use App\Exports\RadioFrequencyExport;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\AuditLog;
 
 class RadioFrequencyController extends Controller

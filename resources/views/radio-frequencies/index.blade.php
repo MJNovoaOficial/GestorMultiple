@@ -19,34 +19,36 @@
                     Listado de radiofrecuencias.
                 </p>
             </div>
-            <a
-                href="{{ route('radio-frequencies.export') }}"
-                class="
-                bg-slate-700
-                hover:bg-slate-800
-                text-white
-                px-5 py-3
-                rounded-2xl
-                transition
-                text-white
-                font-semibold"
-            >
-                Exportar Excel
-            </a>
-            <a
-                href="{{ route('radio-frequencies.create') }}"
-                class="
+            <div>
+                <a
+                    href="{{ route('radio-frequencies.export') }}"
+                    class="
+                    bg-slate-700
+                    hover:bg-slate-800
+                    text-white
                     px-5 py-3
                     rounded-2xl
-                    bg-green-600
-                    hover:bg-green-700
                     transition
                     text-white
-                    font-semibold
-                "
-            >
-                Nueva Radiofrecuencia
-            </a>
+                    font-semibold"
+                >
+                    Exportar Excel
+                </a>
+                <a
+                    href="{{ route('radio-frequencies.create') }}"
+                    class="
+                        px-5 py-3
+                        rounded-2xl
+                        bg-green-600
+                        hover:bg-green-700
+                        transition
+                        text-white
+                        font-semibold
+                    "
+                >
+                    Nueva Radiofrecuencia
+                </a>
+            </div>
         </div>
         {{-- CARDS SUCURSALES --}}
         <div class="
