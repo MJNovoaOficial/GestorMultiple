@@ -119,12 +119,12 @@ Route::middleware('auth')->group(function () {
         | Módulo de dispositivos
         |--------------------------------------------------------------------------
         */
-        Route::resource('employee-phones',EmployeePhoneController::class);
         Route::post('/employee-phones/import',[EmployeePhoneController::class, 'import'])
             ->name('employee-phones.import');
         Route::get('/employee-phones/export',[EmployeePhoneController::class, 'export'])
             ->name('employee-phones.export');
-        Route::resource('notebooks',NotebookController::class);
+        Route::resource('employee-phones',EmployeePhoneController::class);
+            Route::resource('notebooks',NotebookController::class);
         Route::resource('radio-frequencies', RadioFrequencyController::class);
         Route::resource('dvrs', DvrController::class);
         Route::get('/dvrs/{dvr}/password',[DvrController::class, 'password']);

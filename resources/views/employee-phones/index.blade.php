@@ -30,8 +30,8 @@
 
                         rounded-xl
 
-                        bg-emerald-600
-                        hover:bg-emerald-700
+                        bg-slate-600
+                        hover:bg-slate-700
 
                         text-white
                         text-sm
