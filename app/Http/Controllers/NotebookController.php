@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Exports\NotebookExport;
 use Illuminate\Validation\Rule;
 use App\Models\Notebook;
 use App\Models\AuditLog;
@@ -295,4 +295,19 @@ class NotebookController extends Controller
 
     }
 
+    public function export(Request $request)
+    {
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'export',
+            'description' => 'Exportó notebooks a Excel.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return Excel::download(
+            new NotebookExport(),
+            'notebooks-' . now()->format('Y-m-d-His') . '.xlsx'
+        );
+    }
 }

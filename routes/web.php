@@ -125,7 +125,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/employee-phones/export',[EmployeePhoneController::class, 'export'])
             ->name('employee-phones.export');
         Route::resource('employee-phones',EmployeePhoneController::class);
-            Route::resource('notebooks',NotebookController::class);
+        Route::get('/notebooks/export',[NotebookController::class, 'export'])
+            ->name('notebooks.export');
+        Route::resource('notebooks',NotebookController::class);
+        Route::get('/radio-frequencies/export',[RadioFrequencyController::class, 'export'])
+            ->name('radio-frequencies.export');
         Route::resource('radio-frequencies', RadioFrequencyController::class);
         Route::resource('dvrs', DvrController::class);
         Route::get('/dvrs/{dvr}/password',[DvrController::class, 'password']);

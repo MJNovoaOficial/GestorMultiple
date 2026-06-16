@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\RadioFrequency;
+use App\Exports\RadioFrequencyExport;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\AuditLog;
@@ -280,6 +281,22 @@ class RadioFrequencyController extends Controller
                 'success',
                 'Registro actualizado correctamente.'
             );
+    }
+
+    public function export(Request $request)
+    {
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'export',
+            'description' => 'Exportó Radiofrecuencias a Excel.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return Excel::download(
+            new RadioFrequencyExport(),
+            'radiofrecuencias-' . now()->format('Y-m-d-His') . '.xlsx'
+        );
     }
 
 }

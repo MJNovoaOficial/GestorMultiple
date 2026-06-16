@@ -18,6 +18,20 @@
                 </p>
             </div>
             <a
+                href="{{ route('notebooks.export') }}"
+                class="
+                bg-slate-700
+                hover:bg-slate-800
+                text-white
+                px-5 py-3
+                rounded-2xl
+                transition
+                text-white
+                font-semibold"
+            >
+                Exportar Excel
+            </a>
+            <a
                 href="{{ route('notebooks.create') }}"
                 class="
                     px-5 py-3
