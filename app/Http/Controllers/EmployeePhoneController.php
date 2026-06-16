@@ -330,9 +330,17 @@ class EmployeePhoneController extends Controller
 
     public function export()
     {
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'export',
+            'description' => 'Exportó celulares corporativos a Excel.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
         return Excel::download(
             new EmployeePhonesExport(),
-            'celulares-corporativos.xlsx'
+            'celulares-corporativos-' . now()->format('Y-m-d-His') . '.xlsx'
         );
     }
 }

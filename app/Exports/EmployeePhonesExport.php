@@ -13,21 +13,35 @@ class EmployeePhonesExport implements FromCollection, WithHeadings
     */
     public function collection()
     {
-         return EmployeePhone::select([
-            'phone_number',
+        return EmployeePhone::select([
+            "'" . $phone->phone_number,
             'first_name',
             'last_name',
             'rut',
             'vendor_code',
             'phone_model',
-            'delivery_date',
-            'imei',
+            $phone->delivery_date
+            ? \Carbon\Carbon::parse($phone->delivery_date)->format('d-m-Y')
+            : '',
+            "'" . $phone->imei,
             'position',
             'department',
             'company_name',
             'email',
             'status',
-        ])->get();
+        ])
+        ->get()
+        ->map(function ($phone) {
+
+            $phone->status = match ($phone->status) {
+                'active' => 'Activo',
+                'returned' => 'Devuelto',
+                'blocked' => 'Bloqueado',
+                default => $phone->status,
+            };
+
+            return $phone;
+        });
     }
 
     public function headings(): array
