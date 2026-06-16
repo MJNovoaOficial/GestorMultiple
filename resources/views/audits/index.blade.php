@@ -132,7 +132,7 @@
                                         ],
 
                                         'export' => [
-                                            'label' => 'Importado',
+                                            'label' => 'Exportado',
                                             'class' => 'bg-slate-600',
                                         ],
 
