@@ -131,6 +131,11 @@
                                             'class' => 'bg-purple-600',
                                         ],
 
+                                        'export' => [
+                                            'label' => 'Importado',
+                                            'class' => 'bg-slate-600',
+                                        ],
+
                                         'SCANNER_STOCK_AGREGADO' => [
                                             'label' => 'Agregado',
                                             'class' => 'bg-green-600',
