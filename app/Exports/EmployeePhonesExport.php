@@ -14,24 +14,23 @@ class EmployeePhonesExport implements FromCollection, WithHeadings
     public function collection()
     {
         return EmployeePhone::select([
-            "'" . $phone->phone_number,
+            'phone_number',
             'first_name',
             'last_name',
             'rut',
             'vendor_code',
             'phone_model',
-            $phone->delivery_date
-            ? \Carbon\Carbon::parse($phone->delivery_date)->format('d-m-Y')
-            : '',
-            "'" . $phone->imei,
+            'delivery_date',
+            'imei',
             'position',
             'department',
             'company_name',
             'email',
             'status',
-        ])
-        ->get()
-        ->map(function ($phone) {
+        ])->get()->map(function ($phone) {
+
+            $phone->phone_number = "'" . $phone->phone_number;
+            $phone->imei = "'" . $phone->imei;
 
             $phone->status = match ($phone->status) {
                 'active' => 'Activo',
