@@ -328,7 +328,7 @@ class EmployeePhoneController extends Controller
             );
     }
 
-    public function export()
+    public function export(Request $request)
     {
         AuditLog::create([
             'user_id' => auth()->id(),
