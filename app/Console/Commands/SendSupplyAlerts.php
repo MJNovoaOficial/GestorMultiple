@@ -43,7 +43,7 @@ class SendSupplyAlerts extends Command
             ->orWhere(
                 'last_critical_alert_at',
                 '<=',
-                now()->subDays(3)
+                now()->subDays(3)->toDateTimeString()
             );
 
         })
@@ -62,7 +62,9 @@ class SendSupplyAlerts extends Command
             ->orWhere(
                 'last_out_alert_at',
                 '<=',
-                now()->subDay()
+                dd(
+                    now()->subDays(3)->toDateTimeString()
+                )
             );
 
         })
