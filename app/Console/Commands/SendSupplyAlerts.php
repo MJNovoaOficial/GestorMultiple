@@ -34,7 +34,7 @@ class SendSupplyAlerts extends Command
             '<=',
             'minimum_stock'
         )
-        /*->where('quantity', '>', 0)
+        ->where('quantity', '>', 0)
         ->where(function ($query) {
 
             $query->whereNull(
@@ -46,7 +46,7 @@ class SendSupplyAlerts extends Command
                 now()->subDays(3)->toDateTimeString()
             );
 
-        })*/
+        })
         ->get();
 
         $outSupplies = Supply::where(
@@ -54,7 +54,7 @@ class SendSupplyAlerts extends Command
             '<=',
             0
         )
-        /*->where(function ($query) {
+        ->where(function ($query) {
 
             $query->whereNull(
                 'last_out_alert_at'
@@ -65,7 +65,7 @@ class SendSupplyAlerts extends Command
                 now()->subDay()->toDateTimeString()
             );
 
-        })*/
+        })
         ->get();
 
         if ($criticalSupplies->isNotEmpty()) {
