@@ -60,7 +60,14 @@ class RadioFrequencyController extends Controller
 
         $radioFrequencies = $query
             ->with('branch')
-            ->orderByRaw('CAST(number AS INT) ASC')
+            ->orderByRaw("
+                CASE
+                    WHEN TRY_CAST(number AS INT) IS NOT NULL THEN 0
+                    ELSE 1
+                END,
+                TRY_CAST(number AS INT),
+                number
+            ")
             ->paginate(25)
             ->withQueryString();
 
