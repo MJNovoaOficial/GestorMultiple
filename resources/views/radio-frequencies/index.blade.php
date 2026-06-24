@@ -690,7 +690,7 @@
                         </label>
 
                         <input
-                            type="number"
+                            type="text"
                             id="edit-number"
                             name="number"
                             readonly

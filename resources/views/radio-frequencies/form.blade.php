@@ -7,7 +7,7 @@
         </label>
 
         <input
-            type="number"
+            type="text"
             name="number"
             value="{{ old('number') }}"
             class="w-full rounded-xl border border-slate-700 bg-slate-900 text-white px-4 py-3"

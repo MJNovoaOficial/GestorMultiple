@@ -103,7 +103,8 @@ class RadioFrequencyController extends Controller
 
             'number' => [
                 'required',
-                'numeric',
+                'string',
+                'max:255',
                 'unique:radio_frequencies,number',
             ],
 
@@ -194,7 +195,7 @@ class RadioFrequencyController extends Controller
 
             'number' => [
                 'required',
-                'numeric',
+                'string',
 
                 Rule::unique(
                     'radio_frequencies',
