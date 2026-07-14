@@ -125,7 +125,7 @@ class IpAddressController extends Controller
         );
 
         return redirect()
-            ->route('ip-addresses.index')
+            ->back()
             ->with('success', 'IP actualizada correctamente.');
     }
 
