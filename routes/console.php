@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command('supplies:alerts')
-    ->everyMinute();
+    ->dailyAt('08:00');
