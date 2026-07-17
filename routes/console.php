@@ -9,6 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 
-Schedule::command(
-    'supplies:alerts'
-)->dailyAt('08:00');
+Schedule::command('supplies:alerts')
+    ->everyMinute();
