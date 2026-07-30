@@ -176,6 +176,8 @@ class EmployeePhoneController extends Controller
             'email.email' =>
                 'Ingrese un correo válido.',
 
+            'rut.valid_rut' =>
+                'El rut ingresado no es válido, por favor verifique el dígito verificador.',
         ]);
 
         $existingDevice = EmployeePhone::where(
@@ -288,6 +290,9 @@ class EmployeePhoneController extends Controller
             'delivery_date.date' =>
                 'Ingrese una fecha válida.',
 
+            'rut.valid_rut' =>
+                'El rut ingresado no es válido, por favor verifique el dígito verificador.',
+                
         ]);
 
         // Normalizar teléfono
