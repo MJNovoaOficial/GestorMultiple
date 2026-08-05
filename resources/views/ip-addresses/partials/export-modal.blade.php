@@ -3,7 +3,7 @@
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6"
 >
 
-    <div class="w-full max-w-6xl overflow-hidden rounded-2xl bg-[#0F172A] shadow-2xl">
+    <div class="w-full max-w-5xl max-h-[85vh] overflow-y-auto rounded-2xl bg-[#0F172A] shadow-2xl">
 
         {{-- Header --}}
         <div class="flex items-center justify-between border-b border-gray-800 px-6 py-5">
@@ -22,10 +22,10 @@
         </div>
 
         {{-- Contenido --}}
-        <div class="space-y-6 p-6">
+        <div class="space-y-4 p-4">
 
             {{-- Formato --}}
-            <div class="rounded-xl border border-gray-800 bg-[#020817] p-5">
+            <div class="rounded-xl border border-gray-800 bg-[#020817] p-4">
 
                 <h3 class="mb-4 text-lg font-semibold text-white">
                     Formato de exportación
@@ -75,7 +75,7 @@
             </div>
 
             {{-- Ramas --}}
-            <div class="rounded-xl border border-gray-800 bg-[#020817] p-5">
+            <div class="rounded-xl border border-gray-800 bg-[#020817] p-4">
 
                 <div class="mb-4">
 
@@ -139,7 +139,7 @@
             </div>
 
             {{-- Columnas --}}
-            <div class="rounded-xl border border-gray-800 bg-[#020817] p-5">
+            <div class="rounded-xl border border-gray-800 bg-[#020817] p-4">
 
                 <h3 class="mb-4 text-lg font-semibold text-white">
                     Columnas a exportar
@@ -182,7 +182,7 @@
             </div>
 
             {{-- Filtros --}}
-            <div class="rounded-xl border border-gray-800 bg-[#020817] p-5">
+            <div class="rounded-xl border border-gray-800 bg-[#020817] p-4">
 
                 <h3 class="mb-4 text-lg font-semibold text-white">
                     Estado
@@ -212,7 +212,7 @@
             </div>
 
             {{-- Resumen --}}
-            <div class="rounded-xl border border-indigo-700 bg-indigo-900/20 p-5">
+            <div class="rounded-xl border border-indigo-700 bg-indigo-900/20 p-4">
 
                 <h3 class="mb-4 text-lg font-semibold text-white">
                     Resumen de exportación
