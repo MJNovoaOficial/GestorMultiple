@@ -3,15 +3,29 @@
     <div class="p-6">
 
         {{-- Header --}}
-        <div class="mb-6">
+        <div class="mb-6 flex items-start justify-between">
 
-            <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
-                Gestor de IPs
-            </h1>
+            <div>
 
-            <p class="text-slate-500 dark:text-slate-400 mt-1">
-                Administración de direcciones IP del sistema
-            </p>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
+                    Gestor de IPs
+                </h1>
+
+                <p class="text-slate-500 dark:text-slate-400 mt-1">
+                    Administración de direcciones IP del sistema
+                </p>
+
+            </div>
+
+            <button
+                id="openExportModal"
+                class="inline-flex items-center gap-2
+                bg-emerald-600 hover:bg-emerald-700
+                text-white font-medium
+                px-5 py-3 rounded-xl
+                shadow-lg transition">
+                📄 Exportar
+            </button>
 
         </div>
 
@@ -539,76 +553,15 @@
                     @endforelse
 
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
+
+    {{-- Modal Exportar --}}
+    @include('ip-addresses.partials.export-modal')
 
     {{-- Modal Ping --}}
-    <div
-        id="pingModal"
-        class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
-    >
-
-        <div class="bg-[#0F172A] w-11/12 max-w-3xl rounded-2xl shadow-2xl overflow-hidden">
-
-            {{-- Header --}}
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-800">
-
-                <h2
-                    id="pingTitle"
-                    class="text-white text-xl font-semibold"
-                >
-                    📡 Ping
-                </h2>
-
-                <button
-                    id="closePingBtn"
-                    class="text-gray-400 hover:text-white text-xl"
-                >
-                    ✖
-                </button>
-
-            </div>
-
-            {{-- Consola --}}
-            <div
-                id="pingOutput"
-                class="
-                    bg-black
-                    text-green-400
-                    font-mono
-                    text-sm
-                    p-4
-                    h-[400px]
-                    overflow-y-auto
-                "
-            >
-            </div>
-
-            {{-- Footer --}}
-            <div class="px-6 py-4 border-t border-gray-800 flex justify-end">
-
-                <button
-                    id="stopPingBtn"
-                    class="
-                        bg-red-600 hover:bg-red-500
-                        text-white
-                        px-4 py-2
-                        rounded-xl
-                        transition
-                    "
-                >
-                    Detener
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
+    @include('ip-addresses.partials.ping-modal')
 
     <script>
 
@@ -650,6 +603,34 @@
             });
 
         }
+
+        // EXPORT MODAL
+
+        const exportModal = document.getElementById('exportModal');
+
+        document
+            .getElementById('openExportModal')
+            .addEventListener('click', () => {
+
+                exportModal.classList.remove('hidden');
+
+            });
+
+        document
+            .getElementById('closeExportModal')
+            .addEventListener('click', () => {
+
+                exportModal.classList.add('hidden');
+
+            });
+
+        document
+            .getElementById('cancelExport')
+            .addEventListener('click', () => {
+
+                exportModal.classList.add('hidden');
+
+            });
 
         //modal de ping
         const stopPingBtn = document.getElementById('stopPingBtn');
