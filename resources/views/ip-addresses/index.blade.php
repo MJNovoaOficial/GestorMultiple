@@ -659,6 +659,9 @@
 
             const summaryNetworks =
                 document.getElementById('summaryNetworks');
+            
+            const summaryOccupiedIps = 
+                document.getElementById('summaryOccupiedIps');
 
             function setButtonStyle(button, selected) {
 
@@ -697,12 +700,14 @@
                 hiddenContainer.innerHTML = '';
 
                 let selectedCount = 0;
+                let occupiedIps = 0;
 
                 subnetButtons.forEach(button => {
 
                     if (button.dataset.selected === 'true') {
 
                         selectedCount++;
+                        occupiedIps += Number(button.dataset.count);
 
                         const input =
                             document.createElement('input');
@@ -718,7 +723,7 @@
                 });
 
                 summaryNetworks.textContent = selectedCount;
-
+                summaryOccupiedIps.textContent = occupiedIps;
                 updateAllButton();
 
             }

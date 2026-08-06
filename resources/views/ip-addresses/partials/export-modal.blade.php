@@ -171,8 +171,8 @@
                             </div>
                             <div class="flex items-center justify-between gap-3">
                                 <dt class="text-gray-400">IPs ocupadas</dt>
-                                <dd id="summaryNetworks">
-                                    {{ $subnets->count() }}
+                                <dd id="summaryOccupiedIps" class="font-semibold text-amber-400">
+                                    {{ $subnetCounts->sum() }}
                                 </dd>
                             </div>
                             <div class="flex items-center justify-between gap-3">
