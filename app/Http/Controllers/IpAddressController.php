@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\IpAddress;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\DeviceType;
@@ -59,7 +60,7 @@ class IpAddressController extends Controller
         
         //Contador de IPs por subred
         $occupiedStatusId = IpStatus::where('name', 'Ocupado')->value('id');
-        
+
         $subnetCounts = IpAddress::selectRaw("
             LEFT(
                 ip_address,
