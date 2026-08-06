@@ -605,135 +605,181 @@
         }
 
         // ======================================================
+        // MODAL EXPORTACIÓN
+        // ======================================================
+
+        const exportModal = document.getElementById('exportModal');
+        const openExportModal = document.getElementById('openExportModal');
+        const closeExportModal = document.getElementById('closeExportModal');
+        const cancelExport = document.getElementById('cancelExport');
+
+        if (openExportModal) {
+
+            openExportModal.addEventListener('click', () => {
+
+                exportModal.classList.remove('hidden');
+
+            });
+
+        }
+
+        if (closeExportModal) {
+
+            closeExportModal.addEventListener('click', () => {
+
+                exportModal.classList.add('hidden');
+
+            });
+
+        }
+
+        if (cancelExport) {
+
+            cancelExport.addEventListener('click', () => {
+
+                exportModal.classList.add('hidden');
+
+            });
+
+        }
+
+        // ======================================================
         // ASISTENTE DE EXPORTACIÓN
         // ======================================================
 
-        const allButton = document.getElementById('selectAllSubnets');
-        const subnetButtons = document.querySelectorAll('[data-subnet]');
-        const selectedContainer = document.getElementById('selectedSubnets');
-        const summaryNetworks = document.getElementById('summaryNetworks');
+        const exportForm = document.getElementById('exportForm');
 
-        function setSubnetState(button, selected) {
+        if (exportForm) {
 
-            button.dataset.selected = selected;
+            const subnetButtons = document.querySelectorAll('[data-subnet]');
+            const allButton = document.getElementById('selectAllSubnets');
 
-            if (selected) {
+            const hiddenContainer =
+                document.getElementById('selectedSubnets');
 
-                button.classList.remove('bg-[#1E293B]', 'text-gray-300');
-                button.classList.add('bg-indigo-600', 'text-white');
+            const summaryNetworks =
+                document.getElementById('summaryNetworks');
 
-            } else {
+            function setButtonStyle(button, selected) {
 
-                button.classList.remove('bg-indigo-600', 'text-white');
-                button.classList.add('bg-[#1E293B]', 'text-gray-300');
+                button.dataset.selected = selected ? 'true' : 'false';
+
+                if (selected) {
+
+                    button.classList.remove(
+                        'bg-[#1E293B]',
+                        'text-gray-300'
+                    );
+
+                    button.classList.add(
+                        'bg-indigo-600',
+                        'text-white'
+                    );
+
+                } else {
+
+                    button.classList.remove(
+                        'bg-indigo-600',
+                        'text-white'
+                    );
+
+                    button.classList.add(
+                        'bg-[#1E293B]',
+                        'text-gray-300'
+                    );
+
+                }
 
             }
 
-        }
+            function rebuildHiddenInputs() {
 
-        function updateHiddenInputs() {
+                hiddenContainer.innerHTML = '';
 
-            selectedContainer.innerHTML = '';
+                let selectedCount = 0;
 
-            subnetButtons.forEach(button => {
+                subnetButtons.forEach(button => {
 
-                if (button.dataset.selected === 'true') {
+                    if (button.dataset.selected === 'true') {
 
-                    const input = document.createElement('input');
+                        selectedCount++;
 
-                    input.type = 'hidden';
-                    input.name = 'subnets[]';
-                    input.value = button.dataset.subnet;
+                        const input =
+                            document.createElement('input');
 
-                    selectedContainer.appendChild(input);
+                        input.type = 'hidden';
+                        input.name = 'subnets[]';
+                        input.value = button.dataset.subnet;
 
-                }
+                        hiddenContainer.appendChild(input);
 
-            });
+                    }
 
-        }
+                });
 
-        function updateSummary() {
+                summaryNetworks.textContent = selectedCount;
 
-            const selected = [...subnetButtons].filter(button =>
-                button.dataset.selected === 'true'
-            );
+                updateAllButton();
 
-            summaryNetworks.textContent = selected.length;
+            }
 
-        }
+            function updateAllButton() {
 
-        function updateAllButton() {
+                const allSelected =
+                    [...subnetButtons].every(button =>
+                        button.dataset.selected === 'true'
+                    );
 
-            const allSelected = [...subnetButtons].every(button =>
-                button.dataset.selected === 'true'
-            );
+                setButtonStyle(allButton, allSelected);
 
-            setSubnetState(allButton, allSelected);
-
-        }
-
-        function refreshExportModal() {
-
-            updateHiddenInputs();
-            updateSummary();
-            updateAllButton();
-
-        }
-
-        // ==========================================
-        // BOTONES DE RAMAS
-        // ==========================================
-
-        subnetButtons.forEach(button => {
-
-            button.addEventListener('click', () => {
-
-                const selected =
-                    button.dataset.selected === 'true';
-
-                // Evitar dejar cero ramas seleccionadas
-                const totalSelected = [...subnetButtons]
-                    .filter(b => b.dataset.selected === 'true')
-                    .length;
-
-                if (selected && totalSelected === 1) {
-                    return;
-                }
-
-                setSubnetState(button, !selected);
-
-                refreshExportModal();
-
-            });
-
-        });
-
-        // ==========================================
-        // BOTÓN TODAS
-        // ==========================================
-
-        allButton.addEventListener('click', () => {
-
-            const allSelected = [...subnetButtons].every(button =>
-                button.dataset.selected === 'true'
-            );
+            }
 
             subnetButtons.forEach(button => {
 
-                setSubnetState(button, !allSelected);
+                button.addEventListener('click', () => {
+
+                    const selected =
+                        button.dataset.selected === 'true';
+
+                    const totalSelected =
+                        [...subnetButtons].filter(button =>
+                            button.dataset.selected === 'true'
+                        ).length;
+
+                    if (selected && totalSelected === 1) {
+
+                        return;
+
+                    }
+
+                    setButtonStyle(button, !selected);
+
+                    rebuildHiddenInputs();
+
+                });
 
             });
 
-            refreshExportModal();
+            allButton.addEventListener('click', () => {
 
-        });
+                const allSelected =
+                    [...subnetButtons].every(button =>
+                        button.dataset.selected === 'true'
+                    );
 
-        // ==========================================
-        // INICIALIZAR
-        // ==========================================
+                subnetButtons.forEach(button => {
 
-        refreshExportModal();
+                    setButtonStyle(button, !allSelected);
+
+                });
+
+                rebuildHiddenInputs();
+
+            });
+
+            rebuildHiddenInputs();
+
+        }
 
         //===========================================
         // ASISTENTE DE PING
