@@ -10,6 +10,9 @@ use App\Models\Department;
 use App\Models\DeviceType;
 use App\Models\IpStatus;
 use App\Services\AuditService;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\IpAddressesExport;
+use App\Exports\IpAddressesSheet;
 
 class IpAddressController extends Controller
 {
