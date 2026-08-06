@@ -224,4 +224,30 @@ class IpAddressController extends Controller
             'success' => true
         ]);
     }
+
+    public function export(Request $request)
+    {
+        $request->validate([
+            'subnets' => 'required|array|min:1',
+            'columns' => 'required|array|min:1',
+            'status' => 'nullable|string',
+        ]);
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'export',
+            'description' => 'Exportó direcciones IP a un documento.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return Excel::download(
+            new IpAddressesExport(
+                $request->subnets,
+                $request->columns,
+                $request->status
+            ),
+            'Direcciones-IP-' . now()->format('Y-m-d-His') . '.xlsx'
+        );
+    }
 }

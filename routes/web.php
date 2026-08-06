@@ -87,6 +87,8 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/ip-addresses/{ip}/release', [IpAddressController::class, 'release'])
             ->name('ip-addresses.release');
+        Route::post('/ip-addresses/export', [IpAddressController::class, 'export'])
+            ->name('ip-addresses.export');
 
         /*
         |--------------------------------------------------------------------------

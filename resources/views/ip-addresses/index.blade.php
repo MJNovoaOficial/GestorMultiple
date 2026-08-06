@@ -604,35 +604,140 @@
 
         }
 
-        // EXPORT MODAL
+        // ======================================================
+        // ASISTENTE DE EXPORTACIÓN
+        // ======================================================
 
-        const exportModal = document.getElementById('exportModal');
+        const allButton = document.getElementById('selectAllSubnets');
+        const subnetButtons = document.querySelectorAll('[data-subnet]');
+        const selectedContainer = document.getElementById('selectedSubnets');
+        const summaryNetworks = document.getElementById('summaryNetworks');
 
-        document
-            .getElementById('openExportModal')
-            .addEventListener('click', () => {
+        function setSubnetState(button, selected) {
 
-                exportModal.classList.remove('hidden');
+            button.dataset.selected = selected;
+
+            if (selected) {
+
+                button.classList.remove('bg-[#1E293B]', 'text-gray-300');
+                button.classList.add('bg-indigo-600', 'text-white');
+
+            } else {
+
+                button.classList.remove('bg-indigo-600', 'text-white');
+                button.classList.add('bg-[#1E293B]', 'text-gray-300');
+
+            }
+
+        }
+
+        function updateHiddenInputs() {
+
+            selectedContainer.innerHTML = '';
+
+            subnetButtons.forEach(button => {
+
+                if (button.dataset.selected === 'true') {
+
+                    const input = document.createElement('input');
+
+                    input.type = 'hidden';
+                    input.name = 'subnets[]';
+                    input.value = button.dataset.subnet;
+
+                    selectedContainer.appendChild(input);
+
+                }
 
             });
 
-        document
-            .getElementById('closeExportModal')
-            .addEventListener('click', () => {
+        }
 
-                exportModal.classList.add('hidden');
+        function updateSummary() {
+
+            const selected = [...subnetButtons].filter(button =>
+                button.dataset.selected === 'true'
+            );
+
+            summaryNetworks.textContent = selected.length;
+
+        }
+
+        function updateAllButton() {
+
+            const allSelected = [...subnetButtons].every(button =>
+                button.dataset.selected === 'true'
+            );
+
+            setSubnetState(allButton, allSelected);
+
+        }
+
+        function refreshExportModal() {
+
+            updateHiddenInputs();
+            updateSummary();
+            updateAllButton();
+
+        }
+
+        // ==========================================
+        // BOTONES DE RAMAS
+        // ==========================================
+
+        subnetButtons.forEach(button => {
+
+            button.addEventListener('click', () => {
+
+                const selected =
+                    button.dataset.selected === 'true';
+
+                // Evitar dejar cero ramas seleccionadas
+                const totalSelected = [...subnetButtons]
+                    .filter(b => b.dataset.selected === 'true')
+                    .length;
+
+                if (selected && totalSelected === 1) {
+                    return;
+                }
+
+                setSubnetState(button, !selected);
+
+                refreshExportModal();
 
             });
 
-        document
-            .getElementById('cancelExport')
-            .addEventListener('click', () => {
+        });
 
-                exportModal.classList.add('hidden');
+        // ==========================================
+        // BOTÓN TODAS
+        // ==========================================
+
+        allButton.addEventListener('click', () => {
+
+            const allSelected = [...subnetButtons].every(button =>
+                button.dataset.selected === 'true'
+            );
+
+            subnetButtons.forEach(button => {
+
+                setSubnetState(button, !allSelected);
 
             });
 
-        //modal de ping
+            refreshExportModal();
+
+        });
+
+        // ==========================================
+        // INICIALIZAR
+        // ==========================================
+
+        refreshExportModal();
+
+        //===========================================
+        // ASISTENTE DE PING
+        //===========================================
         const stopPingBtn = document.getElementById('stopPingBtn');
         const closePingModal = document.getElementById('closePingBtn');
 
