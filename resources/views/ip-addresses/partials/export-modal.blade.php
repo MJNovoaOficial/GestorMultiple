@@ -1,4 +1,26 @@
 {{-- export-modal.blade.php --}}
+<style>
+    #exportModal .export-main-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr);
+        gap: 0.75rem;
+    }
+
+    #exportModal .export-columns-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        column-gap: 1rem;
+        row-gap: 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+        #exportModal .export-main-grid,
+        #exportModal .export-columns-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
 <div
     id="exportModal"
     class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/70 p-4 sm:p-6"
@@ -76,8 +98,8 @@
                 </section>
 
                 {{-- Ramas, opciones y resumen --}}
-                <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
-                    <section class="rounded-xl border border-gray-800 bg-[#020817] p-4 lg:col-span-2">
+                <div class="export-main-grid">
+                    <section class="rounded-xl border border-gray-800 bg-[#020817] p-4">
                         <div class="mb-3 flex items-center justify-between gap-3">
                             <h3 class="text-sm font-semibold text-white">
                                 Ramas a exportar
@@ -169,7 +191,7 @@
                         <span class="text-xs text-gray-500">Selecciona los campos incluidos</span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">
+                    <div class="export-columns-grid">
                         @foreach([
                             'ip' => 'IP',
                             'status' => 'Estado',
