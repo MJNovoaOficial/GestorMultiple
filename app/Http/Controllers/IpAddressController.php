@@ -58,15 +58,25 @@ class IpAddressController extends Controller
             ->pluck('subnet');
         
         //Contador de IPs por subred
+        $occupiedStatusId = IpStatus::where('name', 'Ocupado')->value('id');
+        
         $subnetCounts = IpAddress::selectRaw("
             LEFT(
                 ip_address,
                 LEN(ip_address) - CHARINDEX('.', REVERSE(ip_address))
             ) as subnet,
-            COUNT(*) as total
+
+            SUM(
+                CASE
+                    WHEN ip_status_id = $occupiedStatusId THEN 1
+                    ELSE 0
+                END
+            ) as total
         ")
         ->when($request->branch_id, function ($q) use ($request) {
+
             $q->where('branch_id', $request->branch_id);
+
         })
         ->groupByRaw("
             LEFT(
