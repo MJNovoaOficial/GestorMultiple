@@ -662,7 +662,24 @@
             
             const summaryOccupiedIps = 
                 document.getElementById('summaryOccupiedIps');
+            
+            const columnCheckboxes = document.querySelectorAll(
+                'input[name="columns[]"]'
+            );
 
+            const summaryColumns = document.getElementById('summaryColumns');
+            
+            function updateColumnsSummary() {
+
+                const total =
+                    [...columnCheckboxes]
+                        .filter(cb => cb.checked)
+                        .length;
+
+                summaryColumns.textContent = total;
+
+            }
+            
             function setButtonStyle(button, selected) {
 
                 button.dataset.selected = selected ? 'true' : 'false';
@@ -760,6 +777,16 @@
                     setButtonStyle(button, !selected);
 
                     rebuildHiddenInputs();
+
+                });
+
+            });
+
+            columnCheckboxes.forEach(checkbox => {
+
+                checkbox.addEventListener('change', () => {
+
+                    updateColumnsSummary();
 
                 });
 
