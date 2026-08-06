@@ -121,11 +121,14 @@
                                 <button
                                     type="button"
                                     data-subnet="{{ $subnet }}"
+                                    data-count="{{ $subnetCounts[$subnet] ?? 0 }}"
                                     data-selected="true"
                                     class="subnet-btn rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow transition hover:bg-indigo-500"
                                 >
                                     {{ $subnet }}.x
-                                    <span class="ml-1 font-semibold text-amber-400">(0)</span>
+                                    <span class="ml-1 font-semibold text-amber-400">
+                                        ({{ $subnetCounts[$subnet] ?? 0 }})
+                                    </span>
                                 </button>
                             @endforeach
                         </div>
@@ -168,7 +171,9 @@
                             </div>
                             <div class="flex items-center justify-between gap-3">
                                 <dt class="text-gray-400">IPs ocupadas</dt>
-                                <dd id="summaryIPs" class="font-semibold text-amber-400">0</dd>
+                                <dd id="summaryNetworks">
+                                    {{ $subnets->count() }}
+                                </dd>
                             </div>
                             <div class="flex items-center justify-between gap-3">
                                 <dt class="text-gray-400">Columnas</dt>

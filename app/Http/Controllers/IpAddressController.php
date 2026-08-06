@@ -56,6 +56,28 @@ class IpAddressController extends Controller
             ->distinct()
             ->orderBy('subnet')
             ->pluck('subnet');
+        
+        //Contador de IPs por subred
+        $subnetCounts = IpAddress::selectRaw("
+            LEFT(
+                ip_address,
+                LEN(ip_address) - CHARINDEX('.', REVERSE(ip_address))
+            ) as subnet,
+            COUNT(*) as total
+        ")
+        ->when($request->branch_id, function ($q) use ($request) {
+            $q->where('branch_id', $request->branch_id);
+        })
+        ->groupByRaw("
+            LEFT(
+                ip_address,
+                LEN(ip_address) - CHARINDEX('.', REVERSE(ip_address))
+            )
+        ")
+        ->pluck('total', 'subnet');
+
+    
+
         /* Esta es la versión para MYSQL
         $ipAddresses = $query
             ->orderByRaw('INET_ATON(ip_address)')
@@ -81,6 +103,7 @@ class IpAddressController extends Controller
             'ipAddresses',
             'branches',
             'subnets',
+            'subnetCounts',
             'departments',
             'deviceTypes',
             'ipStatuses'
