@@ -174,6 +174,11 @@ class IpAddressesSheet implements FromCollection, WithHeadings, WithTitle
 
         }
 
-        return $query->orderBy('ip_address');
+        return $query->orderByRaw("
+            CAST(PARSENAME(ip_address, 4) AS BIGINT),
+            CAST(PARSENAME(ip_address, 3) AS BIGINT),
+            CAST(PARSENAME(ip_address, 2) AS BIGINT),
+            CAST(PARSENAME(ip_address, 1) AS BIGINT)
+        ");
     }
 }
