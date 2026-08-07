@@ -221,25 +221,35 @@
 
             @if($lastAudit)
 
-                <div class="space-y-1">
+                <div class="space-y-2">
 
                     <h3 class="text-lg text-center font-semibold leading-snug">
                         {{ $lastAudit->description ?? 'Actividad registrada' }}
                     </h3>
 
-                    @if($lastAudit->user)
+                    <div class="text-center">
+                        @if($lastAudit->source === 'credential')
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                🔐 Auditoría de credenciales
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                📋 Auditoría del sistema
+                            </span>
+                        @endif
+                    </div>
 
+                    @if($lastAudit->user_name)
                         <p class="text-sm text-center text-slate-500 dark:text-slate-400">
                             Realizado por
                             <span class="font-medium">
-                                {{ $lastAudit->user->name }}
+                                {{ $lastAudit->user_name }}
                             </span>
                         </p>
-
                     @endif
 
                     <p class="text-sm text-center text-slate-500 dark:text-slate-400">
-                        {{ $lastAudit->created_at->diffForHumans() }}
+                        {{ \Carbon\Carbon::parse($lastAudit->created_at)->diffForHumans() }}
                     </p>
 
                 </div>

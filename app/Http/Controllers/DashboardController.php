@@ -8,11 +8,13 @@ use App\Models\Branch;
 use App\Models\IpAddress;
 use App\Models\EmailCredential;
 use App\Models\CredentialAuditLog;
+use App\Models\AuditLog;
 use App\Models\EmployeePhone;
 use App\Models\Notebook;
 use App\Models\RadioFrequency;
 use App\Models\Dvr;
 use App\Models\Supply;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -49,8 +51,37 @@ class DashboardController extends Controller
             $totalRadiofrequencies +
             $totalDvrs;
         
-        $lastAudit = CredentialAuditLog::latest()->first();
-       
+        $lastAudit = DB::query()
+            ->fromSub(function ($query) {
+
+                $auditLogs = DB::table('audit_logs as al')
+                    ->leftJoin('users as u', 'al.user_id', '=', 'u.id')
+                    ->select(
+                        'al.created_at',
+                        'al.action',
+                        'al.description',
+                        'al.ip_address',
+                        'u.name as user_name',
+                        DB::raw("'general' as source")
+                    );
+
+                $credentialLogs = DB::table('credential_audit_logs as cal')
+                    ->leftJoin('users as u', 'cal.user_id', '=', 'u.id')
+                    ->select(
+                        'cal.created_at',
+                        'cal.action',
+                        'cal.description',
+                        'cal.ip_address',
+                        'u.name as user_name',
+                        DB::raw("'credential' as source")
+                    );
+
+                $query->fromSub($auditLogs->unionAll($credentialLogs), 'logs');
+
+            }, 'logs')
+            ->orderByDesc('created_at')
+            ->first();
+            
         $lowStockSupplies = Supply::where(
                 'is_active',
                 true
