@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Dvr;
+use App\Exports\DvrExport;
 use Illuminate\Http\Request;
 use App\Models\AuditLog;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DvrController extends Controller
 {
@@ -252,4 +254,24 @@ class DvrController extends Controller
             );
     }
 
+    public function export(Request $request)
+    {
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'export',
+            'description' =>
+                'Exportó la lista de DVRs',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        if (empty($request->columns)) {
+            return back()->with('error', 'Debe seleccionar al menos una columna para exportar.');
+        }
+
+        return Excel::download(
+            new DvrExport($request->columns ?? []),
+            'DVRS-' . now()->format('Y-m-d H:i:s') . '.xlsx'
+        );
+    }
 }

@@ -13,6 +13,14 @@
                 </p>
             </div>
 
+            <button
+                type="button"
+                data-modal-target="exportModal"
+                data-modal-toggle="exportModal"
+                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                <i class="bi bi-file-earmark-excel"></i>
+                Exportar
+            </button>
             <a
                 href="{{ route('dvrs.create') }}"
                 class="
@@ -763,5 +771,8 @@
 
             });
         });
+
+        //MODAL PARA EXPORTAR DVRS
+        
     </script>
 </x-app-layout>

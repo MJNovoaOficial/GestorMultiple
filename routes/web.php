@@ -137,6 +137,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/dvrs/{dvr}/password',[DvrController::class, 'password']);
         Route::patch('/dvrs/{dvr}/retire',[DvrController::class, 'retire'])
             ->name('dvrs.retire');
+        Route::get('/dvrs/export', [DvrController::class, 'export'])
+            ->name('dvrs.export');
 
         /*
         |--------------------------------------------------------------------------
