@@ -139,12 +139,14 @@
             <div class="p-5 border-b border-slate-200 dark:border-slate-800">
 
                 <form
+                    id="search-form"
                     method="GET"
                     action="{{ route('dvrs.index') }}"
                     class="flex flex-col lg:flex-row gap-4"
                 >
 
                     <input
+                        id="search-input"
                         type="text"
                         name="search"
                         value="{{ request('search') }}"
@@ -687,10 +689,12 @@
                         Guardar cambios
                     </button>
                 </div>
+            </form>
         </div>
-            
     </div>
+
     @include('dvrs.partials.export-dvr')
+    
     <script>
         window.passwordStore = {};
 
