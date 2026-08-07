@@ -3,6 +3,7 @@
 
         {{-- HEADER --}}
         <div class="flex items-center justify-between mb-6">
+
             <div>
                 <h1 class="text-3xl font-bold text-slate-700 dark:text-slate-200">
                     DVRs
@@ -13,28 +14,32 @@
                 </p>
             </div>
 
-            <button
-                type="button"
-                data-modal-target="exportModal"
-                data-modal-toggle="exportModal"
-                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
-                <i class="bi bi-file-earmark-excel"></i>
-                Exportar
-            </button>
-            <a
-                href="{{ route('dvrs.create') }}"
-                class="
-                    px-5 py-3
-                    rounded-2xl
-                    bg-green-600
-                    hover:bg-green-700
-                    transition
-                    text-white
-                    font-semibold
-                "
-            >
-                Nuevo DVR
-            </a>
+            <div class="flex items-center gap-3">
+
+                <button
+                    type="button"
+                    id="open-export-modal"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                    Exportar
+                </button>
+
+                <a
+                    href="{{ route('dvrs.create') }}"
+                    class="
+                        px-5 py-3
+                        rounded-2xl
+                        bg-green-600
+                        hover:bg-green-700
+                        transition
+                        text-white
+                        font-semibold
+                    "
+                >
+                    Nuevo DVR
+                </a>
+
+            </div>
+
         </div>
 
         {{-- CARDS SUCURSALES --}}
@@ -685,7 +690,7 @@
         </div>
             
     </div>
-
+    @include('dvrs.partials.export-dvr')
     <script>
         window.passwordStore = {};
 
@@ -773,6 +778,29 @@
         });
 
         //MODAL PARA EXPORTAR DVRS
-        
+        // MODAL EXPORTAR DVRS
+
+        const exportModal = document.getElementById('exportModal');
+        const openExportModal = document.getElementById('open-export-modal');
+        const closeExportModal = document.getElementById('close-export-modal');
+
+        openExportModal.addEventListener('click', () => {
+            exportModal.classList.remove('hidden');
+            exportModal.classList.add('flex');
+        });
+
+        closeExportModal.addEventListener('click', () => {
+            exportModal.classList.add('hidden');
+            exportModal.classList.remove('flex');
+        });
+
+        // Cerrar haciendo clic fuera del modal
+        exportModal.addEventListener('click', (e) => {
+            if (e.target === exportModal) {
+                exportModal.classList.add('hidden');
+                exportModal.classList.remove('flex');
+            }
+        });
+
     </script>
 </x-app-layout>

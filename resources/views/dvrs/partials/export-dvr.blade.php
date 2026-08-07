@@ -14,7 +14,7 @@
 
                     @php
                         $columns = [
-                            'nombre' => 'Número',
+                            'nombre' => 'Nombre',
                             'branch_id' => 'Sucursal',
                             'tipo' => 'Tipo',
                             'modelo' => 'Modelo',
@@ -50,6 +50,7 @@
 
                         <button
                             type="button"
+                            id="close-export-modal"
                             data-modal-hide="exportModal"
                             class="px-4 py-2 rounded bg-gray-500 text-white">
 
