@@ -133,12 +133,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/radio-frequencies/export',[RadioFrequencyController::class, 'export'])
             ->name('radio-frequencies.export');
         Route::resource('radio-frequencies', RadioFrequencyController::class);
-        Route::resource('dvrs', DvrController::class);
-        Route::get('/dvrs/{dvr}/password',[DvrController::class, 'password']);
-        Route::patch('/dvrs/{dvr}/retire',[DvrController::class, 'retire'])
-            ->name('dvrs.retire');
         Route::get('/dvrs/export', [DvrController::class, 'export'])
             ->name('dvrs.export');
+        Route::resource('dvrs', DvrController::class);
+        Route::get('/dvrs/{dvr}/password', [DvrController::class, 'password']);
+        Route::patch('/dvrs/{dvr}/retire', [DvrController::class, 'retire'])
+            ->name('dvrs.retire');
 
         /*
         |--------------------------------------------------------------------------
