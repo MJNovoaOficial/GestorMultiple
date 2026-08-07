@@ -229,12 +229,14 @@
 
                     <div class="text-center">
                         @if($lastAudit->source === 'credential')
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
-                                🔐 Auditoría de credenciales
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">
+                                <i class="bi bi-key-fill"></i>
+                                Auditoría de credenciales
                             </span>
                         @else
-                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
-                                📋 Auditoría del sistema
+                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                <i class="bi bi-journal-check"></i>
+                                Auditoría del sistema
                             </span>
                         @endif
                     </div>
