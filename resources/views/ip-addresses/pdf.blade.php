@@ -160,6 +160,17 @@
             background-color: #ffffff;
         }
 
+        .status-available {
+            background-color: #dcfce7 !important;
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .status-occupied {
+            background-color: #fee2e2 !important;
+            color: #991b1b;
+            font-weight: bold;
+        }
         /*
         |--------------------------------------------------------------------------
         | Anchos de columnas
@@ -391,41 +402,29 @@
 
                             @foreach($columns as $column)
 
-                                <td>
+                                @php
+                                    $status = strtolower(trim($row[$column] ?? ''));
+                                @endphp
 
-                                    @if($column === 'status')
+                                @if($column === 'status' && $status === 'disponible')
 
-                                        @php
-                                            $status = strtolower(trim($row[$column] ?? ''));
-                                        @endphp
+                                    <td class="status-available">
+                                        {{ $row[$column] }}
+                                    </td>
 
-                                        @if($status === 'disponible')
+                                @elseif($column === 'status' && $status === 'ocupado')
 
-                                            <span class="status status-available">
-                                                {{ $row[$column] }}
-                                            </span>
+                                    <td class="status-occupied">
+                                        {{ $row[$column] }}
+                                    </td>
 
-                                        @elseif($status === 'ocupado')
+                                @else
 
-                                            <span class="status status-occupied">
-                                                {{ $row[$column] }}
-                                            </span>
-
-                                        @else
-
-                                            <span class="status status-default">
-                                                {{ $row[$column] ?? '' }}
-                                            </span>
-
-                                        @endif
-
-                                    @else
-
+                                    <td>
                                         {{ $row[$column] ?? '' }}
+                                    </td>
 
-                                    @endif
-
-                                </td>
+                                @endif
 
                             @endforeach
 
