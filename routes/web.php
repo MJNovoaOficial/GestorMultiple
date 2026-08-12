@@ -89,7 +89,7 @@ Route::middleware('auth')->group(function () {
             ->name('ip-addresses.release');
         Route::post('/ip-addresses/export', [IpAddressController::class, 'export'])
             ->name('ip-addresses.export');
-        Route::get('/ip-addresses/export-pdf', [IpAddressController::class, 'exportPdf'])
+        Route::post('/ip-addresses/export-pdf', [IpAddressController::class, 'exportPdf'])
             ->name('ip-addresses.export-pdf');
         /*
         |--------------------------------------------------------------------------
