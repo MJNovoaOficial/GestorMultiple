@@ -205,7 +205,12 @@
                             'branch' => 'Sucursal',
                             'department' => 'Departamento',
                         ] as $value => $label)
-                            <label class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-gray-300 transition hover:bg-[#1E293B] hover:text-white">
+                            <label
+                                @if($value === 'branch')
+                                    id="branchColumnOption"
+                                @endif
+                                class="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-gray-300 transition hover:bg-[#1E293B] hover:text-white"
+                            >
                                 <input
                                     type="checkbox"
                                     class="column-checkbox rounded border-gray-600 bg-[#1E293B] text-indigo-600 focus:ring-indigo-500"
@@ -215,6 +220,7 @@
                                 >
                                 <span>{{ $label }}</span>
                             </label>
+
                         @endforeach
                     </div>
                 </section>
@@ -240,4 +246,220 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const exportForm = document.getElementById('exportForm');
+
+            if (!exportForm) {
+                return;
+            }
+
+            const formatRadios = document.querySelectorAll(
+                'input[name="export_format"]'
+            );
+
+            const branchColumnOption =
+                document.getElementById('branchColumnOption');
+
+            const branchColumnCheckbox =
+                document.querySelector('input[name="columns[]"][value="branch"]');
+
+            const summaryFormat =
+                document.getElementById('summaryFormat');
+
+            const summaryColumns =
+                document.getElementById('summaryColumns');
+
+            const startExport =
+                document.getElementById('startExport');
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Actualizar formato
+            |--------------------------------------------------------------------------
+            */
+
+            function updateExportFormat() {
+
+                const selectedFormat =
+                    document.querySelector(
+                        'input[name="export_format"]:checked'
+                    )?.value;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | EXCEL
+                |--------------------------------------------------------------------------
+                */
+
+                if (selectedFormat === 'excel') {
+
+                    exportForm.action =
+                        "{{ route('ip-addresses.export') }}";
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Mostrar Sucursal
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (branchColumnOption) {
+                        branchColumnOption.classList.remove('hidden');
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Restaurar checkbox Sucursal
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (branchColumnCheckbox) {
+                        branchColumnCheckbox.disabled = false;
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Resumen
+                    |--------------------------------------------------------------------------
+                    */
+
+                    summaryFormat.textContent = 'Excel';
+
+                    summaryFormat.classList.remove(
+                        'text-red-400'
+                    );
+
+                    summaryFormat.classList.add(
+                        'text-emerald-400'
+                    );
+
+                    startExport.textContent =
+                        '📗 Exportar Excel';
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | PDF
+                |--------------------------------------------------------------------------
+                */
+
+                if (selectedFormat === 'pdf') {
+
+                    exportForm.action =
+                        "{{ route('ip-addresses.export-pdf') }}";
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Ocultar Sucursal
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (branchColumnOption) {
+                        branchColumnOption.classList.add('hidden');
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Desactivar Sucursal
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (branchColumnCheckbox) {
+
+                        branchColumnCheckbox.checked = false;
+                        branchColumnCheckbox.disabled = true;
+
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Resumen
+                    |--------------------------------------------------------------------------
+                    */
+
+                    summaryFormat.textContent = 'PDF';
+
+                    summaryFormat.classList.remove(
+                        'text-emerald-400'
+                    );
+
+                    summaryFormat.classList.add(
+                        'text-red-400'
+                    );
+
+                    startExport.textContent =
+                        '📕 Exportar PDF';
+                }
+
+
+                updateColumnsSummary();
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Contador de columnas
+            |--------------------------------------------------------------------------
+            */
+
+            function updateColumnsSummary() {
+
+                const selectedColumns =
+                    document.querySelectorAll(
+                        'input[name="columns[]"]:checked:not(:disabled)'
+                    );
+
+                summaryColumns.textContent =
+                    selectedColumns.length;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Cambio de formato
+            |--------------------------------------------------------------------------
+            */
+
+            formatRadios.forEach(radio => {
+
+                radio.addEventListener(
+                    'change',
+                    updateExportFormat
+                );
+
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Cambio manual de columnas
+            |--------------------------------------------------------------------------
+            */
+
+            document
+                .querySelectorAll('input[name="columns[]"]')
+                .forEach(checkbox => {
+
+                    checkbox.addEventListener(
+                        'change',
+                        updateColumnsSummary
+                    );
+
+                });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Estado inicial
+            |--------------------------------------------------------------------------
+            */
+
+            updateExportFormat();
+
+        });
+    </script>
 </div>

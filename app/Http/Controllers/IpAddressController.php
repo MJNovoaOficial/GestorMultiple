@@ -13,6 +13,7 @@ use App\Services\AuditService;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\IpAddressesExport;
 use App\Exports\IpAddressesSheet;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IpAddressController extends Controller
 {
@@ -273,7 +274,7 @@ class IpAddressController extends Controller
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'export',
-            'description' => 'Exportó direcciones IP a un documento.',
+            'description' => 'Exportó direcciones IP a un Excel.',
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
@@ -286,5 +287,157 @@ class IpAddressController extends Controller
             ),
             'Direcciones-IP-' . now()->format('Y-m-d-His') . '.xlsx'
         );
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $request->validate([
+            'subnets' => 'required|array|min:1',
+            'columns' => 'required|array|min:1',
+            'status' => 'nullable|string',
+        ]);
+
+        $sections = [];
+
+        foreach ($request->subnets as $subnet) {
+
+            $query = IpAddress::with([
+                'branch',
+                'department',
+                'deviceType',
+                'ipStatus'
+            ]);
+
+            /*
+            | Filtrar por subnet
+            */
+
+            $query->where(
+                'ip_address',
+                'like',
+                $subnet . '.%'
+            );
+
+            /*
+            | Filtrar por estado
+            */
+
+            if (!empty($request->status)) {
+
+                $query->whereHas('ipStatus', function ($query) use ($request) {
+
+                    $query->whereRaw(
+                        'LOWER(name) = ?',
+                        [strtolower($request->status)]
+                    );
+
+                });
+            }
+
+            /*
+            | Ordenar IPs
+            */
+
+            $ips = $query
+                ->orderByRaw("
+                    CAST(PARSENAME(ip_address, 4) AS BIGINT),
+                    CAST(PARSENAME(ip_address, 3) AS BIGINT),
+                    CAST(PARSENAME(ip_address, 2) AS BIGINT),
+                    CAST(PARSENAME(ip_address, 1) AS BIGINT)
+                ")
+                ->get();
+
+            /*
+            | Determinar la sucursal
+            */
+
+            $branch = $ips->first()?->branch?->name ?? '';
+
+            /*
+            | Construir filas
+            */
+
+            $rows = $ips->map(function ($ip) use ($request) {
+
+                $row = [];
+
+                foreach ($request->columns as $column) {
+
+                    switch ($column) {
+
+                        case 'ip':
+
+                            $row['ip'] = $ip->ip_address;
+
+                            break;
+
+                        case 'status':
+
+                            $row['status'] = $ip->ipStatus?->name ?? '';
+
+                            break;
+
+                        case 'user':
+
+                            $row['user'] = $ip->user_assigned ?? '';
+
+                            break;
+
+                        case 'device':
+
+                            $row['device'] = $ip->deviceType?->name ?? '';
+
+                            break;
+
+                        case 'department':
+
+                            $row['department'] = $ip->department?->name ?? '';
+
+                            break;
+                    }
+                }
+
+                return $row;
+
+            })->toArray();
+
+            /*
+            | Agregar subnet al PDF
+            */
+
+            $sections[] = [
+                'subnet' => $subnet . '.x',
+                'branch' => $branch,
+                'rows' => $rows,
+            ];
+        }
+
+        /*
+        | Registrar auditoría
+        */
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'export',
+            'description' => 'Exportó direcciones IP a PDF.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        /*
+        | Generar PDF
+        */
+
+        $pdf = Pdf::loadView('ip-addresses.pdf', [
+            'sections' => $sections,
+            'columns' => $request->columns,
+            'status' => $request->status,
+        ]);
+
+        return $pdf
+            ->setPaper('letter', 'landscape')
+            ->download(
+                'DireccionesIP-' . now()->format('Y-m-d') . '.pdf'
+            );
     }
 }
