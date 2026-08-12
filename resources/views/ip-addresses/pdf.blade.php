@@ -144,11 +144,11 @@
         }
 
         .ip-table td {
-            padding: 4px 5px;
+            padding: 3px 5px;
             border: 1px solid #d1d5db;
             text-align: center;
             vertical-align: middle;
-            height: 19px;
+            height: 17px;
             word-wrap: break-word;
         }
 
@@ -228,6 +228,10 @@
 
         .footer-right {
             float: right;
+        }
+
+        .page-number::after {
+            content: counter(page);
         }
     </style>
 </head>
