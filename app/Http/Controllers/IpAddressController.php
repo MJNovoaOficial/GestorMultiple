@@ -291,6 +291,8 @@ class IpAddressController extends Controller
 
     public function exportPdf(Request $request)
     {
+        ini_set('memory_limit', '512M');
+
         $request->validate([
             'subnets' => 'required|array|min:1',
             'columns' => 'required|array|min:1',
