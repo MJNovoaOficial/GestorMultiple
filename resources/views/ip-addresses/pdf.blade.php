@@ -160,17 +160,6 @@
             background-color: #ffffff;
         }
 
-        .status-available {
-            background-color: #dcfce7 !important;
-            color: #166534;
-            font-weight: bold;
-        }
-
-        .status-occupied {
-            background-color: #fee2e2 !important;
-            color: #991b1b;
-            font-weight: bold;
-        }
         /*
         |--------------------------------------------------------------------------
         | Anchos de columnas
@@ -402,29 +391,9 @@
 
                             @foreach($columns as $column)
 
-                                @php
-                                    $status = strtolower(trim($row[$column] ?? ''));
-                                @endphp
-
-                                @if($column === 'status' && $status === 'disponible')
-
-                                    <td class="status-available">
-                                        {{ $row[$column] }}
-                                    </td>
-
-                                @elseif($column === 'status' && $status === 'ocupado')
-
-                                    <td class="status-occupied">
-                                        {{ $row[$column] }}
-                                    </td>
-
-                                @else
-
-                                    <td>
-                                        {{ $row[$column] ?? '' }}
-                                    </td>
-
-                                @endif
+                                <td>
+                                    {{ $row[$column] ?? '' }}
+                                </td>
 
                             @endforeach
 
