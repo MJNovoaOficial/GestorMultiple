@@ -289,7 +289,7 @@ class IpAddressController extends Controller
         );
     }
 
-    public function exportPdf(Request $request)
+   public function exportPdf(Request $request)
     {
         ini_set('memory_limit', '1024M');
         set_time_limit(300);
@@ -300,147 +300,267 @@ class IpAddressController extends Controller
             'status' => 'nullable|string',
         ]);
 
-        $sections = [];
+        $tempFiles = [];
 
-        foreach ($request->subnets as $subnet) {
+        try {
 
-            $query = IpAddress::with([
-                'branch',
-                'department',
-                'deviceType',
-                'ipStatus'
-            ]);
+            foreach ($request->subnets as $subnet) {
 
-            /*
-            | Filtrar por subnet
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | Consulta de la subnet
+                |--------------------------------------------------------------------------
+                */
 
-            $query->where(
-                'ip_address',
-                'like',
-                $subnet . '.%'
-            );
+                $query = IpAddress::with([
+                    'branch',
+                    'department',
+                    'deviceType',
+                    'ipStatus'
+                ]);
 
-            /*
-            | Filtrar por estado
-            */
+                $query->where(
+                    'ip_address',
+                    'like',
+                    $subnet . '.%'
+                );
 
-            if (!empty($request->status)) {
+                /*
+                |--------------------------------------------------------------------------
+                | Filtrar por estado
+                |--------------------------------------------------------------------------
+                */
 
-                $query->whereHas('ipStatus', function ($query) use ($request) {
+                if (!empty($request->status)) {
 
-                    $query->whereRaw(
-                        'LOWER(name) = ?',
-                        [strtolower($request->status)]
-                    );
+                    $query->whereHas('ipStatus', function ($query) use ($request) {
 
-                });
+                        $query->whereRaw(
+                            'LOWER(name) = ?',
+                            [strtolower($request->status)]
+                        );
+
+                    });
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | Ordenar IPs
+                |--------------------------------------------------------------------------
+                */
+
+                $ips = $query
+                    ->orderByRaw("
+                        CAST(PARSENAME(ip_address, 4) AS BIGINT),
+                        CAST(PARSENAME(ip_address, 3) AS BIGINT),
+                        CAST(PARSENAME(ip_address, 2) AS BIGINT),
+                        CAST(PARSENAME(ip_address, 1) AS BIGINT)
+                    ")
+                    ->get();
+
+                /*
+                |--------------------------------------------------------------------------
+                | Determinar sucursal
+                |--------------------------------------------------------------------------
+                */
+
+                $branch = $ips->first()?->branch?->name ?? '';
+
+                /*
+                |--------------------------------------------------------------------------
+                | Construir filas
+                |--------------------------------------------------------------------------
+                */
+
+                $rows = $ips->map(function ($ip) use ($request) {
+
+                    $row = [];
+
+                    foreach ($request->columns as $column) {
+
+                        switch ($column) {
+
+                            case 'ip':
+
+                                $row['ip'] = $ip->ip_address;
+
+                                break;
+
+                            case 'status':
+
+                                $row['status'] = $ip->ipStatus?->name ?? '';
+
+                                break;
+
+                            case 'user':
+
+                                $row['user'] = $ip->user_assigned ?? '';
+
+                                break;
+
+                            case 'device':
+
+                                $row['device'] = $ip->deviceType?->name ?? '';
+
+                                break;
+
+                            case 'department':
+
+                                $row['department'] = $ip->department?->name ?? '';
+
+                                break;
+                        }
+                    }
+
+                    return $row;
+
+                })->toArray();
+
+                /*
+                |--------------------------------------------------------------------------
+                | Generar PDF SOLO de esta subnet
+                |--------------------------------------------------------------------------
+                */
+
+                $pdf = Pdf::loadView('ip-addresses.pdf', [
+                    'sections' => [[
+                        'subnet' => $subnet . '.x',
+                        'branch' => $branch,
+                        'rows' => $rows,
+                    ]],
+                    'columns' => $request->columns,
+                    'status' => $request->status,
+                ]);
+
+                $pdf->setPaper('letter', 'landscape');
+
+                /*
+                |--------------------------------------------------------------------------
+                | Guardar PDF temporal
+                |--------------------------------------------------------------------------
+                */
+
+                $tempPath = storage_path(
+                    'app/temp-ip-pdf-' . uniqid('', true) . '.pdf'
+                );
+
+                if (!is_dir(dirname($tempPath))) {
+                    mkdir(dirname($tempPath), 0755, true);
+                }
+
+                $pdf->save($tempPath);
+
+                $tempFiles[] = $tempPath;
+
+                /*
+                |--------------------------------------------------------------------------
+                | Liberar memoria de Dompdf
+                |--------------------------------------------------------------------------
+                */
+
+                unset($pdf);
+                unset($ips);
+                unset($rows);
+
+                gc_collect_cycles();
             }
 
             /*
-            | Ordenar IPs
+            |--------------------------------------------------------------------------
+            | Combinar PDFs
+            |--------------------------------------------------------------------------
             */
 
-            $ips = $query
-                ->orderByRaw("
-                    CAST(PARSENAME(ip_address, 4) AS BIGINT),
-                    CAST(PARSENAME(ip_address, 3) AS BIGINT),
-                    CAST(PARSENAME(ip_address, 2) AS BIGINT),
-                    CAST(PARSENAME(ip_address, 1) AS BIGINT)
-                ")
-                ->get();
-
-            /*
-            | Determinar la sucursal
-            */
-
-            $branch = $ips->first()?->branch?->name ?? '';
-
-            /*
-            | Construir filas
-            */
-
-            $rows = $ips->map(function ($ip) use ($request) {
-
-                $row = [];
-
-                foreach ($request->columns as $column) {
-
-                    switch ($column) {
-
-                        case 'ip':
-
-                            $row['ip'] = $ip->ip_address;
-
-                            break;
-
-                        case 'status':
-
-                            $row['status'] = $ip->ipStatus?->name ?? '';
-
-                            break;
-
-                        case 'user':
-
-                            $row['user'] = $ip->user_assigned ?? '';
-
-                            break;
-
-                        case 'device':
-
-                            $row['device'] = $ip->deviceType?->name ?? '';
-
-                            break;
-
-                        case 'department':
-
-                            $row['department'] = $ip->department?->name ?? '';
-
-                            break;
-                    }
-                }
-
-                return $row;
-
-            })->toArray();
-
-            /*
-            | Agregar subnet al PDF
-            */
-
-            $sections[] = [
-                'subnet' => $subnet . '.x',
-                'branch' => $branch,
-                'rows' => $rows,
-            ];
-        }
-
-        /*
-        | Registrar auditoría
-        */
-
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'export',
-            'description' => 'Exportó direcciones IP a PDF.',
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
-
-        /*
-        | Generar PDF
-        */
-
-        $pdf = Pdf::loadView('ip-addresses.pdf', [
-            'sections' => $sections,
-            'columns' => $request->columns,
-            'status' => $request->status,
-        ]);
-
-        return $pdf
-            ->setPaper('letter', 'landscape')
-            ->download(
-                'DireccionesIP-' . now()->format('Y-m-d') . '.pdf'
+            $outputPath = storage_path(
+                'app/DireccionesIP-' . now()->format('Y-m-d-His') . '.pdf'
             );
+
+            $fpdi = new \setasign\Fpdi\Fpdi();
+
+            foreach ($tempFiles as $tempFile) {
+
+                $pageCount = $fpdi->setSourceFile($tempFile);
+
+                for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
+
+                    $templateId = $fpdi->importPage($pageNo);
+
+                    $size = $fpdi->getTemplateSize($templateId);
+
+                    $orientation = $size['width'] > $size['height']
+                        ? 'L'
+                        : 'P';
+
+                    $fpdi->AddPage(
+                        $orientation,
+                        [
+                            $size['width'],
+                            $size['height']
+                        ]
+                    );
+
+                    $fpdi->useTemplate($templateId);
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Guardar PDF final
+            |--------------------------------------------------------------------------
+            */
+
+            $fpdi->Output($outputPath, 'F');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Auditoría
+            |--------------------------------------------------------------------------
+            */
+
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'export',
+                'description' => 'Exportó direcciones IP a PDF.',
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | Descargar y eliminar temporal
+            |--------------------------------------------------------------------------
+            */
+
+            foreach ($tempFiles as $tempFile) {
+
+                if (file_exists($tempFile)) {
+                    unlink($tempFile);
+                }
+            }
+
+            return response()
+                ->download(
+                    $outputPath,
+                    'DireccionesIP-' . now()->format('Y-m-d') . '.pdf'
+                )
+                ->deleteFileAfterSend(true);
+
+        } catch (\Throwable $e) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Limpiar temporales si ocurre un error
+            |--------------------------------------------------------------------------
+            */
+
+            foreach ($tempFiles as $tempFile) {
+
+                if (file_exists($tempFile)) {
+                    unlink($tempFile);
+                }
+            }
+
+            throw $e;
+        }
     }
 }
