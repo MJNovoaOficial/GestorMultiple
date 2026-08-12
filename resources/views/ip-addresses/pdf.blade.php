@@ -160,29 +160,6 @@
             background-color: #ffffff;
         }
 
-        .status {
-            display: inline-block;
-            padding: 3px 9px;
-            border-radius: 10px;
-            font-size: 8px;
-            font-weight: bold;
-            white-space: nowrap;
-        }
-
-        .status-available {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .status-occupied {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-default {
-            background-color: #e5e7eb;
-            color: #374151;
-        }
         /*
         |--------------------------------------------------------------------------
         | Anchos de columnas
