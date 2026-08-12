@@ -160,6 +160,29 @@
             background-color: #ffffff;
         }
 
+        .status {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 10px;
+            font-size: 8px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-available {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-occupied {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-default {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
         /*
         |--------------------------------------------------------------------------
         | Anchos de columnas
@@ -393,7 +416,37 @@
 
                                 <td>
 
-                                    {{ $row[$column] ?? '' }}
+                                    @if($column === 'status')
+
+                                        @php
+                                            $status = strtolower(trim($row[$column] ?? ''));
+                                        @endphp
+
+                                        @if($status === 'disponible')
+
+                                            <span class="status status-available">
+                                                {{ $row[$column] }}
+                                            </span>
+
+                                        @elseif($status === 'ocupado')
+
+                                            <span class="status status-occupied">
+                                                {{ $row[$column] }}
+                                            </span>
+
+                                        @else
+
+                                            <span class="status status-default">
+                                                {{ $row[$column] ?? '' }}
+                                            </span>
+
+                                        @endif
+
+                                    @else
+
+                                        {{ $row[$column] ?? '' }}
+
+                                    @endif
 
                                 </td>
 
