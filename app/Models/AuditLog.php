@@ -9,17 +9,11 @@ class AuditLog extends Model
     protected $fillable = [
 
         'user_id',
-
         'action',
-
         'description',
-
         'old_values',
-
         'new_values',
-
         'ip_address',
-
         'user_agent',
 
     ];
@@ -27,7 +21,6 @@ class AuditLog extends Model
     protected $casts = [
 
         'old_values' => 'array',
-
         'new_values' => 'array',
 
     ];
