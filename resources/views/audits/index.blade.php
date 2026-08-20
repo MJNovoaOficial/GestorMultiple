@@ -112,6 +112,11 @@
                                             'class' => 'bg-red-600',
                                         ],
 
+                                        'deleted_permanently' => [
+                                            'label' => 'Eliminado permanentemente',
+                                            'class' => 'bg-red-900',
+                                        ],
+
                                         'reactivated' => [
                                             'label' => 'Reactivado',
                                             'class' => 'bg-blue-600',

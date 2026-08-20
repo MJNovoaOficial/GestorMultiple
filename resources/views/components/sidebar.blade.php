@@ -228,7 +228,7 @@
 
                 {{-- Icon --}}
                 <span class="font-semibold text-sm tracking-wide">
-                    📦 Gestión Suministros
+                    📦 Gestión de Suministros
                 </span>
 
             </div>
@@ -541,6 +541,25 @@
 
         </div>
     @endif
+
+    {{-- Documentación --}}
+
+    <a
+        href="{{ route('documentacion.index') }}"
+        class="
+            flex items-center gap-3
+            px-4 py-2.5 rounded-2xl
+            bg-slate-900/80 whitespace-nowrap
+            dark:border-slate-800
+            hover:bg-[#1E293B]
+            transition
+            shadow-lg
+        "
+    >
+        <span class="font-semibold text-sm tracking-wide text-white">
+            📚 Manuales y documentos
+        </span>
+    </a>
 
     {{-- Auditoría --}}
         <a

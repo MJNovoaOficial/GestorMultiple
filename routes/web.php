@@ -20,6 +20,8 @@ use App\Http\Controllers\EmployeePhoneController;
 use App\Http\Controllers\NotebookController;
 use App\Http\Controllers\RadioFrequencyController;
 use App\Http\Controllers\DvrController;
+use App\Http\Controllers\DocumentCategoryController;
+use App\Http\Controllers\DocumentController;
 
 Route::get('/', function () {
    
@@ -30,7 +32,6 @@ Route::get('/', function () {
     return redirect()->route('login');
     
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])
@@ -141,6 +142,24 @@ Route::middleware('auth')->group(function () {
         Route::patch('/dvrs/{dvr}/retire', [DvrController::class, 'retire'])
             ->name('dvrs.retire');
 
+        /*
+        |--------------------------------------------------------------------------
+        | Módulo de Manuales y documentos sql
+        |--------------------------------------------------------------------------
+        */  
+        Route::get('/documentacion/papelera', [DocumentCategoryController::class, 'trash'])
+            ->name('documentacion.trash');
+        Route::patch('/documentacion/{id}/restore',[DocumentCategoryController::class, 'restore'])
+            ->name('documentacion.restore');
+        Route::delete('/documentacion/{id}/permanent-delete',[DocumentCategoryController::class, 'permanentDelete'])
+            ->name('documentacion.permanent-delete');
+        Route::get('/documentacion/{category}',[DocumentController::class, 'index'])
+            ->name('documentacion.category');
+        Route::post('/documentacion/{category}/documents',[DocumentController::class, 'store'])
+            ->name('documentacion.documents.store');
+        Route::resource('documentacion', DocumentCategoryController::class)
+            ->except(['create']);
+        
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría
