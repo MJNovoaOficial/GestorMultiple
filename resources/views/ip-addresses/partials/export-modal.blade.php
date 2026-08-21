@@ -43,7 +43,11 @@
                 aria-label="Cerrar modal de exportación"
                 class="rounded-lg p-2 text-xl leading-none text-gray-400 transition hover:bg-gray-800 hover:text-white"
             >
-                ✕
+                <img
+                    src="{{ asset('images/documentacion/salir.png') }}"
+                    alt="Cerrar"
+                    class="w-5 h-5 object-contain"
+                >
             </button>
         </div>
 

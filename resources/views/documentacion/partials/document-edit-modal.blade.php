@@ -1,0 +1,332 @@
+{{-- Modal: Editar documento --}}
+<div
+    id="document-edit-modal"
+    class="
+        hidden
+        fixed
+        inset-0
+        z-50
+        bg-black/60
+        items-center
+        justify-center
+        p-4
+    "
+>
+    <div
+        class="
+            relative
+            w-full
+            max-w-xl
+            rounded-2xl
+            bg-white
+            dark:bg-[#020817]
+            border
+            border-slate-200
+            dark:border-slate-800
+            shadow-2xl
+            overflow-hidden
+        "
+    >
+        {{-- HEADER --}}
+        <div
+            class="
+                flex
+                items-center
+                justify-between
+                px-6
+                py-5
+                border-b
+                border-slate-200
+                dark:border-slate-800
+            "
+        >
+            <div>
+                <h2
+                    class="
+                        text-xl
+                        font-bold
+                        text-slate-700
+                        dark:text-slate-200
+                    "
+                >
+                    Editar documento
+                </h2>
+
+                <p
+                    class="
+                        mt-1
+                        text-sm
+                        text-slate-500
+                        dark:text-slate-400
+                    "
+                >
+                    Modifica la información del documento.
+                </p>
+            </div>
+            {{-- CERRAR --}}
+            <button
+                type="button"
+                id="close-document-edit-modal"
+                class="
+                    w-9
+                    h-9
+                    rounded-xl
+                    flex
+                    items-center
+                    justify-center
+                    text-slate-500
+                    dark:text-slate-400
+                    hover:bg-slate-100
+                    dark:hover:bg-slate-800
+                    transition
+                "
+            >
+                <img
+                    src="{{ asset('images/documentacion/salir.png') }}"
+                    alt="Cerrar"
+                    class="w-5 h-5 object-contain"
+                >
+            </button>
+        </div>
+        {{-- FORMULARIO --}}
+        <form
+            id="document-edit-form"
+            method="POST"
+        >
+            @csrf
+            @method('PUT')
+            <div
+                class="
+                    px-6
+                    py-6
+                    space-y-5
+                "
+            >
+                {{-- NOMBRE --}}
+                <div>
+                    <label
+                        for="edit-document-name"
+                        class="
+                            block
+                            mb-2
+                            text-sm
+                            font-semibold
+                            text-slate-700
+                            dark:text-slate-200
+                        "
+                    >
+                        Nombre del documento
+                    </label>
+
+                    <input
+                        type="text"
+                        id="edit-document-name"
+                        name="name"
+                        required
+                        maxlength="255"
+                        class="
+                            w-full
+                            rounded-xl
+                            border
+                            border-slate-300
+                            dark:border-slate-700
+                            bg-white
+                            dark:bg-slate-900
+                            px-4
+                            py-3
+                            text-sm
+                            text-slate-700
+                            dark:text-slate-200
+                            outline-none
+                            focus:border-blue-500
+                            focus:ring-2
+                            focus:ring-blue-500/20
+                            transition
+                        "
+                    >
+                </div>
+                {{-- DESCRIPCIÓN --}}
+                <div>
+                    <label
+                        for="edit-document-description"
+                        class="
+                            block
+                            mb-2
+                            text-sm
+                            font-semibold
+                            text-slate-700
+                            dark:text-slate-200
+                        "
+                    >
+                        Descripción
+                    </label>
+
+                    <textarea
+                        id="edit-document-description"
+                        name="description"
+                        rows="4"
+                        class="
+                            w-full
+                            rounded-xl
+                            border
+                            border-slate-300
+                            dark:border-slate-700
+                            bg-white
+                            dark:bg-slate-900
+                            px-4
+                            py-3
+                            text-sm
+                            text-slate-700
+                            dark:text-slate-200
+                            outline-none
+                            resize-none
+                            focus:border-blue-500
+                            focus:ring-2
+                            focus:ring-blue-500/20
+                            transition
+                        "
+                        placeholder="Agrega una descripción..."
+                    ></textarea>
+                </div>
+                {{-- AVISO ARCHIVO --}}
+                <div
+                    class="
+                        flex
+                        items-start
+                        gap-3
+                        rounded-xl
+                        bg-slate-50
+                        dark:bg-slate-900/60
+                        border
+                        border-slate-200
+                        dark:border-slate-800
+                        px-4
+                        py-3
+                    "
+                >
+                    {{-- ICONO --}}
+                    <div
+                        class="
+                            w-12
+                            h-12
+                            rounded-xl
+                            bg-white
+                            dark:bg-slate-800
+                            border
+                            border-slate-200
+                            dark:border-slate-700
+                            flex
+                            items-center
+                            justify-center
+                            flex-shrink-0
+                            overflow-hidden
+                        "
+                    >
+
+                        <img
+                            id="edit-document-file-icon"
+                            src=""
+                            alt="Icono del archivo"
+                            class="
+                                w-full
+                                h-full
+                                object-contain
+                                p-2
+                            "
+                        >
+                    </div>
+                    <div class="min-w-0">
+
+                        <p
+                            class="
+                                text-xs
+                                font-semibold
+                                text-slate-600
+                                dark:text-slate-300
+                            "
+                        >
+                            Archivo actual
+                        </p>
+
+                        <p
+                            id="edit-document-file-name"
+                            class="
+                                mt-1
+                                text-sm
+                                text-slate-500
+                                dark:text-slate-400
+                                truncate
+                            "
+                        >
+                            -
+                        </p>
+
+                        <p
+                            class="
+                                mt-1
+                                text-xs
+                                text-slate-400
+                                dark:text-slate-500
+                            "
+                        >
+                            El archivo no se modificará.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {{-- FOOTER --}}
+            <div
+                class="
+                    flex
+                    items-center
+                    justify-end
+                    gap-3
+                    px-6
+                    py-4
+                    border-t
+                    border-slate-200
+                    dark:border-slate-800
+                    bg-slate-50
+                    dark:bg-slate-900/40
+                "
+            >
+                {{-- CANCELAR --}}
+                <button
+                    type="button"
+                    id="cancel-document-edit-modal"
+                    class="
+                        px-5
+                        py-2.5
+                        rounded-xl
+                        bg-slate-200
+                        hover:bg-slate-300
+                        dark:bg-slate-800
+                        dark:hover:bg-slate-700
+                        text-slate-700
+                        dark:text-slate-200
+                        font-semibold
+                        transition
+                    "
+                >
+                    Cancelar
+                </button>
+                {{-- GUARDAR --}}
+                <button
+                    type="submit"
+                    class="
+                        px-5
+                        py-2.5
+                        rounded-xl
+                        bg-blue-600
+                        hover:bg-blue-700
+                        text-white
+                        font-semibold
+                        transition
+                    "
+                >
+                    💾 Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

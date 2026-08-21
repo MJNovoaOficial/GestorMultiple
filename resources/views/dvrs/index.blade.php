@@ -508,7 +508,11 @@
                         transition
                     "
                 >
-                    ✕
+                    <img
+                        src="{{ asset('images/documentacion/salir.png') }}"
+                        alt="Cerrar"
+                        class="w-5 h-5 object-contain"
+                    >
                 </button>
             </div>
 

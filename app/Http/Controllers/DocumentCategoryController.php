@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\DocumentCategory;
+use App\Models\Document;
 use Illuminate\Http\Request;
 use App\Models\AuditLog;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 
 class DocumentCategoryController extends Controller
@@ -251,144 +253,351 @@ class DocumentCategoryController extends Controller
 
     public function trash()
     {
+        /*
+        |--------------------------------------------------------------------------
+        | CATEGORÍAS ELIMINADAS
+        |--------------------------------------------------------------------------
+        */
         $categories = DocumentCategory::onlyTrashed()
             ->where('is_active', true)
-            ->withCount('documents')
+            ->withCount([
+                'documents' => function ($query) {
+                    $query->withTrashed();
+                }
+            ])
             ->orderByDesc('deleted_at')
             ->get();
-
-        return view('documentacion.trash', compact('categories'));
+        /*
+        |--------------------------------------------------------------------------
+        | DOCUMENTOS ELIMINADOS
+        |--------------------------------------------------------------------------
+        */
+        $documents = Document::onlyTrashed()
+            ->with([
+                'creator',
+                'category' => function ($query) {
+                    $query->withTrashed();
+                }
+            ])
+            ->orderByDesc('deleted_at')
+            ->get();
+        /*
+        |--------------------------------------------------------------------------
+        | VISTA
+        |--------------------------------------------------------------------------
+        */
+        return view(
+            'documentacion.trash',
+            compact(
+                'categories',
+                'documents'
+            )
+        );
     }
 
     public function destroy(Request $request, DocumentCategory $documentacion)
     {
-        // Guardamos los datos antes del Soft Delete
-        $oldValues = [
-            'id' => $documentacion->id,
-            'name' => $documentacion->name,
-            'description' => $documentacion->description,
-            'image' => $documentacion->image,
-            'created_by' => $documentacion->created_by,
-        ];
-
-        // Soft Delete
-        $documentacion->delete();
-
-        // Registrar auditoría
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'deleted',
-            'description' => 'Categoría de carpeta "' . $documentacion->name . '" enviada a la papelera',
-
-            'old_values' => $oldValues,
-
-            'new_values' => [
-                'deleted_at' => $documentacion->deleted_at,
-            ],
-
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
-
-        return redirect()
-            ->route('documentacion.index')
-            ->with(
-                'success',
-                'La categoría fue enviada a la papelera.'
-            );
-    }
-
-    public function restore(Request $request, $id)
-    {
-        $documentacion = DocumentCategory::withTrashed()
-            ->findOrFail($id);
-
-        // Guardamos los datos antes de restaurar
-        $oldValues = [
-            'id' => $documentacion->id,
-            'name' => $documentacion->name,
-            'description' => $documentacion->description,
-            'image' => $documentacion->image,
-            'created_by' => $documentacion->created_by,
-            'deleted_at' => $documentacion->deleted_at,
-        ];
-
-        // Restaurar categoría
-        $documentacion->restore();
-
-        // Registrar auditoría
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'reactivated',
-            'description' => 'Categoría de carpeta "' . $documentacion->name . '" restaurada',
-
-            'old_values' => $oldValues,
-
-            'new_values' => [
+        DB::transaction(function () use ($request, $documentacion) {
+            /*
+            |--------------------------------------------------------------------------
+            | GUARDAR DATOS DE LA CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            $oldValues = [
                 'id' => $documentacion->id,
                 'name' => $documentacion->name,
                 'description' => $documentacion->description,
                 'image' => $documentacion->image,
                 'created_by' => $documentacion->created_by,
-                'deleted_at' => null,
-            ],
+            ];
+            /*
+            |--------------------------------------------------------------------------
+            | ENVIAR DOCUMENTOS A LA PAPELERA
+            |--------------------------------------------------------------------------
+            */
+            $documentacion->documents
+                ->each(function ($document) use ($request, $documentacion) {
 
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
+                    $documentOldValues = [
+                        'id' => $document->id,
+                        'category_id' => $document->category_id,
+                        'name' => $document->name,
+                        'description' => $document->description,
+                        'file_name' => $document->file_name,
+                        'file_type' => $document->file_type,
+                        'file_size' => $document->file_size,
+                        'created_by' => $document->created_by,
+                    ];
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | MARCAR QUE FUE ELIMINADO JUNTO CON LA CATEGORÍA
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $document->deleted_with_category = true;
+                    $document->save();
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SOFT DELETE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $document->delete();
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | AUDITORÍA
+                    |--------------------------------------------------------------------------
+                    */
+
+                    AuditLog::create([
+                        'user_id' => auth()->id(),
+                        'action' => 'deleted',
+
+                        'description' =>
+                            'Documento "' . $document->name .
+                            '" enviado a la papelera debido a la eliminación de la categoría "' .
+                            $documentacion->name . '"',
+
+                        'old_values' => $documentOldValues,
+
+                        'new_values' => [
+                            'deleted_at' => $document->deleted_at,
+                            'deleted_with_category' => true,
+                            'category_name' => $documentacion->name,
+                        ],
+
+                        'ip_address' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]);
+
+                });
+            /*
+            |--------------------------------------------------------------------------
+            | SOFT DELETE DE LA CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            $documentacion->delete();
+            /*
+            |--------------------------------------------------------------------------
+            | AUDITORÍA DE LA CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'deleted',
+
+                'description' =>
+                    'Carpeta de "' .
+                    $documentacion->name .
+                    '" enviada a la papelera junto con sus documentos',
+
+                'old_values' => $oldValues,
+
+                'new_values' => [
+                    'deleted_at' => $documentacion->deleted_at,
+                ],
+
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+        });
 
         return redirect()
             ->route('documentacion.index')
             ->with(
                 'success',
-                'La categoría fue restaurada correctamente.'
+                'La carpeta y sus documentos fueron enviados a la papelera.'
             );
     }
 
-    public function permanentDelete(Request $request, $id)
+    public function restore(Request $request, $id)
     {
-        $documentacion = DocumentCategory::withTrashed()
-            ->findOrFail($id);
-
-        // Guardamos los datos antes de desactivar
-        $oldValues = [
-            'id' => $documentacion->id,
-            'name' => $documentacion->name,
-            'description' => $documentacion->description,
-            'image' => $documentacion->image,
-            'created_by' => $documentacion->created_by,
-            'deleted_at' => $documentacion->deleted_at,
-            'is_active' => $documentacion->is_active,
-        ];
-
-        // Desactivación definitiva para la aplicación
-        $documentacion->is_active = false;
-        $documentacion->save();
-
-        // Registrar auditoría
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' => 'deleted_permanently',
-            'description' => 'Categoría de carpeta "' . $documentacion->name . '" eliminada definitivamente',
-
-            'old_values' => $oldValues,
-
-            'new_values' => [
+        DB::transaction(function () use ($request, $id) {
+            $documentacion = DocumentCategory::withTrashed()
+                ->findOrFail($id);
+            /*
+            |--------------------------------------------------------------------------
+            | GUARDAR DATOS ANTES DE RESTAURAR
+            |--------------------------------------------------------------------------
+            */
+            $oldValues = [
                 'id' => $documentacion->id,
                 'name' => $documentacion->name,
-                'is_active' => false,
-            ],
+                'description' => $documentacion->description,
+                'image' => $documentacion->image,
+                'created_by' => $documentacion->created_by,
+                'deleted_at' => $documentacion->deleted_at,
+            ];
+            /*
+            |--------------------------------------------------------------------------
+            | RESTAURAR CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            $documentacion->restore();
+            /*
+            |--------------------------------------------------------------------------
+            | RESTAURAR DOCUMENTOS ELIMINADOS JUNTO CON LA CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            $documents = Document::onlyTrashed()
+                ->where('category_id', $documentacion->id)
+                ->where('deleted_with_category', true)
+                ->get();
+            foreach ($documents as $document) {
+                $document->restore();
+                // Ya no está eliminado junto con una categoría
+                $document->deleted_with_category = false;
+                $document->save();
+            }
+            /*
+            |--------------------------------------------------------------------------
+            | AUDITORÍA DE LA CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'reactivated',
+                'description' =>
+                    'La carpeta "' .
+                    $documentacion->name .
+                    '" restaurada junto con sus documentos',
+                'old_values' => $oldValues,
+                'new_values' => [
+                    'id' => $documentacion->id,
+                    'name' => $documentacion->name,
+                    'description' => $documentacion->description,
+                    'image' => $documentacion->image,
+                    'created_by' => $documentacion->created_by,
+                    'deleted_at' => null,
+                    'documents_restored' => $documents->count(),
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        });
+        return redirect()
+            ->route('documentacion.index')
+            ->with(
+                'success',
+                'La categoría y sus documentos fueron restaurados correctamente.'
+            );
+    }
 
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
-
+   public function permanentDelete(Request $request, $id)
+    {
+        DB::transaction(function () use ($request, $id) {
+            $documentacion = DocumentCategory::withTrashed()
+                ->findOrFail($id);
+            /*
+            |--------------------------------------------------------------------------
+            | DATOS DE LA CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            $oldValues = [
+                'id' => $documentacion->id,
+                'name' => $documentacion->name,
+                'description' => $documentacion->description,
+                'image' => $documentacion->image,
+                'created_by' => $documentacion->created_by,
+                'deleted_at' => $documentacion->deleted_at,
+                'is_active' => $documentacion->is_active,
+            ];
+            /*
+            |--------------------------------------------------------------------------
+            | DOCUMENTOS DE LA CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            $documents = Document::withTrashed()
+                ->where('category_id', $documentacion->id)
+                ->where('is_active', true)
+                ->get();
+            foreach ($documents as $document) {
+                $documentOldValues = [
+                    'id' => $document->id,
+                    'category_id' => $document->category_id,
+                    'name' => $document->name,
+                    'description' => $document->description,
+                    'file_path' => $document->file_path,
+                    'file_name' => $document->file_name,
+                    'file_type' => $document->file_type,
+                    'file_size' => $document->file_size,
+                    'created_by' => $document->created_by,
+                    'deleted_at' => $document->deleted_at,
+                    'is_active' => $document->is_active,
+                ];
+                /*
+                |--------------------------------------------------------------------------
+                | DESACTIVAR DOCUMENTO
+                |--------------------------------------------------------------------------
+                */
+                $document->is_active = false;
+                $document->save();
+                /*
+                |--------------------------------------------------------------------------
+                | AUDITORÍA DEL DOCUMENTO
+                |--------------------------------------------------------------------------
+                */
+                AuditLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'deleted_permanently',
+                    'description' =>
+                        'Documento "' .
+                        $document->name .
+                        '" eliminado definitivamente junto con la categoría "' .
+                        $documentacion->name .
+                        '"',
+                    'old_values' => $documentOldValues,
+                    'new_values' => [
+                        'id' => $document->id,
+                        'name' => $document->name,
+                        'is_active' => false,
+                        'category_id' => $document->category_id,
+                    ],
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            }
+            /*
+            |--------------------------------------------------------------------------
+            | DESACTIVAR CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            $documentacion->is_active = false;
+            $documentacion->save();
+            /*
+            |--------------------------------------------------------------------------
+            | AUDITORÍA DE LA CATEGORÍA
+            |--------------------------------------------------------------------------
+            */
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'deleted_permanently',
+                'description' =>
+                    'Categoría de carpeta "' .
+                    $documentacion->name .
+                    '" eliminada definitivamente junto con sus documentos',
+                'old_values' => $oldValues,
+                'new_values' => [
+                    'id' => $documentacion->id,
+                    'name' => $documentacion->name,
+                    'is_active' => false,
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+        });
         return redirect()
             ->route('documentacion.trash')
             ->with(
                 'success',
-                'La categoría fue eliminada definitivamente.'
+                'La categoría y sus documentos fueron eliminados definitivamente.'
             );
     }
-
 }

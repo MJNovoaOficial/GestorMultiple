@@ -157,9 +157,14 @@ Route::middleware('auth')->group(function () {
             ->name('documentacion.category');
         Route::post('/documentacion/{category}/documents',[DocumentController::class, 'store'])
             ->name('documentacion.documents.store');
+        Route::get('/documentacion/documentos/{document}/download',[DocumentController::class, 'download'])
+            ->name('documentacion.documents.download');
+        Route::put('/documentacion/documentos/{document}',[DocumentController::class, 'update'])
+            ->name('documentacion.documents.update');
+        Route::delete('/documentacion/documentos/{document}', [DocumentController::class, 'destroy'])
+            ->name('documentacion.documents.destroy');
         Route::resource('documentacion', DocumentCategoryController::class)
             ->except(['create']);
-        
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría

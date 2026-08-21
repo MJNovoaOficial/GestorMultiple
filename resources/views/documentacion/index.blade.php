@@ -23,18 +23,25 @@
                         inline-flex
                         items-center
                         gap-2
-                        px-5
-                        py-3
-                        rounded-2xl
-                        bg-green-600
-                        hover:bg-green-700
-                        transition
-                        text-white
+                        rounded-xl
+                        bg-blue-600
+                        hover:bg-blue-700
+                        px-4
+                        py-2.5
+                        text-sm
                         font-semibold
+                        text-white
+                        transition
                     "
                 >
-                    <span class="text-lg">+</span>
-                    Nueva Carpeta
+                    <img
+                        src="{{ asset('images/documentacion/carpeta.png') }}"
+                        alt="Nueva Carpeta"
+                        class="w-5 h-5 object-contain"
+                    >
+                    <span>
+                        Nueva Carpeta
+                    </span>
                 </button>
             </div>
 

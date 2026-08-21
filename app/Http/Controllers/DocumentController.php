@@ -158,43 +158,215 @@ class DocumentController extends Controller
         }
     }
 
-
-    /**
-     * Mostrar un documento.
-     */
-    public function show(Document $document)
+    public function download(Document $document)
     {
-        //
+        if (!$document->is_active) {
+            abort(404);
+        }
+        if (!Storage::disk('public')->exists($document->file_path)) {
+            abort(404, 'El archivo no existe.');
+        }
+
+        return Storage::disk('public')->download(
+            $document->file_path,
+            $document->file_name
+        );
     }
 
-
-    /**
-     * Mostrar formulario de edición.
-     */
-    public function edit(Document $document)
+    public function trash()
     {
-        //
-    }
+        $categories = DocumentCategory::onlyTrashed()
+            ->withCount([
+                'documents' => function ($query) {
+                    $query->withTrashed();
+                }
+            ])
+            ->latest('deleted_at')
+            ->get();
 
+
+        $documents = Document::onlyTrashed()
+            ->with([
+                'creator',
+                'category' => function ($query) {
+                    $query->withTrashed();
+                }
+            ])
+            ->latest('deleted_at')
+            ->get();
+
+
+        return view(
+            'documentacion.trash',
+            compact(
+                'categories',
+                'documents'
+            )
+        );
+    }
 
     /**
      * Actualizar un documento.
      */
     public function update(Request $request, Document $document)
     {
-        //
+        if (!$document->is_active) {
+            abort(404);
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDACIÓN
+        |--------------------------------------------------------------------------
+        */
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | GUARDAR VALORES ANTERIORES
+        |--------------------------------------------------------------------------
+        */
+        $oldValues = [
+            'id' => $document->id,
+            'name' => $document->name,
+            'description' => $document->description,
+        ];
+        /*
+        |--------------------------------------------------------------------------
+        | ACTUALIZAR
+        |--------------------------------------------------------------------------
+        */
+        $document->update([
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | AUDITORÍA
+        |--------------------------------------------------------------------------
+        */
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'updated',
+            'description' =>
+                'Documento "' .
+                $document->name .
+                '" actualizado',
+            'old_values' => $oldValues,
+            'new_values' => [
+                'id' => $document->id,
+                'name' => $document->name,
+                'description' => $document->description,
+            ],
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+        return redirect()
+            ->route(
+                'documentacion.category',
+                $document->category_id
+            )
+            ->with(
+                'success',
+                'El documento fue actualizado correctamente.'
+            );
     }
-
-
     /**
      * Enviar documento a la papelera.
      */
     public function destroy(Request $request, Document $document)
     {
-        //
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDAR QUE EL DOCUMENTO ESTÉ ACTIVO
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$document->is_active) {
+            abort(404);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | GUARDAR VALORES ANTERIORES
+        |--------------------------------------------------------------------------
+        */
+
+        $oldValues = [
+            'id' => $document->id,
+            'category_id' => $document->category_id,
+            'name' => $document->name,
+            'description' => $document->description,
+            'file_path' => $document->file_path,
+            'file_name' => $document->file_name,
+            'file_type' => $document->file_type,
+            'file_size' => $document->file_size,
+            'created_by' => $document->created_by,
+            'is_active' => $document->is_active,
+            'deleted_with_category' => $document->deleted_with_category,
+        ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ELIMINACIÓN INDIVIDUAL
+        |--------------------------------------------------------------------------
+        */
+
+        $document->deleted_with_category = false;
+        $document->save();
+
+        $document->delete();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AUDITORÍA
+        |--------------------------------------------------------------------------
+        */
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'deleted',
+
+            'description' =>
+                'Documento "' .
+                $document->name .
+                '" enviado a la papelera',
+
+            'old_values' => $oldValues,
+
+            'new_values' => [
+                'id' => $document->id,
+                'name' => $document->name,
+                'deleted_at' => $document->deleted_at,
+                'deleted_with_category' => false,
+            ],
+
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | REDIRECCIÓN
+        |--------------------------------------------------------------------------
+        */
+
+        return redirect()
+            ->route(
+                'documentacion.category',
+                $document->category_id
+            )
+            ->with(
+                'success',
+                'El documento fue enviado a la papelera.'
+            );
     }
-
-
+    
     /**
      * Restaurar documento.
      */

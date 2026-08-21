@@ -21,6 +21,10 @@ class Document extends Model
         'created_by',
     ];
 
+    protected $casts = [
+        'deleted_with_category' => 'boolean',
+    ];
+
     public function category()
     {
         return $this->belongsTo(DocumentCategory::class, 'category_id');

@@ -16,17 +16,26 @@
                             inline-flex
                             items-center
                             gap-2
-                            px-4
-                            py-2.5
                             rounded-xl
                             bg-blue-600
                             hover:bg-blue-700
-                            text-white
+                            px-4
+                            py-2.5
+                            text-sm
                             font-semibold
+                            text-white
                             transition
                         "
                     >
-                        ← Volver a documentación
+                        <img
+                            src="{{ asset('images/documentacion/atras.png') }}"
+                            alt="Volver"
+                            class="w-5 h-5 object-contain"
+                        >
+
+                        <span>
+                            Volver a documentación
+                        </span>
                     </a>
 
 
@@ -67,8 +76,6 @@
                             @endif
 
                         </div>
-
-
                         <div>
 
                             <h1
@@ -111,26 +118,31 @@
                     class="
                         inline-flex
                         items-center
-                        justify-center
                         gap-2
-                        px-5
-                        py-2.5
                         rounded-xl
                         bg-blue-600
                         hover:bg-blue-700
-                        text-white
+                        px-4
+                        py-2.5
+                        text-sm
                         font-semibold
+                        text-white
                         transition
                     "
                 >
-                    <span class="text-lg">+</span>
-                    Subir archivo
+                    <img
+                        src="{{ asset('images/documentacion/nuevo.png') }}"
+                        alt="Subir"
+                        class="w-5 h-5 object-contain"
+                    >
+                    <span>
+                        Subir archivo
+                    </span>
                 </button>
-
             </div>
 
 
-            {{-- INFORMACIÓN --}}
+            {{-- INFORMACIÓN Y BÚSQUEDA --}}
             <div
                 class="
                     mb-6
@@ -144,11 +156,18 @@
                     py-4
                 "
             >
-
-                <div class="flex items-center justify-between">
+                <div
+                    class="
+                        flex
+                        flex-col
+                        md:flex-row
+                        md:items-center
+                        md:justify-between
+                        gap-4
+                    "
+                >
 
                     <div>
-
                         <p
                             class="
                                 text-sm
@@ -170,9 +189,7 @@
                         >
                             Archivos almacenados en esta categoría.
                         </p>
-
                     </div>
-
 
                     <div
                         class="
@@ -191,6 +208,61 @@
                     </div>
 
                 </div>
+
+
+                {{-- BUSCADOR --}}
+                @if($documents->count())
+
+                    <div class="mt-4">
+
+                        <div class="relative">
+
+                            <span
+                                class="
+                                    absolute
+                                    inset-y-0
+                                    left-0
+                                    flex
+                                    items-center
+                                    pl-4
+                                    text-slate-400
+                                "
+                            >
+                                🔎
+                            </span>
+
+                            <input
+                                type="text"
+                                id="document-search"
+                                placeholder="Buscar documentos..."
+                                class="
+                                    w-full
+                                    rounded-xl
+                                    border
+                                    border-slate-300
+                                    dark:border-slate-700
+                                    bg-slate-50
+                                    dark:bg-slate-900
+                                    text-sm
+                                    text-slate-700
+                                    dark:text-slate-200
+                                    placeholder-slate-400
+                                    pl-11
+                                    pr-4
+                                    py-3
+                                    outline-none
+                                    focus:border-blue-500
+                                    focus:ring-2
+                                    focus:ring-blue-500/20
+                                    transition
+                                "
+                            >
+
+                        </div>
+
+                    </div>
+
+                @endif
 
             </div>
 
@@ -212,8 +284,61 @@
 
                     @foreach($documents as $document)
 
+                        @php
+                            $extension = strtolower(
+                                pathinfo($document->file_name, PATHINFO_EXTENSION)
+                            );
+
+                            $icon = match ($extension) {
+
+                                'xls', 'xlsx', 'csv'
+                                    => asset('images/documentacion/excel.png'),
+
+                                'pdf'
+                                    => asset('images/documentacion/pdf.png'),
+
+                                'ppt', 'pptx'
+                                    => asset('images/documentacion/powerpoint.png'),
+
+                                'doc', 'docx'
+                                    => asset('images/documentacion/word.png'),
+
+                                'sql'
+                                    => asset('images/documentacion/sql.png'),
+
+                                'txt'
+                                    => asset('images/documentacion/txt.png'),
+
+                                'rar', 'zip'
+                                    => asset('images/documentacion/rar.png'),
+
+                                'jpg', 'jpeg', 'png', 'gif', 'webp'
+                                    => asset('images/documentacion/imagen.png'),
+
+                                default
+                                    => asset('images/documentacion/txt.png'),
+                            };
+
+                            if ($document->file_size >= 1024 * 1024) {
+
+                                $fileSize = number_format(
+                                    $document->file_size / 1024 / 1024,
+                                    2
+                                ) . ' MB';
+
+                            } else {
+
+                                $fileSize = number_format(
+                                    $document->file_size / 1024,
+                                    2
+                                ) . ' KB';
+
+                            }
+                        @endphp
+
                         <div
                             class="
+                                document-item
                                 flex
                                 items-center
                                 gap-4
@@ -224,116 +349,256 @@
                                 dark:border-slate-800
                                 last:border-b-0
                                 hover:bg-slate-50
-                                dark:hover:bg-slate-900/50
+                                dark:hover:bg-slate-900/60
                                 transition
+                            "
+                            data-search="
+                                {{ strtolower(
+                                    $document->name . ' ' .
+                                    ($document->description ?? '') . ' ' .
+                                    $document->file_name
+                                ) }}
                             "
                         >
 
-                            {{-- ICONO --}}
-                            <div
+                            {{-- DOCUMENTO --}}
+                            <a
+                                href="{{ route('documentacion.documents.download', $document) }}"
                                 class="
-                                    w-12
-                                    h-12
-                                    rounded-xl
-                                    bg-slate-100
-                                    dark:bg-slate-900
                                     flex
                                     items-center
-                                    justify-center
-                                    flex-shrink-0
+                                    gap-4
+                                    flex-1
+                                    min-w-0
+                                    group
                                 "
                             >
-                                📄
-                            </div>
 
-
-                            {{-- INFORMACIÓN --}}
-                            <div class="flex-1 min-w-0">
-
-                                <h2
-                                    class="
-                                        text-sm
-                                        font-bold
-                                        text-slate-700
-                                        dark:text-slate-200
-                                        truncate
-                                    "
-                                >
-                                    {{ $document->name }}
-                                </h2>
-
-
+                                {{-- ICONO --}}
                                 <div
                                     class="
+                                        w-14
+                                        h-14
+                                        rounded-xl
+                                        bg-slate-100
+                                        dark:bg-slate-900
                                         flex
-                                        flex-wrap
                                         items-center
-                                        gap-x-3
-                                        gap-y-1
-                                        mt-1
-                                        text-xs
-                                        text-slate-500
-                                        dark:text-slate-400
+                                        justify-center
+                                        flex-shrink-0
+                                        overflow-hidden
+                                        border
+                                        border-slate-200
+                                        dark:border-slate-800
                                     "
                                 >
 
-                                    <span>
-                                        {{ strtoupper($document->file_type) }}
-                                    </span>
-
-                                    <span>•</span>
-
-                                    <span>
-                                        {{ number_format($document->file_size / 1024, 2) }} KB
-                                    </span>
-
-                                    <span>•</span>
-
-                                    <span>
-                                        {{ $document->creator->name ?? 'Usuario desconocido' }}
-                                    </span>
+                                    <img
+                                        src="{{ $icon }}"
+                                        alt="{{ strtoupper($extension) }}"
+                                        class="
+                                            w-full
+                                            h-full
+                                            object-contain
+                                            p-2
+                                        "
+                                    >
 
                                 </div>
 
 
-                                @if($document->description)
+                                {{-- INFORMACIÓN --}}
+                                <div class="flex-1 min-w-0">
 
-                                    <p
+                                    {{-- NOMBRE --}}
+                                    <h2
                                         class="
-                                            mt-1
-                                            text-xs
-                                            text-slate-500
-                                            dark:text-slate-400
+                                            text-sm
+                                            font-bold
+                                            text-slate-700
+                                            dark:text-slate-200
                                             truncate
+                                            group-hover:text-blue-600
+                                            dark:group-hover:text-blue-400
+                                            transition
                                         "
                                     >
-                                        {{ $document->description }}
-                                    </p>
-
-                                @endif
-
-                            </div>
+                                        {{ $document->name }}
+                                    </h2>
 
 
-                            {{-- OPCIONES --}}
-                            <button
-                                type="button"
+                                    {{-- DESCRIPCIÓN --}}
+                                    @if($document->description)
+
+                                        <p
+                                            class="
+                                                mt-1
+                                                text-sm
+                                                text-slate-500
+                                                dark:text-slate-400
+                                                truncate
+                                            "
+                                        >
+                                            {{ $document->description }}
+                                        </p>
+
+                                    @else
+
+                                        <p
+                                            class="
+                                                mt-1
+                                                text-sm
+                                                italic
+                                                text-slate-400
+                                                dark:text-slate-500
+                                            "
+                                        >
+                                            Sin descripción
+                                        </p>
+
+                                    @endif
+
+
+                                    {{-- METADATOS --}}
+                                    <div
+                                        class="
+                                            flex
+                                            flex-wrap
+                                            items-center
+                                            gap-x-3
+                                            gap-y-1
+                                            mt-2
+                                            text-xs
+                                            text-slate-400
+                                            dark:text-slate-500
+                                        "
+                                    >
+
+                                        <span>
+                                            {{ strtoupper($extension) }}
+                                        </span>
+
+                                        <span>•</span>
+
+                                        <span>
+                                            {{ $fileSize }}
+                                        </span>
+
+                                        <span>•</span>
+
+                                        <span>
+                                            {{ $document->created_at->format('d/m/Y H:i') }}
+                                        </span>
+
+                                        <span>•</span>
+
+                                        <span>
+                                            {{ $document->creator->name ?? 'Usuario desconocido' }}
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </a>
+
+
+                            {{-- ACCIONES --}}
+                            <div
                                 class="
-                                    w-9
-                                    h-9
-                                    rounded-xl
                                     flex
                                     items-center
-                                    justify-center
-                                    text-slate-400
-                                    hover:text-white
-                                    hover:bg-slate-800
-                                    dark:hover:bg-slate-700
-                                    transition
+                                    gap-2
+                                    flex-shrink-0
                                 "
                             >
-                                ⋮
-                            </button>
+                                <button
+                                    type="button"
+                                    class="
+                                        w-9
+                                        h-9
+                                        rounded-xl
+                                        flex
+                                        items-center
+                                        justify-center
+                                        text-slate-400
+                                        hover:text-blue-500
+                                        hover:bg-blue-50
+                                        dark:hover:bg-blue-950/30
+                                        transition
+                                    "
+                                    title="Editar"
+                                    data-document-id="{{ $document->id }}"
+                                    data-document-name="{{ $document->name }}"
+                                    data-document-description="{{ $document->description }}"
+                                    data-document-file-name="{{ $document->file_name }}"
+                                    data-document-extension="{{ strtolower($document->file_type) }}"
+                                    onclick="openDocumentEditModal(this)"
+                                >
+                                    <img
+                                        src="{{ asset('images/documentacion/editar.png') }}"
+                                        alt="editar"
+                                        class="w-6 h-6 object-contain"
+                                    >
+                                </button>
+
+                                {{-- DESCARGAR --}}
+                                <a
+                                    href="{{ route('documentacion.documents.download', $document) }}"
+                                    title="Descargar documento"
+                                    class="
+                                        w-10
+                                        h-10
+                                        rounded-xl
+                                        flex
+                                        items-center
+                                        justify-center
+                                        hover:bg-blue-50
+                                        dark:hover:bg-blue-950/30
+                                        transition
+                                    "
+                                >
+
+                                    <img
+                                        src="{{ asset('images/documentacion/descargar.png') }}"
+                                        alt="Descargar"
+                                        class="w-6 h-6 object-contain"
+                                    >
+
+                                </a>
+
+
+                                {{-- ELIMINAR --}}
+                                <button
+                                    type="button"
+                                    title="Eliminar documento"
+                                    class="
+                                        w-10
+                                        h-10
+                                        rounded-xl
+                                        flex
+                                        items-center
+                                        justify-center
+                                        hover:bg-red-50
+                                        dark:hover:bg-red-950/30
+                                        transition
+                                    "
+                                    data-document-id="{{ $document->id }}"
+                                    data-document-name="{{ $document->name }}"
+                                    data-document-file-name="{{ $document->file_name }}"
+                                    data-document-extension="{{ strtolower($document->file_type) }}"
+                                    onclick="openDocumentDeleteModal(this)"
+                                >
+
+                                    <img
+                                        src="{{ asset('images/documentacion/basurero.png') }}"
+                                        alt="Eliminar"
+                                        class="w-6 h-6 object-contain"
+                                    >
+
+                                </button>
+
+                            </div>
 
                         </div>
 
@@ -478,11 +743,17 @@
 
     </div>
 
-    @include('documentacion.partials.document-upload-modal')
+    @include('documentacion.partials.document-upload-modal', ['category' => $category])
+    @include('documentacion.partials.document-edit-modal')
+    @include('documentacion.partials.document-delete-modal')
 
     <script>
         const documentStoreUrl =
             @json(route('documentacion.documents.store', $category));
+
+        const documentCsrfToken = @json(
+            csrf_token()
+        );
     </script>
 
     <script>
@@ -493,6 +764,14 @@
         */
         const uploadModal = document.getElementById(
             'document-upload-modal'
+        );
+
+        const editDocumentFileIcon = document.getElementById(
+            'edit-document-file-icon'
+        );
+  
+        const deleteDocumentFileIcon = document.getElementById(
+            'delete-document-file-icon'
         );
 
         const openUploadButton = document.getElementById(
@@ -874,7 +1153,11 @@
                             "
                             onclick="removeDocumentFile(${index})"
                         >
-                            ✕
+                            <img
+                                src="{{ asset('images/documentacion/salir.png') }}"
+                                alt="Cerrar"
+                                class="w-5 h-5 object-contain"
+                            >
                         </button>
 
                     </div>
@@ -1357,11 +1640,8 @@
 
                     formData.append(
                         '_token',
-                        document.querySelector(
-                            'meta[name="csrf-token"]'
-                        ).getAttribute('content')
+                        documentCsrfToken
                     );
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -1503,6 +1783,514 @@
 
 
                         updateDocumentCount();
+
+                    }
+
+                }
+            );
+
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | BUSCAR DOCUMENTOS
+        |--------------------------------------------------------------------------
+        */
+
+        const documentSearch = document.getElementById(
+            'document-search'
+        );
+
+        const documentItems = document.querySelectorAll(
+            '.document-item'
+        );
+
+
+        if (documentSearch) {
+
+            documentSearch.addEventListener(
+                'input',
+                function () {
+
+                    const search =
+                        this.value
+                            .toLowerCase()
+                            .trim();
+
+
+                    documentItems.forEach(
+                        item => {
+
+                            const content =
+                                item.dataset.search || '';
+
+
+                            if (
+                                content.includes(search)
+                            ) {
+
+                                item.classList.remove(
+                                    'hidden'
+                                );
+
+                            } else {
+
+                                item.classList.add(
+                                    'hidden'
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | MODAL EDITAR DOCUMENTO
+        |--------------------------------------------------------------------------
+        */
+
+        const documentEditModal = document.getElementById(
+            'document-edit-modal'
+        );
+
+        const documentEditForm = document.getElementById(
+            'document-edit-form'
+        );
+
+        const editDocumentName = document.getElementById(
+            'edit-document-name'
+        );
+
+        const editDocumentDescription = document.getElementById(
+            'edit-document-description'
+        );
+
+        const editDocumentFileName = document.getElementById(
+            'edit-document-file-name'
+        );
+
+        const closeDocumentEditButton = document.getElementById(
+            'close-document-edit-modal'
+        );
+
+        const cancelDocumentEditButton = document.getElementById(
+            'cancel-document-edit-modal'
+        );
+        /*
+        |--------------------------------------------------------------------------
+        | ABRIR MODAL
+        |--------------------------------------------------------------------------
+        */
+        function openDocumentEditModal(button) {
+            if (!documentEditModal) {
+                return;
+            }
+            /*
+            |--------------------------------------------------------------------------
+            | OBTENER DATOS DEL DOCUMENTO
+            |--------------------------------------------------------------------------
+            */
+            const documentId =
+                button.dataset.documentId;
+            const documentName =
+                button.dataset.documentName || '';
+            const documentDescription =
+                button.dataset.documentDescription || '';
+            const documentFileName =
+                button.dataset.documentFileName || '';
+            const documentExtension =
+                button.dataset.documentExtension || '';
+            /*
+            |--------------------------------------------------------------------------
+            | RELLENAR CAMPOS
+            |--------------------------------------------------------------------------
+            */
+            if (editDocumentFileIcon) {
+                const iconMap = {
+                    pdf: '/images/documentacion/pdf.png',
+                    doc: '/images/documentacion/word.png',
+                    docx: '/images/documentacion/word.png',
+                    xls: '/images/documentacion/excel.png',
+                    xlsx: '/images/documentacion/excel.png',
+                    sql: '/images/documentacion/sql.png',
+                    txt: '/images/documentacion/txt.png',
+                    zip: '/images/documentacion/rar.png',
+                    rar: '/images/documentacion/rar.png',
+                    jpg: '/images/documentacion/imagen.png',
+                    jpeg: '/images/documentacion/imagen.png',
+                    png: '/images/documentacion/imagen.png',
+                };
+                editDocumentFileIcon.src =
+                    iconMap[documentExtension]
+                    || '/images/documentacion/default.png';
+            }
+            if (editDocumentName) {
+                editDocumentName.value =
+                    documentName;
+            }
+            if (editDocumentDescription) {
+                editDocumentDescription.value =
+                    documentDescription;
+            }
+            if (editDocumentFileName) {
+                editDocumentFileName.textContent =
+                    documentFileName;
+            }
+            /*
+            |--------------------------------------------------------------------------
+            | CONFIGURAR ACTION DEL FORMULARIO
+            |--------------------------------------------------------------------------
+            */
+            if (documentEditForm) {
+                documentEditForm.action =
+                    `/documentacion/documentos/${documentId}`;
+            }
+            /*
+            |--------------------------------------------------------------------------
+            | ABRIR
+            |--------------------------------------------------------------------------
+            */
+            documentEditModal.classList.remove(
+                'hidden'
+            );
+            documentEditModal.classList.add(
+                'flex'
+            );
+            /*
+            |--------------------------------------------------------------------------
+            | ENFOCAR NOMBRE
+            |--------------------------------------------------------------------------
+            */
+            setTimeout(() => {
+                if (editDocumentName) {
+                    editDocumentName.focus();
+                }
+            }, 100);
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR MODAL
+        |--------------------------------------------------------------------------
+        */
+        function closeDocumentEditModal() {
+            if (!documentEditModal) {
+                return;
+            }
+            documentEditModal.classList.add(
+                'hidden'
+            );
+            documentEditModal.classList.remove(
+                'flex'
+            );
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN X
+        |--------------------------------------------------------------------------
+        */
+        if (closeDocumentEditButton) {
+            closeDocumentEditButton.addEventListener(
+                'click',
+                closeDocumentEditModal
+            );
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN CANCELAR
+        |--------------------------------------------------------------------------
+        */
+        if (cancelDocumentEditButton) {
+            cancelDocumentEditButton.addEventListener(
+                'click',
+                closeDocumentEditModal
+            );
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR AL HACER CLICK FUERA
+        |--------------------------------------------------------------------------
+        */
+        if (documentEditModal) {
+            documentEditModal.addEventListener(
+                'click',
+                function (event) {
+                    if (
+                        event.target ===
+                        documentEditModal
+                    ) {
+                        closeDocumentEditModal();
+                    }
+                }
+            );
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | MODAL ELIMINAR DOCUMENTO
+        |--------------------------------------------------------------------------
+        */
+
+        const documentDeleteModal = document.getElementById(
+            'document-delete-modal'
+        );
+
+        const documentDeleteForm = document.getElementById(
+            'document-delete-form'
+        );
+
+        const deleteDocumentName = document.getElementById(
+            'delete-document-name'
+        );
+
+        const deleteDocumentFileName = document.getElementById(
+            'delete-document-file-name'
+        );
+
+        const closeDocumentDeleteButton = document.getElementById(
+            'close-document-delete-modal'
+        );
+
+        const cancelDocumentDeleteButton = document.getElementById(
+            'cancel-document-delete-modal'
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ABRIR MODAL
+        |--------------------------------------------------------------------------
+        */
+
+        window.openDocumentDeleteModal = function (button) {
+
+            if (!documentDeleteModal) {
+                return;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | OBTENER DATOS
+            |--------------------------------------------------------------------------
+            */
+
+            const documentId =
+                button.dataset.documentId;
+
+            const documentName =
+                button.dataset.documentName || '';
+
+            const documentFileName =
+                button.dataset.documentFileName || '';
+
+            const documentExtension =
+                button.dataset.documentExtension || '';
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | NOMBRE DEL DOCUMENTO
+            |--------------------------------------------------------------------------
+            */
+
+            if (deleteDocumentName) {
+
+                deleteDocumentName.textContent =
+                    documentName;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | NOMBRE DEL ARCHIVO
+            |--------------------------------------------------------------------------
+            */
+
+            if (deleteDocumentFileName) {
+
+                deleteDocumentFileName.textContent =
+                    documentFileName;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | ICONO
+            |--------------------------------------------------------------------------
+            */
+
+            if (deleteDocumentFileIcon) {
+
+                const iconMap = {
+
+                    pdf: '/images/documentacion/pdf.png',
+                    doc: '/images/documentacion/word.png',
+                    docx: '/images/documentacion/word.png',
+                    xls: '/images/documentacion/excel.png',
+                    xlsx: '/images/documentacion/excel.png',
+                    sql: '/images/documentacion/sql.png',
+                    txt: '/images/documentacion/txt.png',
+                    zip: '/images/documentacion/rar.png',
+                    rar: '/images/documentacion/rar.png',
+                    jpg: '/images/documentacion/imagen.png',
+                    jpeg: '/images/documentacion/imagen.png',
+                    png: '/images/documentacion/imagen.png',
+
+                };
+
+
+                deleteDocumentFileIcon.src =
+                    iconMap[documentExtension]
+                    || '/images/documentacion/default.png';
+
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | CARGAR ICONO SEGÚN EXTENSIÓN
+            |--------------------------------------------------------------------------
+            */
+            if (deleteDocumentFileIcon) {
+
+                const iconMap = {
+
+                    pdf: '/images/documentacion/pdf.png',
+
+                    doc: '/images/documentacion/word.png',
+                    docx: '/images/documentacion/word.png',
+
+                    xls: '/images/documentacion/excel.png',
+                    xlsx: '/images/documentacion/excel.png',
+
+                    sql: '/images/documentacion/sql.png',
+
+                    txt: '/images/documentacion/txt.png',
+
+                    zip: '/images/documentacion/zip.png',
+                    rar: '/images/documentacion/rar.png',
+
+                    jpg: '/images/documentacion/imagen.png',
+                    jpeg: '/images/documentacion/imagen.png',
+                    png: '/images/documentacion/imagen.png',
+
+            };
+
+
+            deleteDocumentFileIcon.src =
+                iconMap[documentExtension]
+                || '';
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | ACTION DEL FORMULARIO
+            |--------------------------------------------------------------------------
+            */
+
+            if (documentDeleteForm) {
+
+                documentDeleteForm.action =
+                    `/documentacion/documentos/${documentId}`;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | ABRIR MODAL
+            |--------------------------------------------------------------------------
+            */
+
+            documentDeleteModal.classList.remove(
+                'hidden'
+            );
+
+            documentDeleteModal.classList.add(
+                'flex'
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR MODAL
+        |--------------------------------------------------------------------------
+        */
+
+        function closeDocumentDeleteModal() {
+
+            if (!documentDeleteModal) {
+                return;
+            }
+
+            documentDeleteModal.classList.add(
+                'hidden'
+            );
+
+            documentDeleteModal.classList.remove(
+                'flex'
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN X
+        |--------------------------------------------------------------------------
+        */
+
+        if (closeDocumentDeleteButton) {
+
+            closeDocumentDeleteButton.addEventListener(
+                'click',
+                closeDocumentDeleteModal
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN CANCELAR
+        |--------------------------------------------------------------------------
+        */
+
+        if (cancelDocumentDeleteButton) {
+
+            cancelDocumentDeleteButton.addEventListener(
+                'click',
+                closeDocumentDeleteModal
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR AL HACER CLICK FUERA
+        |--------------------------------------------------------------------------
+        */
+
+        if (documentDeleteModal) {
+
+            documentDeleteModal.addEventListener(
+                'click',
+                function (event) {
+
+                    if (
+                        event.target ===
+                        documentDeleteModal
+                    ) {
+
+                        closeDocumentDeleteModal();
 
                     }
 
