@@ -612,7 +612,7 @@
                                 <td class="px-6 py-4">
 
                                     <a
-                                        href="#"
+                                        href="{{ route('documentacion.category', $category) }}"
                                         class="
                                             flex
                                             items-center
