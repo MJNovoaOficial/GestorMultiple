@@ -487,11 +487,25 @@
                                 {{ $category->name }}
                             </h2>
 
+                            {{-- Descripcion --}}
+                            @if($category->description)
+                                <p
+                                    class="
+                                        mt-2
+                                        text-sm
+                                        text-slate-500
+                                        dark:text-slate-400
+                                        line-clamp-2
+                                    "
+                                    title="{{ $category->description }}"
+                                >
+                                    {{ $category->description }}
+                                </p>
+                            @endif
 
-                            {{-- CANTIDAD DE DOCUMENTOS --}}
                             <p
                                 class="
-                                    mt-1
+                                    mt-2
                                     text-sm
                                     text-slate-500
                                     dark:text-slate-400
