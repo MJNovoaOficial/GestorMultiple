@@ -78,6 +78,14 @@ class DocumentCategoryController extends Controller
 
         $imagePath = null;
 
+        dd([
+            'has_file' => $request->hasFile('image'),
+            'file' => $request->file('image'),
+            'real_path' => $request->file('image')?->getRealPath(),
+            'tmp_dir' => sys_get_temp_dir(),
+            'tmp_writable' => is_writable(sys_get_temp_dir()),
+        ]);
+
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')
                 ->store('document-categories', 'public');
