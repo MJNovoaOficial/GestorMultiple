@@ -320,13 +320,12 @@ class DocumentController extends Controller
 
         $document->delete();
 
-
         /*
         |--------------------------------------------------------------------------
         | AUDITORÍA
         |--------------------------------------------------------------------------
         */
-
+    
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'deleted',
@@ -348,7 +347,7 @@ class DocumentController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
-
+    
 
         /*
         |--------------------------------------------------------------------------
@@ -372,7 +371,85 @@ class DocumentController extends Controller
      */
     public function restore(Request $request, $id)
     {
-        //
+        /*
+        |--------------------------------------------------------------------------
+        | BUSCAR DOCUMENTO ELIMINADO
+        |--------------------------------------------------------------------------
+        */
+        $document = Document::withTrashed()
+            ->findOrFail($id);
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDAR QUE ESTÉ EN LA PAPELERA
+        |--------------------------------------------------------------------------
+        */
+        if (!$document->deleted_at) {
+            abort(404);
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | GUARDAR VALORES ANTERIORES
+        |--------------------------------------------------------------------------
+        */
+        $oldValues = [
+            'id' => $document->id,
+            'category_id' => $document->category_id,
+            'name' => $document->name,
+            'description' => $document->description,
+            'file_path' => $document->file_path,
+            'file_name' => $document->file_name,
+            'file_type' => $document->file_type,
+            'file_size' => $document->file_size,
+            'created_by' => $document->created_by,
+            'is_active' => $document->is_active,
+            'deleted_at' => $document->deleted_at,
+            'deleted_with_category' => $document->deleted_with_category,
+        ];
+        /*
+        |--------------------------------------------------------------------------
+        | RESTAURAR DOCUMENTO
+        |--------------------------------------------------------------------------
+        */
+        $document->restore();
+        $document->is_active = true;
+        $document->deleted_with_category = false;
+        $document->save();
+        /*
+        |--------------------------------------------------------------------------
+        | AUDITORÍA
+        |--------------------------------------------------------------------------
+        */
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'reactivated',
+            'description' =>
+                'Documento "' .
+                $document->name .
+                '" restaurado',
+
+            'old_values' => $oldValues,
+            'new_values' => [
+                'id' => $document->id,
+                'name' => $document->name,
+                'description' => $document->description,
+                'is_active' => true,
+                'deleted_at' => null,
+                'deleted_with_category' => false,
+            ],
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | REDIRECCIÓN
+        |--------------------------------------------------------------------------
+        */
+        return redirect()
+            ->route('documentacion.trash')
+            ->with(
+                'success',
+                'El documento fue restaurado correctamente.'
+            );
     }
 
 
@@ -381,6 +458,98 @@ class DocumentController extends Controller
      */
     public function permanentDelete(Request $request, $id)
     {
-        //
+        /*
+        |--------------------------------------------------------------------------
+        | BUSCAR DOCUMENTO ELIMINADO
+        |--------------------------------------------------------------------------
+        */
+        $document = Document::withTrashed()
+            ->findOrFail($id);
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDAR QUE ESTÉ EN LA PAPELERA
+        |--------------------------------------------------------------------------
+        */
+        if (!$document->deleted_at) {
+            abort(404);
+        }
+        /*
+        |--------------------------------------------------------------------------
+        | GUARDAR VALORES ANTERIORES
+        |--------------------------------------------------------------------------
+        */
+        $oldValues = [
+            'id' => $document->id,
+            'category_id' => $document->category_id,
+            'name' => $document->name,
+            'description' => $document->description,
+            'file_path' => $document->file_path,
+            'file_name' => $document->file_name,
+            'file_type' => $document->file_type,
+            'file_size' => $document->file_size,
+            'created_by' => $document->created_by,
+            'is_active' => $document->is_active,
+            'deleted_at' => $document->deleted_at,
+            'deleted_with_category' => $document->deleted_with_category,
+        ];
+        /*
+        |--------------------------------------------------------------------------
+        | ELIMINAR ARCHIVO FÍSICO
+        |--------------------------------------------------------------------------
+        */
+        if (
+            $document->file_path &&
+            Storage::disk('public')->exists($document->file_path)
+        ) {
+
+            Storage::disk('public')->delete(
+                $document->file_path
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | DESACTIVAR DEFINITIVAMENTE
+        |--------------------------------------------------------------------------
+        */
+        $document->is_active = false;
+        $document->save();
+        /*
+        |--------------------------------------------------------------------------
+        | AUDITORÍA
+        |--------------------------------------------------------------------------
+        */
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'deleted_permanently',
+
+            'description' =>
+                'Documento "' .
+                $document->name .
+                '" eliminado definitivamente',
+
+            'old_values' => $oldValues,
+
+            'new_values' => [
+                'id' => $document->id,
+                'name' => $document->name,
+                'is_active' => false,
+                'file_deleted' => true,
+            ],
+
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | REDIRECCIÓN
+        |--------------------------------------------------------------------------
+        */
+        return redirect()
+            ->route('documentacion.trash')
+            ->with(
+                'success',
+                'El documento fue eliminado definitivamente.'
+            );
     }
 }

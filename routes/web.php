@@ -163,6 +163,10 @@ Route::middleware('auth')->group(function () {
             ->name('documentacion.documents.update');
         Route::delete('/documentacion/documentos/{document}', [DocumentController::class, 'destroy'])
             ->name('documentacion.documents.destroy');
+        Route::patch('/documentacion/documentos/{id}/restore', [DocumentController::class, 'restore'])
+            ->name('documentacion.documents.restore');
+        Route::delete('/documentacion/documentos/{id}/permanent-delete', [DocumentController::class, 'permanentDelete'])
+            ->name('documentacion.documents.permanent-delete');
         Route::resource('documentacion', DocumentCategoryController::class)
             ->except(['create']);
         /*

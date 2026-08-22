@@ -258,6 +258,7 @@ class DocumentCategoryController extends Controller
         | CATEGORÍAS ELIMINADAS
         |--------------------------------------------------------------------------
         */
+
         $categories = DocumentCategory::onlyTrashed()
             ->where('is_active', true)
             ->withCount([
@@ -267,12 +268,17 @@ class DocumentCategoryController extends Controller
             ])
             ->orderByDesc('deleted_at')
             ->get();
+
+
         /*
         |--------------------------------------------------------------------------
         | DOCUMENTOS ELIMINADOS
         |--------------------------------------------------------------------------
         */
-        $documents = Document::onlyTrashed()
+
+        $documents = Document::withTrashed()
+            ->whereNotNull('deleted_at')
+            ->where('is_active', true)
             ->with([
                 'creator',
                 'category' => function ($query) {
@@ -281,11 +287,14 @@ class DocumentCategoryController extends Controller
             ])
             ->orderByDesc('deleted_at')
             ->get();
+
+
         /*
         |--------------------------------------------------------------------------
         | VISTA
         |--------------------------------------------------------------------------
         */
+
         return view(
             'documentacion.trash',
             compact(
