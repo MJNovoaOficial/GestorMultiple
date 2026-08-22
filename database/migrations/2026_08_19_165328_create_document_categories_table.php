@@ -17,7 +17,7 @@ return new class extends Migration
 
             $table->foreignId('created_by')
                 ->constrained('users')
-                ->restrictOnDelete();
+                ->noActionOnDelete();
 
             $table->index('name');
 
