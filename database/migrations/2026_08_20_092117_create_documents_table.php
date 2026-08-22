@@ -17,7 +17,7 @@ return new class extends Migration
             // Categoría a la que pertenece el documento
             $table->foreignId('category_id')
                 ->constrained('document_categories')
-                ->restrictOnDelete();
+                ->noActionOnDelete();
 
             // Información visible para el usuario
             $table->string('name');
@@ -32,7 +32,7 @@ return new class extends Migration
             // Usuario que subió el documento
             $table->foreignId('created_by')
                 ->constrained('users')
-                ->restrictOnDelete();
+                ->noActionOnDelete();
 
             // Índices
             $table->index('category_id');
