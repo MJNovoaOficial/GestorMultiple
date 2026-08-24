@@ -678,7 +678,6 @@
                             alt="Subir"
                             class="w-5 h-5 object-contain"
                         >
-                        <span class="text-lg">+</span>
                         Subir primer archivo
                     </button>
 
