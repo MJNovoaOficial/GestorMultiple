@@ -893,7 +893,7 @@
                     jpg: '/images/documentacion/imagen.png',
                     jpeg: '/images/documentacion/imagen.png',
                     png: '/images/documentacion/imagen.png',
-                    xml: '/images/documentacion/xml.png'
+                    xml: '/images/documentacion/xml.png',
                 };
                 documentFileIcon.src =
                     iconMap[fileExtension] || '';
