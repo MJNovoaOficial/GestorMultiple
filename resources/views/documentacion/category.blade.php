@@ -314,6 +314,9 @@
 
                                 'jpg', 'jpeg', 'png', 'gif', 'webp'
                                     => asset('images/documentacion/imagen.png'),
+                                
+                                'xml', 'xml'
+                                    => asset('images/documentacion/xml.png'),
 
                                 default
                                     => asset('images/documentacion/txt.png'),
@@ -960,6 +963,8 @@
                 'png': '/images/documentacion/imagen.png',
                 'gif': '/images/documentacion/imagen.png',
                 'webp': '/images/documentacion/imagen.png',
+                // archivos XML
+                'xml': '/images/documentacion/xml.png',
             };
 
             return icons[extension]
@@ -1924,6 +1929,7 @@
                     jpg: '/images/documentacion/imagen.png',
                     jpeg: '/images/documentacion/imagen.png',
                     png: '/images/documentacion/imagen.png',
+                    xml: '/images/documentacion/xml.png',
                 };
                 editDocumentFileIcon.src =
                     iconMap[documentExtension]
@@ -2141,7 +2147,7 @@
                     jpg: '/images/documentacion/imagen.png',
                     jpeg: '/images/documentacion/imagen.png',
                     png: '/images/documentacion/imagen.png',
-
+                    xml: '/images/documentacion/xml.png',
                 };
 
 
@@ -2164,21 +2170,16 @@
 
                     doc: '/images/documentacion/word.png',
                     docx: '/images/documentacion/word.png',
-
                     xls: '/images/documentacion/excel.png',
                     xlsx: '/images/documentacion/excel.png',
-
                     sql: '/images/documentacion/sql.png',
-
                     txt: '/images/documentacion/txt.png',
-
-                    zip: '/images/documentacion/zip.png',
+                    zip: '/images/documentacion/rar.png',
                     rar: '/images/documentacion/rar.png',
-
                     jpg: '/images/documentacion/imagen.png',
                     jpeg: '/images/documentacion/imagen.png',
                     png: '/images/documentacion/imagen.png',
-
+                    xml: '/images/documentacion/xml.png',
             };
 
 

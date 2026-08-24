@@ -394,6 +394,7 @@
                                         'jpg'  => 'imagen.png',
                                         'jpeg' => 'imagen.png',
                                         'png'  => 'imagen.png',
+                                        'xml'  => 'xml.png',
                                     ];
 
                                     $icon = $iconMap[$extension] ?? '/images/documentacion/default.png';
@@ -887,12 +888,12 @@
                     xlsx: '/images/documentacion/excel.png',
                     sql: '/images/documentacion/sql.png',
                     txt: '/images/documentacion/txt.png',
-                    zip: '/images/documentacion/zip.png',
+                    zip: '/images/documentacion/rar.png',
                     rar: '/images/documentacion/rar.png',
-                    jpg: '/images/documentacion/image.png',
-                    jpeg: '/images/documentacion/image.png',
-                    png: '/images/documentacion/image.png',
-
+                    jpg: '/images/documentacion/imagen.png',
+                    jpeg: '/images/documentacion/imagen.png',
+                    png: '/images/documentacion/imagen.png',
+                    xml: '/images/documentacion/xml.png'
                 };
                 documentFileIcon.src =
                     iconMap[fileExtension] || '';
@@ -987,6 +988,7 @@
                     jpg: '/images/documentacion/imagen.png',
                     jpeg: '/images/documentacion/imagen.png',
                     png: '/images/documentacion/imagen.png',
+                    xml: '/images/documentacion/xml.png',
                 };
                 iconElement.src =
                     iconMap[fileExtension] || '';

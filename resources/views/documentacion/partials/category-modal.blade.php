@@ -133,7 +133,7 @@
                             name="name"
                             value="{{ old('name') }}"
                             required
-                            placeholder="Ej: SAP"
+                            placeholder="Coloca un nombre a la carpeta, ejemplo: SAP, WMS, SQL, CÁMARAS, ETC..."
                             class="
                                 w-full
                                 rounded-xl
