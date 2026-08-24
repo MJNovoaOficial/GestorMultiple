@@ -225,7 +225,7 @@ class DocumentCategoryController extends Controller
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'updated',
-            'description' => 'Se ha actualizado la carpeta "' . $category->name . '"',
+            'description' => 'Se ha actualizado la carpeta "' . $documentacion->name . '"',
 
             'old_values' => $oldValues,
 
