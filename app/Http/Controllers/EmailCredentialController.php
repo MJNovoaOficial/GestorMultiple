@@ -10,7 +10,6 @@ use App\Services\AuditService;
 
 class EmailCredentialController extends Controller
 {
-   
     public function index(Request $request)
     {
         $query = EmailCredential::query()
@@ -21,31 +20,23 @@ class EmailCredentialController extends Controller
             ]);
 
         if ($request->filled('search')) {
-
             $search = $request->search;
-
             $query->where(function ($q) use ($search) {
-
                 $q->where('full_name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%");
-
             });
 
         }
-
         if ($request->filled('branch_id')) {
             $query->where('branch_id', $request->branch_id);
         }
-
         if ($request->filled('department_id')) {
             $query->where('department_id', $request->department_id);
         }
-
         $passwords = $query
             ->latest()
             ->paginate(15)
             ->withQueryString();
-
         return view('passwords.index', [
             'passwords' => $passwords,
             'branches' => Branch::all(),
@@ -64,13 +55,11 @@ class EmailCredentialController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
-        'full_name' => 'required|string|max:255',
-        'email' => 'required|email',
-        'password' => 'required|string',
-        'branch_id' => 'required',
-        'department_id' => 'required',
-
+            'full_name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'password' => 'required|string',
+            'branch_id' => 'required',
+            'department_id' => 'required',
         ]);
 
         $existingCredential = EmailCredential
@@ -78,22 +67,16 @@ class EmailCredentialController extends Controller
         ->first();
 
         if ($existingCredential) {
-
             if ($existingCredential->is_active) {
-
                 return back()
                     ->withInput()
                     ->with(
                         'error',
                         'La credencial ya existe.'
                     );
-
             }
-
             // REACTIVAR
-
             $existingCredential->update([
-
                 'full_name' => $validated['full_name'],
                 'password' => encrypt($validated['password']),
                 'branch_id' => $validated['branch_id'],
@@ -101,17 +84,13 @@ class EmailCredentialController extends Controller
                 'notes' => $validated['notes'] ?? null,
                 'updated_by' => auth()->id(),
                 'is_active' => true,
-
             ]);
-
-
             AuditService::log(
                 'reactivated',
                 $existingCredential,
                 'Se agregó la credencial para ' .
                     $existingCredential->email
             );
-
             return redirect()
                 ->route('passwords.index')
                 ->with(
@@ -119,9 +98,7 @@ class EmailCredentialController extends Controller
                     'Credencial agregada correctamente.'
                 );
         }
-
         $credential = EmailCredential::create([
-
             'full_name' => $validated['full_name'],
             'email' => $validated['email'],
             'password' => encrypt($validated['password']),
@@ -130,9 +107,7 @@ class EmailCredentialController extends Controller
             'notes' => $validated['notes'] ?? null,
             'created_by' => auth()->id(),
             'is_active' => true,
-
         ]);
-
         AuditService::log(
             'created',
             $credential,
@@ -165,31 +140,22 @@ class EmailCredentialController extends Controller
                 'required',
                 'email',
                 function ($attribute, $value, $fail) use ($password) {
-
                     $exists = EmailCredential::where('email', $value)
                         ->where('is_active', true)
                         ->where('id', '!=', $password->id)
                         ->exists();
-
                     if ($exists) {
-
                         $fail('Ya existe una credencial activa para este correo.');
-
                     }
-
                 }
             ],
             'password' => 'required|string',
             'branch_id' => 'nullable|exists:branches,id',
             'department_id' => 'nullable|exists:departments,id',
         ]);
-
         $validated['updated_by'] = auth()->id();
-
         $oldValues = $password->getOriginal();
-
         $password->update($validated);
-
         AuditService::log(
             'updated',
             $password,
@@ -197,7 +163,6 @@ class EmailCredentialController extends Controller
             $oldValues,
             $password->fresh()->toArray()
         );
-
         return redirect()
             ->route('passwords.index')
             ->with('success', 'Credencial actualizada.');
@@ -210,11 +175,9 @@ class EmailCredentialController extends Controller
             $password,
             'Se han eliminado las credenciales para ' . $password->email
         );
-
         $password->update([
             'is_active' => false
         ]);
-
         return redirect()
             ->route('passwords.index')
             ->with('success', 'Credencial eliminada.');

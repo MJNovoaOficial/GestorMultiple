@@ -15,19 +15,15 @@ class PasswordRevealController extends Controller
             $password,
             'Visualizó la contraseña de: ' . $password->email
         );
-
+        //Este try intenta forzar la desencriptación si caer en una excepción
         try {
-
             return response()->json([
                 'password' => decrypt($password->password)
             ]);
-
         } catch (\Exception $e) {
-
             return response()->json([
                 'password' => 'Error al desencriptar'
             ], 500);
-
         }
     }
 }

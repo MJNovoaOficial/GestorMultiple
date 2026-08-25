@@ -33,29 +33,24 @@ class RadioFrequencyController extends Controller
         }
 
         if ($request->filled('branch')) {
-
             $query->where(
                 'branch_id',
                 $request->branch
             );
-
         }
-        if ($request->filled('area')) {
 
+        if ($request->filled('area')) {
             $query->where(
                 'area',
                 $request->area
             );
-
         }
 
         if ($request->filled('status')) {
-
             $query->where(
                 'status',
                 $request->status
             );
-
         }
 
         $radioFrequencies = $query
@@ -97,7 +92,6 @@ class RadioFrequencyController extends Controller
     public function create()
     {
         $branches = Branch::orderBy('name')->get();
-
         return view(
             'radio-frequencies.create',
             compact('branches')
@@ -107,72 +101,58 @@ class RadioFrequencyController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
             'number' => [
                 'required',
                 'string',
                 'max:255',
                 'unique:radio_frequencies,number',
             ],
-
             'serial' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'mac' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'ip' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'area' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'branch_id' => [
                 'required',
                 'exists:branches,id',
             ],
-
             'type' => [
                 'required',
                 'in:windows,android,cellphone',
             ],
-
             'status' => [
                 'required',
                 'in:operative,repair,retired',
             ],
-
             'blocked' => [
                 'required',
                 'boolean',
             ],
-
             'warranty' => [
                 'required',
                 'boolean',
             ],
-
             'observations' => [
                 'nullable',
                 'string',
             ],
-
         ], [
-
             '*.required' => 'Este campo es obligatorio.',
-
         ]);
 
         // Crear Radiofrecuencia
@@ -199,88 +179,70 @@ class RadioFrequencyController extends Controller
     public function update(Request $request,RadioFrequency $radioFrequency)
     {
         $validated = $request->validate([
-
             'number' => [
                 'required',
                 'string',
-
                 Rule::unique(
                     'radio_frequencies',
                     'number'
                 )->ignore($radioFrequency->id),
             ],
-
             'serial' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'mac' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'ip' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'area' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'branch_id' => [
                 'required',
                 'exists:branches,id',
             ],
-
             'type' => [
                 'required',
                 'in:windows,android,cellphone',
             ],
-
             'status' => [
                 'required',
                 'in:operative,repair,retired',
             ],
-
             'blocked' => [
                 'required',
                 'boolean',
             ],
-
             'warranty' => [
                 'required',
                 'boolean',
             ],
-
             'observations' => [
                 'nullable',
                 'string',
             ],
-
         ], [
-
             '*.required' => 'Este campo es obligatorio.',
-
         ]);
 
         $radioFrequency->update($validated);
 
         AuditLog::create([
             'user_id' => auth()->id(),
-
             'action' => 'update',
-
             'description' =>
                 'Actualizó radiofrecuencia N° '
                 . $radioFrequency->number,
-
             'ip_address' => $request->ip(),
         ]);
 

@@ -13,7 +13,6 @@ class BranchController extends Controller
     {
         $branches = Branch::latest()->get();
         return view('branches.index', compact('branches'));
-        
     }
     
     public function create()
@@ -40,7 +39,6 @@ class BranchController extends Controller
 
     public function edit(Branch $branch)
     {
-
         return view('branches.edit', compact('branch'));
     }
 
