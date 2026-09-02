@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Branch;
 use App\Models\Dvr;
 use App\Exports\DvrExport;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use App\Models\AuditLog;
 use Maatwebsite\Excel\Facades\Excel;
@@ -95,6 +96,7 @@ class DvrController extends Controller
                 'required',
                 'string',
                 'max:255',
+                'unique:dvrs,ip',
             ],
 
             'password' => [
@@ -103,6 +105,8 @@ class DvrController extends Controller
             ],
         ],[
             '*.required' => 'Este campo es obligatorio.',
+            'ip.unique' => 'Esta dirección IP ya está asignada a otro DVR.',
+            'ip.ip' => 'La dirección IP ingresada no es válida.',
         ]);
         // Crear DVR
         $dvr = Dvr::create($validated);
@@ -187,6 +191,7 @@ class DvrController extends Controller
                 'required',
                 'string',
                 'max:255',
+                Rule::unique('dvrs', 'ip')->ignore($dvr->id),
             ],
             'password' => [
                 'required',
@@ -194,6 +199,8 @@ class DvrController extends Controller
             ],
         ],[
             '*.required' => 'Este campo es obligatorio.',
+            'ip.unique' => 'Esta dirección IP ya está asignada a otro DVR.',
+            'ip.ip' => 'La dirección IP ingresada no es válida.',
         ]);
 
         $dvr->update($validated);
