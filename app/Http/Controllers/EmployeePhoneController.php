@@ -16,22 +16,12 @@ class EmployeePhoneController extends Controller
     public function index(Request $request)
     {
         $query = EmployeePhone::query();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Búsqueda
-        |--------------------------------------------------------------------------
-        */
+        
         if ($request->filled('search')) {
-
             $terms = explode(' ', $request->search);
-
             $query->where(function ($q) use ($terms) {
-
                 foreach ($terms as $term) {
-
                     $q->where(function ($sub) use ($term) {
-
                         $sub->where('phone_number', 'like', "%{$term}%")
                             ->orWhere('first_name', 'like', "%{$term}%")
                             ->orWhere('last_name', 'like', "%{$term}%")
@@ -43,21 +33,14 @@ class EmployeePhoneController extends Controller
                             ->orWhere('company_name', 'like', "%{$term}%")
                             ->orWhere('rut', 'like', "%{$term}%")
                             ->orWhere('email', 'like', "%{$term}%");
-
                     });
-
                 }
-
             });
-
         }
 
         $activeCount = EmployeePhone::where('status', 'active')->count();
-
         $returnedCount = EmployeePhone::where('status', 'returned')->count();
-
         $blockedCount = EmployeePhone::where('status', 'blocked')->count();
-
         $totalCount = EmployeePhone::count();
 
         $devices = $query
@@ -81,23 +64,17 @@ class EmployeePhoneController extends Controller
         ]); 
         
         $import = new EmployeePhonesImport();
-
         $file = $request->file('file');
-
         $tempFile = storage_path(
             'app/imports/' . uniqid() . '.xlsx'
         );
-
         if (!is_dir(dirname($tempFile))) {
             mkdir(dirname($tempFile), 0777, true);
         }
 
         copy($file->getPathname(), $tempFile);
-
         Excel::import($import, $tempFile);
-
         unlink($tempFile);
-
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'import',
@@ -109,13 +86,9 @@ class EmployeePhoneController extends Controller
         return redirect()
             ->back()
             ->with('success',
-
                 "Importación finalizada. "
-
                 . "Importados: {$import->imported}. "
-
                 . "Ignorados: {$import->skipped}. "
-
                 . "Duplicados: {$import->duplicates}."
             );
     }
@@ -128,54 +101,33 @@ class EmployeePhoneController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
             'phone_number' => [
                 'required',
                 'regex:/^9\d{8}$/'
             ],
-
             'first_name' => 'required|string|max:255',
-
             'last_name' => 'required|string|max:255',
-
             'phone_model' => 'required|string|max:255',
-
             'delivery_date' => 'required|date',
-
             'imei' => 'required|string|max:255',
-
             'position' => 'required|string|max:255',
-
             'department' => 'required|string|max:255',
-
             'vendor_code' => 'nullable|string|max:255',
-
             'company_name' => 'required|string|max:255',
-
             'rut' => [
                 'required',
                 'string',
                 'max:255',
                 new ValidRut
             ],
-
             'email' => 'nullable|email|max:255',
-
             'observations' => 'nullable|string',
-
         ], [
-
-            // REQUIRED
-
             '*.required' => 'Este campo es obligatorio.',
-
-            // CUSTOM
             'phone_number.regex' =>
                 'El número debe contener exactamente 9 dígitos y comenzar con 9.',
-
             'email.email' =>
                 'Ingrese un correo válido.',
-
             'rut.valid_rut' =>
                 'El rut ingresado no es válido, por favor verifique el dígito verificador.',
         ]);
@@ -186,7 +138,6 @@ class EmployeePhoneController extends Controller
         )->first();
 
         if ($existingDevice) {
-
             $status = match ($existingDevice->status) {
                 'active' => 'Activo',
                 'inactive' => 'Inactivo',
@@ -214,16 +165,12 @@ class EmployeePhoneController extends Controller
         if (!empty($validated['rut'])) {
 
             $rut = preg_replace('/[^0-9kK]/', '', $validated['rut']);
-
             $body = substr($rut, 0, -1);
-
             $dv = strtoupper(substr($rut, -1));
-
             $validated['rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
         // Crear dispositivo
         $device = EmployeePhone::create($validated);
-
         // AUDIT LOG
         AuditLog::create([
             'user_id' => auth()->id(),
@@ -240,82 +187,55 @@ class EmployeePhoneController extends Controller
     public function update(Request $request, EmployeePhone $employeePhone)
     {
         $validated = $request->validate([
-
             'phone_number' => [
                 'required',
                 'regex:/^9\d{8}$/'
             ],
-
             'first_name' => 'required|string|max:255',
-
             'last_name' => 'required|string|max:255',
-
             'phone_model' => 'required|string|max:255',
-            
             'delivery_date' => 'required|date',
-
             'imei' => 'required|string|max:255',
-
             'position' => 'required|string|max:255',
-
             'department' => 'required|string|max:255',
-
             'vendor_code' => 'nullable|string|max:255',
-
             'company_name' => 'required|string|max:255',
-
             'rut' => [
                 'required',
                 'string',
                 'max:255',
                 new ValidRut
             ],
-
             'email' => 'nullable|email|max:255',
-
             'status' => 'required|in:active,returned,blocked',
-
             'observations' => 'nullable|string',
-
         ], [
-
             '*.required' => 'Este campo es obligatorio.',
-
             'phone_number.regex' =>
                 'El número debe contener exactamente 9 dígitos y comenzar con 9.',
-
             'email.email' =>
                 'Ingrese un correo válido.',
-            
             'delivery_date.date' =>
                 'Ingrese una fecha válida.',
-
             'rut.valid_rut' =>
                 'El rut ingresado no es válido, por favor verifique el dígito verificador.',
-                
         ]);
 
         // Normalizar teléfono
         $validated['phone_number'] =
             '+56' . $validated['phone_number'];
-
         // Normalizar RUT
         if (!empty($validated['rut'])) {
-
             $rut = preg_replace(
                 '/[^0-9kK]/',
                 '',
                 $validated['rut']
             );
-
             $body = substr($rut, 0, -1);
-
             $dv = strtoupper(substr($rut, -1));
             $validated['rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
-
         $employeePhone->update($validated);
-
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'update',
@@ -324,7 +244,6 @@ class EmployeePhoneController extends Controller
                 . $employeePhone->phone_number,
             'ip_address' => $request->ip(),
         ]);
-
         return redirect()
             ->route('employee-phones.index')
             ->with(

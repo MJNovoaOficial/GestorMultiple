@@ -17,15 +17,10 @@ class NotebookController extends Controller
         $query = Notebook::query();
 
         if($request -> filled('search')){
-            
             $terms = explode(' ', $request->search);
-
             $query ->where(function ($q) use ($terms){
-                
                 foreach ($terms as $term){
-
                     $q->where(function ($sub) use ($term){
-                        
                         $sub->where('user_name', 'like', "%{$term}%")
                             ->orWhere('user_rut', 'like', "%{$term}%")
                             ->orWhere('model', 'like', "%{$term}%")
@@ -35,7 +30,6 @@ class NotebookController extends Controller
                             ->orWhere('company_name', 'like', "%{$term}%")
                             //Este es para buscar por marca asociada
                             ->orWhereHas('brand', function ($brandQuery) use ($term) {
-
                                 $brandQuery->where(
                                     'name',
                                     'like',
@@ -67,7 +61,6 @@ class NotebookController extends Controller
     public function create()
     {
         $brands = Brand::orderBy('name')->get();
-
         return view('notebooks.create', compact('brands'));
     }
 
@@ -82,28 +75,19 @@ class NotebookController extends Controller
         ]);
 
         $validated = $request->validate([
-
             'user_name' => 'required_if:status,assigned|nullable|string|max:255',
-
             'model' => 'required|string|max:255',
-            
             'delivery_date' => 'required_if:status,assigned|nullable|date',
-
             'position' => 'required_if:status,assigned|nullable|string|max:255',
-
             'company_name' => 'required_if:status,assigned|nullable|string|max:255',
-
             'purchase_value' => 'required|numeric|min:0',
-
             'observations' => 'nullable|string',
-
             'serial_number' => [
                 'required',
                 'string',
                 'max:255',
                 'unique:notebooks,serial_number',
             ],
-            
             'user_rut' => [
                 'nullable',
                 'required_if:status,assigned',
@@ -111,35 +95,25 @@ class NotebookController extends Controller
                 'max:255',
                 new ValidRut
             ],
-
             'condition' => [
                 'required', 'in:new,refurbished',
             ],
-
             'status' =>[
                 'required', 'in:available,assigned,retired',
             ],
-
             'brand_id' => [
                 'required',
                 'exists:brands,id',
             ]
-        ], [
-
-            //aquí van los mensajes de required
+        ],[
+            //aquí van los mensajes que queremos mostrar como avisos de validación
             '*.required' => 'Este campo es obligatorio.',
-
         ]);
-
         //Aquí validamos el rut
         if (!empty($validated['user_rut'])){
-
             $rut = preg_replace('/[^0-9kK]/','', $validated['user_rut']);
-
             $body = substr($rut, 0, -1);
-
             $dv = strtoupper(substr($rut, -1));
-
             $validated['user_rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
 
@@ -150,19 +124,14 @@ class NotebookController extends Controller
             )
             ) {
                 $validated['user_name'] = null;
-
                 $validated['user_rut'] = null;
-
                 $validated['position'] = null;
-
                 $validated['company_name'] = null;
-
                 $validated['delivery_date'] = null;
             }
 
         // Crear Notebook
         $notebook = Notebook::create($validated);
-
         //Rellena la tabla de auditoria
         AuditLog::create([
             'user_id' => auth()->id(),
@@ -172,7 +141,6 @@ class NotebookController extends Controller
                 . $notebook->serial_number,
             'ip_address' => $request->ip(),
         ]);
-        
         return redirect()
             ->route('notebooks.index')
             ->with(
@@ -183,7 +151,6 @@ class NotebookController extends Controller
 
     public function update (Request $request, Notebook $notebook)
     {
-        
         $request->merge([
             'purchase_value' => str_replace(
                 '.',
@@ -195,19 +162,12 @@ class NotebookController extends Controller
         $validated = $request->validate([
 
             'user_name' => 'required_if:status,assigned|nullable|string|max:255',
-
             'model' => 'required|string|max:255',
-            
             'delivery_date' => 'required_if:status,assigned|nullable|date',
-
             'position' => 'required_if:status,assigned|nullable|string|max:255',
-
             'company_name' => 'required_if:status,assigned|nullable|string|max:255',
-
             'purchase_value' => 'required|numeric|min:0',
-
             'observations' => 'nullable|string',
-
             'serial_number' => [
                 'required',
                 'string',
@@ -215,7 +175,6 @@ class NotebookController extends Controller
                 Rule::unique('notebooks', 'serial_number')
                     ->ignore($notebook->id),
             ],
-            
             'user_rut' => [
                 'nullable',
                 'required_if:status,assigned',
@@ -223,37 +182,27 @@ class NotebookController extends Controller
                 'max:255',
                 new ValidRut
             ],
-
             'condition' => [
                 'required', 'in:new,refurbished',
             ],
-
             'status' =>[
                 'required', 'in:available,assigned,retired',
             ],
-
             'brand_id' => [
                 'required',
                 'exists:brands,id',
             ]
-
-
         ],[
             '*.required' => 'Este campo es obligatorio.',
-
             'delivery_date.date' =>
                 'Ingrese una fecha válida.',
         ]);
 
         // Validar Rut user
         if (!empty($validated['user_rut'])){
-
             $rut = preg_replace('/[^0-9kK]/','',$validated['user_rut']);
-
             $body = substr($rut, 0, -1);
-
             $dv = strtoupper(substr($rut,-1));
-
             $validated['user_rut'] = number_format($body, 0, '', '.') . '-' . $dv;
         }
 
@@ -263,15 +212,10 @@ class NotebookController extends Controller
                 ['available', 'retired']
             )
         ) {
-
             $validated['user_name'] = null;
-
             $validated['user_rut'] = null;
-
             $validated['position'] = null;
-
             $validated['company_name'] = null;
-
             $validated['delivery_date'] = null;
         }
         
@@ -292,7 +236,6 @@ class NotebookController extends Controller
                 'success',
                 'Registro actualizado correctamente.'
             );
-
     }
 
     public function export(Request $request)

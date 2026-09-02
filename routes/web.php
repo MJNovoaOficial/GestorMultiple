@@ -24,13 +24,10 @@ use App\Http\Controllers\DocumentCategoryController;
 use App\Http\Controllers\DocumentController;
 
 Route::get('/', function () {
-   
     if (Auth::check()) {
         return redirect()->route('dashboard');
     }
-
-    return redirect()->route('login');
-    
+    return redirect()->route('login');  
 });
 
 Route::middleware('auth')->group(function () {
@@ -40,9 +37,7 @@ Route::middleware('auth')->group(function () {
         ->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])
         ->name('profile.destroy');
-
     Route::middleware(['auth'])->group(function () {
-
         /*
         |--------------------------------------------------------------------------
         | Dashboard
@@ -62,30 +57,22 @@ Route::middleware('auth')->group(function () {
         | Módulo Gestor Passwords
         |--------------------------------------------------------------------------
         */
-        
         Route::post('/passwords/generate',[PasswordGeneratorController::class, 'generate'])
             ->name('passwords.generate');
-
         Route::post('/passwords/{password}/reveal',[PasswordRevealController::class, 'reveal'])
             ->name('passwords.reveal');
-
         Route::resource('passwords', EmailCredentialController::class);
-
         /*
         |--------------------------------------------------------------------------
         | Módulo Gestor IP
         |--------------------------------------------------------------------------
         */
-
         Route::get('/ip-addresses', [IpAddressController::class, 'index'])
             ->name('ip-addresses.index');
-
         Route::put('/ip-addresses/{ipAddress}', [IpAddressController::class, 'update'])
             ->name('ip-addresses.update');
-        
         Route::post('/ip-addresses/ping', [IpAddressController::class, 'ping'])
             ->name('ip-addresses.ping');
-
         Route::post('/ip-addresses/{ip}/release', [IpAddressController::class, 'release'])
             ->name('ip-addresses.release');
         Route::post('/ip-addresses/export', [IpAddressController::class, 'export'])
@@ -141,7 +128,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/dvrs/{dvr}/password', [DvrController::class, 'password']);
         Route::patch('/dvrs/{dvr}/retire', [DvrController::class, 'retire'])
             ->name('dvrs.retire');
-
         /*
         |--------------------------------------------------------------------------
         | Módulo de Manuales y documentos sql
@@ -182,13 +168,11 @@ Route::middleware('auth')->group(function () {
         |--------------------------------------------------------------------------
         */
         Route::middleware(['superadmin'])->group(function () {
-
             /*
             |--------------------------------------------------------------------------
             | Sucursales
             |--------------------------------------------------------------------------
             */
-
             Route::get('/branches', [BranchController::class, 'index'])
                 ->name('branches.index');
 
@@ -206,7 +190,6 @@ Route::middleware('auth')->group(function () {
 
             Route::delete('/branches/{branch}', [BranchController::class, 'destroy'])
                 ->name('branches.destroy');
-
 
             /*
             |--------------------------------------------------------------------------
@@ -232,7 +215,6 @@ Route::middleware('auth')->group(function () {
             Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])
                 ->name('departments.destroy');
 
-
             /*
             |--------------------------------------------------------------------------
             | Device Types
@@ -257,13 +239,11 @@ Route::middleware('auth')->group(function () {
             Route::delete('/device-types/{deviceType}', [DeviceTypeController::class, 'destroy'])
                 ->name('device-types.destroy');
 
-
             /*
             |--------------------------------------------------------------------------
             | Estados IP
             |--------------------------------------------------------------------------
             */
-
             Route::get('/ip-statuses', [IpStatusController::class, 'index'])
                 ->name('ip-statuses.index');
 
@@ -281,24 +261,18 @@ Route::middleware('auth')->group(function () {
 
             Route::delete('/ip-statuses/{ipStatus}', [IpStatusController::class, 'destroy'])
                 ->name('ip-statuses.destroy');
-
-
             /*
             |--------------------------------------------------------------------------
             | Importador Rangos IP
             |--------------------------------------------------------------------------
             */
-
             Route::get('/ip-ranges/import', [IpRangeImportController::class, 'create'])
                 ->name('ip-ranges.create');
 
             Route::post('/ip-ranges/import', [IpRangeImportController::class, 'store'])
                 ->name('ip-ranges.store');
-
         });
-
     });
 });
-
 
 require __DIR__.'/auth.php';

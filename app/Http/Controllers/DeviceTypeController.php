@@ -10,7 +10,6 @@ class DeviceTypeController extends Controller
     public function index()
     {
         $deviceTypes = DeviceType::latest()->get();
-
         return view('device-types.index', compact('deviceTypes'));
     }
     
@@ -36,7 +35,6 @@ class DeviceTypeController extends Controller
 
     public function edit(DeviceType $deviceType)
     {
-
         return view('device-types.edit', compact('deviceType'));
     }
 
@@ -62,5 +60,4 @@ class DeviceTypeController extends Controller
             ->route('device-types.index')
             ->with('success', 'Tipo de dispositivo eliminado correctamente.');
     }
-    
 }

@@ -1,15 +1,11 @@
 <x-app-layout>
-
 <div
     x-data="{ openCreateUser: false }"
     class="p-6"
 >
-
     {{-- Header --}}
     <div class="flex flex-col gap-4 mb-6 md:flex-row md:items-center md:justify-between">
-
         <div>
-
             <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
                 Gestión Usuarios
             </h1>
@@ -19,51 +15,38 @@
             </p>
 
             @if(auth()->user()->role === 'superadmin')
-
-            <div class="flex gap-3 mt-5 mb-6">
-
-                {{-- Activos --}}
-                <a
-                    href="{{ route('users.index', ['status' => 'active']) }}"
-                    class="
-                        px-5 py-2 rounded-xl text-sm font-semibold
-                        transition
-
-                        {{ $status === 'active'
-                            ? 'bg-blue-600 text-white shadow-lg'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                        }}
-                    "
-                >
-
-                    Activos
-
-                </a>
-
-                {{-- Inactivos --}}
-                <a
-                    href="{{ route('users.index', ['status' => 'inactive']) }}"
-                    class="
-                        px-5 py-2 rounded-xl text-sm font-semibold
-                        transition
-
-                        {{ $status === 'inactive'
-                            ? 'bg-red-600 text-white shadow-lg'
-                            : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                        }}
-                    "
-                >
-
-                    Inactivos
-
-                </a>
-
-            </div>
-
-        @endif
-
+                <div class="flex gap-3 mt-5 mb-6">
+                    {{-- Activos --}}
+                    <a
+                        href="{{ route('users.index', ['status' => 'active']) }}"
+                        class="
+                            px-5 py-2 rounded-xl text-sm font-semibold
+                            transition
+                            {{ $status === 'active'
+                                ? 'bg-blue-600 text-white shadow-lg'
+                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                            }}
+                        "
+                    >
+                        Activos
+                    </a>
+                    {{-- Inactivos --}}
+                    <a
+                        href="{{ route('users.index', ['status' => 'inactive']) }}"
+                        class="
+                            px-5 py-2 rounded-xl text-sm font-semibold
+                            transition
+                            {{ $status === 'inactive'
+                                ? 'bg-red-600 text-white shadow-lg'
+                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                            }}
+                        "
+                    >
+                        Inactivos
+                    </a>
+                </div>
+            @endif
         </div>
-
         {{-- Botón Crear --}}
         <button
             @click="openCreateUser = true"
@@ -71,43 +54,31 @@
                 transition bg-blue-600 rounded-2xl
                 hover:bg-blue-700 shadow-lg"
         >
-
             Nuevo Usuario
-
         </button>
-
     </div>
 
     {{-- Alertas --}}
     @if(session('success'))
-
         <div class="
             mb-5 px-4 py-3 rounded-xl
             bg-green-600 text-white text-sm
         ">
-
             {{ session('success') }}
-
         </div>
-
     @endif
 
     @if(session('error'))
-
         <div class="
             mb-5 px-4 py-3 rounded-xl
             bg-red-600 text-white text-sm
         ">
-
             {{ session('error') }}
-
         </div>
-
     @endif
 
     {{-- Buscador --}}
     <div class="mb-5">
-
         <input
             id="globalSearch"
             type="text"
@@ -119,7 +90,6 @@
                 focus:ring-2 focus:ring-blue-500
                 focus:outline-none"
         >
-
     </div>
 
     {{-- Tabla --}}
@@ -129,16 +99,11 @@
         border border-gray-800
         rounded-2xl
     ">
-
         <div class="overflow-x-auto">
-
             <table class="min-w-full divide-y divide-gray-800">
-
                 {{-- Header --}}
                 <thead class="bg-[#0F172A]">
-
                     <tr>
-
                         <th class="
                             px-6 py-4 text-xs font-semibold
                             tracking-wider text-left
@@ -146,7 +111,6 @@
                         ">
                             Nombre
                         </th>
-
                         <th class="
                             px-6 py-4 text-xs font-semibold
                             tracking-wider text-left
@@ -154,7 +118,6 @@
                         ">
                             Correo
                         </th>
-
                         <th class="
                             px-6 py-4 text-xs font-semibold
                             tracking-wider text-left
@@ -162,7 +125,6 @@
                         ">
                             Rol
                         </th>
-
                         <th class="
                             px-6 py-4 text-xs font-semibold
                             tracking-wider text-left
@@ -170,37 +132,27 @@
                         ">
                             Estado
                         </th>
-
                     </tr>
-
                 </thead>
 
                 {{-- Body --}}
                 <tbody class="divide-y divide-gray-800">
-
                     @forelse($users as $user)
-
                         <tr
                             class="user-row hover:bg-gray-800/40 transition"
-
                             data-search="
                                 {{ strtolower($user->name) }}
                                 {{ strtolower($user->email) }}
-                            "
-                        >
+                            ">
 
                             {{-- Nombre --}}
                             <td class="px-6 py-4 text-sm text-white">
-
                                 {{ $user->name }}
-
                             </td>
 
                             {{-- Correo --}}
                             <td class="px-6 py-4 text-sm text-gray-300">
-
                                 {{ $user->email }}
-
                             </td>
 
                             {{-- Rol --}}

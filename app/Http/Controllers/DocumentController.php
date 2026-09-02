@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
 {
-    /**
-     * Mostrar los documentos de una categoría.
-     */
     public function index(DocumentCategory $category)
     {
         $documents = $category->documents()
@@ -27,10 +24,6 @@ class DocumentController extends Controller
         );
     }
 
-
-    /**
-     * Mostrar formulario para subir un documento.
-     */
     public function create(DocumentCategory $category)
     {
         return view(
@@ -39,12 +32,9 @@ class DocumentController extends Controller
         );
     }
 
-
-    /**
-     * Guardar un nuevo documento.
-     */
     public function store(Request $request, DocumentCategory $category)
     {
+        //validamos los datos antes de guardar
         $request->validate([
             'files' => 'required|array|min:1',
             'files.*' => 'required|file|max:51200',
@@ -56,82 +46,54 @@ class DocumentController extends Controller
             'descriptions.*' => 'nullable|string',
         ]);
 
-
         DB::beginTransaction();
 
         try {
 
             foreach ($request->file('files') as $index => $file) {
 
-                /*
-                |--------------------------------------------------------------------------
-                | Nombre y descripción
-                |--------------------------------------------------------------------------
-                */
-
+                //recogemos los datos del nombre y descripción
                 $name = $request->input(
                     "names.$index"
                 );
-
                 $description = $request->input(
                     "descriptions.$index"
                 );
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Guardar archivo
-                |--------------------------------------------------------------------------
-                */
-
+                //ubicación de donde ser guardará la imagen subida por el usuario
                 $path = $file->store(
                     'documentacion/' . $category->id,
                     'public'
                 );
 
-
-                /*
-                |--------------------------------------------------------------------------
-                | Crear documento
-                |--------------------------------------------------------------------------
-                */
-
                 $document = Document::create([
 
                     'category_id' => $category->id,
-
                     'name' => $name,
-
                     'description' => $description,
-
                     'file_path' => $path,
-
                     'file_name' => $file->getClientOriginalName(),
-
                     'file_type' => $file->getClientOriginalExtension(),
-
                     'file_size' => $file->getSize(),
-
                     'created_by' => auth()->id(),
-
                 ]);
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Auditoría
-                |--------------------------------------------------------------------------
-                */
-
-                // Aquí colocaremos el AuditLog cuando conectemos
-                // exactamente el mismo sistema que usamos para categorías.
-
+                //Auditoría al subir el archivo
+                AuditLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'created',
+                    'description' => 'Se ha subido el documento "' . $document->name . '"',
+                    'old_values' => null,
+                    'new_values' => [
+                        'id' => $document->id,
+                        'name' => $document->name,
+                        'description' => $document->description,
+                        'category_id' => $document->category_id,
+                        'file_name' => $document->file_name,
+                        'file_type' => $document->file_type,
+                        'file_size' => $document->file_size,
+                    ],
+                ]);
             }
-
-
             DB::commit();
-
-
             return redirect()
                 ->route(
                     'documentacion.category',
@@ -141,20 +103,14 @@ class DocumentController extends Controller
                     'success',
                     'Los documentos fueron subidos correctamente.'
                 );
-
-
         } catch (\Throwable $e) {
-
             DB::rollBack();
-
-
             return back()
                 ->withInput()
                 ->with(
                     'error',
                     'No fue posible subir los documentos.'
                 );
-
         }
     }
 
@@ -166,7 +122,6 @@ class DocumentController extends Controller
         if (!Storage::disk('public')->exists($document->file_path)) {
             abort(404, 'El archivo no existe.');
         }
-
         return Storage::disk('public')->download(
             $document->file_path,
             $document->file_name
@@ -175,6 +130,7 @@ class DocumentController extends Controller
 
     public function trash()
     {
+        //cargamos la categoría a la que pertenece el documento
         $categories = DocumentCategory::onlyTrashed()
             ->withCount([
                 'documents' => function ($query) {
@@ -183,8 +139,7 @@ class DocumentController extends Controller
             ])
             ->latest('deleted_at')
             ->get();
-
-
+        //preparamos el documento para enviarse a la papelera
         $documents = Document::onlyTrashed()
             ->with([
                 'creator',
@@ -194,8 +149,6 @@ class DocumentController extends Controller
             ])
             ->latest('deleted_at')
             ->get();
-
-
         return view(
             'documentacion.trash',
             compact(
@@ -205,54 +158,35 @@ class DocumentController extends Controller
         );
     }
 
-    /**
-     * Actualizar un documento.
-     */
     public function update(Request $request, Document $document)
     {
         if (!$document->is_active) {
             abort(404);
         }
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDACIÓN
-        |--------------------------------------------------------------------------
-        */
+        //se valida el nombre y descripción del documento.
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
-        /*
-        |--------------------------------------------------------------------------
-        | GUARDAR VALORES ANTERIORES
-        |--------------------------------------------------------------------------
-        */
+        // se rescata los nombres antiguos
         $oldValues = [
             'id' => $document->id,
             'name' => $document->name,
             'description' => $document->description,
         ];
-        /*
-        |--------------------------------------------------------------------------
-        | ACTUALIZAR
-        |--------------------------------------------------------------------------
-        */
+        //se actualizan los datos del documento
         $document->update([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
         ]);
-        /*
-        |--------------------------------------------------------------------------
-        | AUDITORÍA
-        |--------------------------------------------------------------------------
-        */
+        //Auditoría de actualización del documento
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'updated',
             'description' =>
-                'Documento "' .
+                'El documento "' .
                 $document->name .
-                '" actualizado',
+                '" ha sido actualizado',
             'old_values' => $oldValues,
             'new_values' => [
                 'id' => $document->id,
@@ -272,28 +206,14 @@ class DocumentController extends Controller
                 'El documento fue actualizado correctamente.'
             );
     }
-    /**
-     * Enviar documento a la papelera.
-     */
+    
     public function destroy(Request $request, Document $document)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDAR QUE EL DOCUMENTO ESTÉ ACTIVO
-        |--------------------------------------------------------------------------
-        */
-
+        //Primero verificamos si el archivo no se haya eliminado antes
         if (!$document->is_active) {
             abort(404);
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | GUARDAR VALORES ANTERIORES
-        |--------------------------------------------------------------------------
-        */
-
+        //preparamos los datos del documento
         $oldValues = [
             'id' => $document->id,
             'category_id' => $document->category_id,
@@ -307,36 +227,20 @@ class DocumentController extends Controller
             'is_active' => $document->is_active,
             'deleted_with_category' => $document->deleted_with_category,
         ];
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | ELIMINACIÓN INDIVIDUAL
-        |--------------------------------------------------------------------------
-        */
-
+        //como este es eliminado directamente, sin carpeta, este no habilita el eliminado con categoría
         $document->deleted_with_category = false;
         $document->save();
-
+        //Elimina el documento (se envía a papelera)
         $document->delete();
-
-        /*
-        |--------------------------------------------------------------------------
-        | AUDITORÍA
-        |--------------------------------------------------------------------------
-        */
-    
+        //Creación de la auditoría    
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'deleted',
-
             'description' =>
-                'Documento "' .
+                'El documento "' .
                 $document->name .
-                '" enviado a la papelera',
-
+                '" ha sido enviado a la papelera',
             'old_values' => $oldValues,
-
             'new_values' => [
                 'id' => $document->id,
                 'name' => $document->name,
@@ -347,50 +251,25 @@ class DocumentController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
-    
-
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECCIÓN
-        |--------------------------------------------------------------------------
-        */
 
         return redirect()
-            ->route(
-                'documentacion.category',
-                $document->category_id
-            )
+            ->route('documentacion.category', $document->category_id)
             ->with(
                 'success',
                 'El documento fue enviado a la papelera.'
             );
     }
-    
-    /**
-     * Restaurar documento.
-     */
+ 
     public function restore(Request $request, $id)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | BUSCAR DOCUMENTO ELIMINADO
-        |--------------------------------------------------------------------------
-        */
+        //Buscamos el archivo en la papelera
         $document = Document::withTrashed()
             ->findOrFail($id);
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDAR QUE ESTÉ EN LA PAPELERA
-        |--------------------------------------------------------------------------
-        */
+        //Aquí validamos si el archivo está en papelera
         if (!$document->deleted_at) {
             abort(404);
         }
-        /*
-        |--------------------------------------------------------------------------
-        | GUARDAR VALORES ANTERIORES
-        |--------------------------------------------------------------------------
-        */
+        //Recuperamos los datos del documento
         $oldValues = [
             'id' => $document->id,
             'category_id' => $document->category_id,
@@ -405,20 +284,12 @@ class DocumentController extends Controller
             'deleted_at' => $document->deleted_at,
             'deleted_with_category' => $document->deleted_with_category,
         ];
-        /*
-        |--------------------------------------------------------------------------
-        | RESTAURAR DOCUMENTO
-        |--------------------------------------------------------------------------
-        */
+        //aquí procedemos a restaurar el archivo
         $document->restore();
         $document->is_active = true;
         $document->deleted_with_category = false;
         $document->save();
-        /*
-        |--------------------------------------------------------------------------
-        | AUDITORÍA
-        |--------------------------------------------------------------------------
-        */
+        //Creamos la auditoría de la restauración
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'reactivated',
@@ -426,7 +297,6 @@ class DocumentController extends Controller
                 'Documento "' .
                 $document->name .
                 '" restaurado',
-
             'old_values' => $oldValues,
             'new_values' => [
                 'id' => $document->id,
@@ -439,11 +309,6 @@ class DocumentController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECCIÓN
-        |--------------------------------------------------------------------------
-        */
         return redirect()
             ->route('documentacion.trash')
             ->with(
@@ -452,32 +317,16 @@ class DocumentController extends Controller
             );
     }
 
-
-    /**
-     * Desactivar definitivamente un documento.
-     */
     public function permanentDelete(Request $request, $id)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | BUSCAR DOCUMENTO ELIMINADO
-        |--------------------------------------------------------------------------
-        */
+        //Busca el documento en la papelera
         $document = Document::withTrashed()
             ->findOrFail($id);
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDAR QUE ESTÉ EN LA PAPELERA
-        |--------------------------------------------------------------------------
-        */
+        //Valida que si exista
         if (!$document->deleted_at) {
             abort(404);
         }
-        /*
-        |--------------------------------------------------------------------------
-        | GUARDAR VALORES ANTERIORES
-        |--------------------------------------------------------------------------
-        */
+        // Guarda sus valores
         $oldValues = [
             'id' => $document->id,
             'category_id' => $document->category_id,
@@ -492,59 +341,36 @@ class DocumentController extends Controller
             'deleted_at' => $document->deleted_at,
             'deleted_with_category' => $document->deleted_with_category,
         ];
-        /*
-        |--------------------------------------------------------------------------
-        | ELIMINAR ARCHIVO FÍSICO
-        |--------------------------------------------------------------------------
-        */
+        //elimina el documento de la lista de la papelera
         if (
             $document->file_path &&
             Storage::disk('public')->exists($document->file_path)
         ) {
-
             Storage::disk('public')->delete(
                 $document->file_path
             );
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | DESACTIVAR DEFINITIVAMENTE
-        |--------------------------------------------------------------------------
-        */
+        //lo deshabilita en la base de datos
         $document->is_active = false;
         $document->save();
-        /*
-        |--------------------------------------------------------------------------
-        | AUDITORÍA
-        |--------------------------------------------------------------------------
-        */
+        // registra la auditoría
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'deleted_permanently',
-
             'description' =>
                 'Documento "' .
                 $document->name .
                 '" eliminado definitivamente',
-
             'old_values' => $oldValues,
-
             'new_values' => [
                 'id' => $document->id,
                 'name' => $document->name,
                 'is_active' => false,
                 'file_deleted' => true,
             ],
-
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
-        /*
-        |--------------------------------------------------------------------------
-        | REDIRECCIÓN
-        |--------------------------------------------------------------------------
-        */
         return redirect()
             ->route('documentacion.trash')
             ->with(

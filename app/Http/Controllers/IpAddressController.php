@@ -19,32 +19,24 @@ class IpAddressController extends Controller
 {
     public function index(Request $request)
     {
-        
         $branches = Branch::orderBy('name')->get();
-
         $query = IpAddress::with([
             'branch',
             'department',
             'deviceType',
             'ipStatus',
         ]);
-
         if ($request->filled('branch_id')) {
-
             $query->where('branch_id', $request->branch_id);
-
         }
-
         if ($request->filled('subnet')) {
-
             $query->where(
                 'ip_address',
                 'like',
                 $request->subnet . '.%'
             );
-
         }
-        //SUBSTRING_INDEX(ip_address, '.', 3) as subnet --> reemplazar para my sql, elimina la línea left y reemplazalo por esto.
+        //SUBSTRING_INDEX(ip_address, '.', 3) as subnet --> reemplazar para mysql, elimina la línea left y reemplazalo por esto.
 
         //Version SQL SERVER
         $subnets = IpAddress::selectRaw("
@@ -54,9 +46,7 @@ class IpAddressController extends Controller
                 ) as subnet
             ")
             ->when($request->branch_id, function ($q) use ($request) {
-
                 $q->where('branch_id', $request->branch_id);
-
             })
             ->distinct()
             ->orderBy('subnet')
@@ -64,7 +54,6 @@ class IpAddressController extends Controller
         
         //Contador de IPs por subred
         $occupiedStatusId = IpStatus::where('name', 'Ocupado')->value('id');
-
         $subnetCounts = IpAddress::selectRaw("
             LEFT(
                 ip_address,
@@ -79,9 +68,7 @@ class IpAddressController extends Controller
             ) as total
         ")
         ->when($request->branch_id, function ($q) use ($request) {
-
             $q->where('branch_id', $request->branch_id);
-
         })
         ->groupByRaw("
             LEFT(
@@ -90,8 +77,6 @@ class IpAddressController extends Controller
             )
         ")
         ->pluck('total', 'subnet');
-
-    
 
         /* Esta es la versión para MYSQL
         $ipAddresses = $query
@@ -109,9 +94,7 @@ class IpAddressController extends Controller
             ->paginate(254);
         
         $departments = Department::orderBy('name')->get();
-
         $deviceTypes = DeviceType::orderBy('name')->get();
-
         $ipStatuses = IpStatus::orderBy('name')->get();
 
         return view('ip-addresses.index', compact(
@@ -133,12 +116,7 @@ class IpAddressController extends Controller
             'device_type_id' => 'nullable|exists:device_types,id',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Estado automático
-        |--------------------------------------------------------------------------
-        */
-
+        //estado automático
         $assigned = (
             $request->filled('user_assigned') ||
             $request->filled('department_id') ||
@@ -170,21 +148,15 @@ class IpAddressController extends Controller
     public function ping(Request $request)
     {
         try {
-
             $ip = $request->ip;
-
             if (!filter_var($ip, FILTER_VALIDATE_IP)) {
-
                 return response()->json([
                     'success' => false,
                     'state'   => 'invalid',
                     'message' => 'IP inválida'
                 ]);
-
             }
-
             $os = strtoupper(substr(PHP_OS, 0, 3));
-
             if ($os === 'WIN') {
                 $command = "ping -n 1 " . escapeshellarg($ip);
             } else {
@@ -192,14 +164,11 @@ class IpAddressController extends Controller
             }
 
             exec($command, $output, $status);
-
             $text = implode("\n", $output);
-
             // Convertir desde Windows-1252 para evitar errores UTF-8
             $text = iconv('Windows-1252', 'UTF-8//IGNORE', $text);
 
-            /*
-            * Detectar el resultado real del ping.
+            /* Detectar el resultado real del ping.
             * NO confiar únicamente en $status.
             */
             $state = 'timeout';
@@ -208,16 +177,12 @@ class IpAddressController extends Controller
                 str_contains($text, 'Host de destino inaccesible') ||
                 str_contains($text, 'Destination host unreachable')
             ) {
-
                 $state = 'unreachable';
-
             } elseif (
                 str_contains($text, 'TTL=') ||
                 str_contains($text, 'ttl=')
             ) {
-
                 $state = 'success';
-
             }
 
             return response()->json([
@@ -226,30 +191,23 @@ class IpAddressController extends Controller
                 'status'  => $status,
                 'output'  => $text,
             ]);
-
         } catch (\Throwable $e) {
-
             return response()->json([
                 'success' => false,
                 'state'   => 'error',
                 'error'   => $e->getMessage(),
             ], 500);
-
         }
     }
 
     public function release(IpAddress $ip)
     {
         $availableStatus = IpStatus::where('name', 'Disponible')->first();
-
         $ip->update([
-
             'user_assigned' => null,
             'device_type_id' => null,
             'department_id' => null,
-
             'ip_status_id' => $availableStatus->id
-
         ]);
 
         AuditService::log(
@@ -293,7 +251,6 @@ class IpAddressController extends Controller
     {
         ini_set('memory_limit', '1024M');
         set_time_limit(300);
-
         $request->validate([
             'subnets' => 'required|array|min:1',
             'columns' => 'required|array|min:1',
@@ -301,54 +258,31 @@ class IpAddressController extends Controller
         ]);
 
         $tempFiles = [];
-
         try {
-
             foreach ($request->subnets as $subnet) {
-
-                /*
-                |--------------------------------------------------------------------------
-                | Consulta de la subnet
-                |--------------------------------------------------------------------------
-                */
-
+                // Consulta todas las subnets o ramas
                 $query = IpAddress::with([
                     'branch',
                     'department',
                     'deviceType',
                     'ipStatus'
                 ]);
-
                 $query->where(
                     'ip_address',
                     'like',
                     $subnet . '.%'
                 );
 
-                /*
-                |--------------------------------------------------------------------------
-                | Filtrar por estado
-                |--------------------------------------------------------------------------
-                */
-
+                //Hace un filtro por estados
                 if (!empty($request->status)) {
-
                     $query->whereHas('ipStatus', function ($query) use ($request) {
-
                         $query->whereRaw(
                             'LOWER(name) = ?',
                             [strtolower($request->status)]
                         );
-
                     });
                 }
-
-                /*
-                |--------------------------------------------------------------------------
-                | Ordenar IPs
-                |--------------------------------------------------------------------------
-                */
-
+                //Hace un reordenamiento de las IP
                 $ips = $query
                     ->orderByRaw("
                         CAST(PARSENAME(ip_address, 4) AS BIGINT),
@@ -357,71 +291,35 @@ class IpAddressController extends Controller
                         CAST(PARSENAME(ip_address, 1) AS BIGINT)
                     ")
                     ->get();
-
-                /*
-                |--------------------------------------------------------------------------
-                | Determinar sucursal
-                |--------------------------------------------------------------------------
-                */
-
+                //Busca la sucursal de la IP
                 $branch = $ips->first()?->branch?->name ?? '';
-
-                /*
-                |--------------------------------------------------------------------------
-                | Construir filas
-                |--------------------------------------------------------------------------
-                */
+                //Construcción de las filas de la tabla
 
                 $rows = $ips->map(function ($ip) use ($request) {
-
                     $row = [];
-
                     foreach ($request->columns as $column) {
-
                         switch ($column) {
-
                             case 'ip':
-
                                 $row['ip'] = $ip->ip_address;
-
                                 break;
-
                             case 'status':
-
                                 $row['status'] = $ip->ipStatus?->name ?? '';
-
                                 break;
-
                             case 'user':
-
                                 $row['user'] = $ip->user_assigned ?? '';
-
                                 break;
-
                             case 'device':
-
                                 $row['device'] = $ip->deviceType?->name ?? '';
-
                                 break;
-
                             case 'department':
-
                                 $row['department'] = $ip->department?->name ?? '';
-
                                 break;
                         }
                     }
-
                     return $row;
-
                 })->toArray();
 
-                /*
-                |--------------------------------------------------------------------------
-                | Generar PDF SOLO de esta subnet
-                |--------------------------------------------------------------------------
-                */
-
+                //Genera un pdf de las RAMAS
                 $pdf = Pdf::loadView('ip-addresses.pdf', [
                     'sections' => [[
                         'subnet' => $subnet . '.x',
@@ -431,46 +329,24 @@ class IpAddressController extends Controller
                     'columns' => $request->columns,
                     'status' => $request->status,
                 ]);
-
                 $pdf->setPaper('letter', 'landscape');
-
-                /*
-                |--------------------------------------------------------------------------
-                | Guardar PDF temporal
-                |--------------------------------------------------------------------------
-                */
-
+                //Guardado temporal, para poder descargar
                 $tempPath = storage_path(
                     'app/temp-ip-pdf-' . uniqid('', true) . '.pdf'
                 );
-
                 if (!is_dir(dirname($tempPath))) {
                     mkdir(dirname($tempPath), 0755, true);
                 }
-
                 $pdf->save($tempPath);
-
                 $tempFiles[] = $tempPath;
-
-                /*
-                |--------------------------------------------------------------------------
-                | Liberar memoria de Dompdf
-                |--------------------------------------------------------------------------
-                */
-
+                //Se libera la memoria del recurso
                 unset($pdf);
                 unset($ips);
                 unset($rows);
-
                 gc_collect_cycles();
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Combinar PDFs
-            |--------------------------------------------------------------------------
-            */
-
+            //Se combinan los datos del PDF
             $outputPath = storage_path(
                 'app/DireccionesIP-' . now()->format('Y-m-d-His') . '.pdf'
             );
@@ -478,19 +354,14 @@ class IpAddressController extends Controller
             $fpdi = new \setasign\Fpdi\Fpdi();
 
             foreach ($tempFiles as $tempFile) {
-
                 $pageCount = $fpdi->setSourceFile($tempFile);
-
+              
                 for ($pageNo = 1; $pageNo <= $pageCount; $pageNo++) {
-
                     $templateId = $fpdi->importPage($pageNo);
-
                     $size = $fpdi->getTemplateSize($templateId);
-
                     $orientation = $size['width'] > $size['height']
                         ? 'L'
                         : 'P';
-
                     $fpdi->AddPage(
                         $orientation,
                         [
@@ -498,25 +369,13 @@ class IpAddressController extends Controller
                             $size['height']
                         ]
                     );
-
                     $fpdi->useTemplate($templateId);
                 }
             }
-
-            /*
-            |--------------------------------------------------------------------------
-            | Guardar PDF final
-            |--------------------------------------------------------------------------
-            */
-
+            //Guarda el nuevo PDF a imprimir
             $fpdi->Output($outputPath, 'F');
 
-            /*
-            |--------------------------------------------------------------------------
-            | Auditoría
-            |--------------------------------------------------------------------------
-            */
-
+            //Auditoría de exportación
             AuditLog::create([
                 'user_id' => auth()->id(),
                 'action' => 'export',
@@ -525,36 +384,21 @@ class IpAddressController extends Controller
                 'user_agent' => $request->userAgent(),
             ]);
 
-            /*
-            |--------------------------------------------------------------------------
-            | Descargar y eliminar temporal
-            |--------------------------------------------------------------------------
-            */
-
+            // Descargar y eliminar temporal
             foreach ($tempFiles as $tempFile) {
-
                 if (file_exists($tempFile)) {
                     unlink($tempFile);
                 }
             }
-
             return response()
                 ->download(
                     $outputPath,
                     'DireccionesIP-' . now()->format('Y-m-d') . '.pdf'
                 )
                 ->deleteFileAfterSend(true);
-
         } catch (\Throwable $e) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Limpiar temporales si ocurre un error
-            |--------------------------------------------------------------------------
-            */
-
+            //Limpiar temporales si ocurre un error
             foreach ($tempFiles as $tempFile) {
-
                 if (file_exists($tempFile)) {
                     unlink($tempFile);
                 }

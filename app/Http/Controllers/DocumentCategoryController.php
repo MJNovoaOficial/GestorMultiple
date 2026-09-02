@@ -51,11 +51,6 @@ class DocumentCategoryController extends Controller
         ));
     }
 
-    public function create()
-    {
-     //   
-    }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -124,12 +119,6 @@ class DocumentCategoryController extends Controller
         ));
     }
 
-    public function edit(string $id)
-    {
-        //
-    }
-
-    
     public function update(Request $request, DocumentCategory $documentacion)
     {
         $validated = $request->validate([
@@ -163,24 +152,14 @@ class DocumentCategoryController extends Controller
             'created_by' => $documentacion->created_by,
         ];
 
-        /*
-        |--------------------------------------------------------------------------
-        | IMAGEN
-        |--------------------------------------------------------------------------
-        */
-
         // Si se sube una nueva imagen
         if ($request->hasFile('image')) {
-
             // Eliminar imagen anterior si existe
             if ($documentacion->image) {
-
                 Storage::disk('public')->delete(
                     $documentacion->image
                 );
-
             }
-
             // Guardar nueva imagen
             $documentacion->image = $request->file('image')
                 ->store('document-categories', 'public');
@@ -190,45 +169,25 @@ class DocumentCategoryController extends Controller
         elseif ($request->boolean('remove_image')) {
 
             if ($documentacion->image) {
-
                 Storage::disk('public')->delete(
                     $documentacion->image
                 );
-
             }
-
             $documentacion->image = null;
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATOS
-        |--------------------------------------------------------------------------
-        */
 
         $documentacion->name = $validated['name'];
 
         $documentacion->description =
             $validated['description'] ?? null;
-
-
         $documentacion->save();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | AUDITORÍA
-        |--------------------------------------------------------------------------
-        */
-
+        //auditamos la actualización de la carpeta
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'updated',
             'description' => 'Se ha actualizado la carpeta "' . $documentacion->name . '"',
-
             'old_values' => $oldValues,
-
             'new_values' => [
                 'id' => $documentacion->id,
                 'name' => $documentacion->name,
@@ -236,12 +195,9 @@ class DocumentCategoryController extends Controller
                 'image' => $documentacion->image,
                 'created_by' => $documentacion->created_by,
             ],
-
             'ip_address' => $request->ip(),
-
             'user_agent' => $request->userAgent(),
         ]);
-
 
         return redirect()
             ->route('documentacion.index')
@@ -253,12 +209,7 @@ class DocumentCategoryController extends Controller
 
     public function trash()
     {
-        /*
-        |--------------------------------------------------------------------------
-        | CATEGORÍAS ELIMINADAS
-        |--------------------------------------------------------------------------
-        */
-
+        //Muestra listado de categorías o carpetas eliminadas (carga la papelera)
         $categories = DocumentCategory::onlyTrashed()
             ->where('is_active', true)
             ->withCount([
@@ -269,13 +220,7 @@ class DocumentCategoryController extends Controller
             ->orderByDesc('deleted_at')
             ->get();
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | DOCUMENTOS ELIMINADOS
-        |--------------------------------------------------------------------------
-        */
-
+        //Muestra listado de documentos eliminados pertenecientes a una categoría (carga la papelera también)
         $documents = Document::withTrashed()
             ->whereNotNull('deleted_at')
             ->where('is_active', true)
@@ -287,13 +232,6 @@ class DocumentCategoryController extends Controller
             ])
             ->orderByDesc('deleted_at')
             ->get();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | VISTA
-        |--------------------------------------------------------------------------
-        */
 
         return view(
             'documentacion.trash',
@@ -307,11 +245,7 @@ class DocumentCategoryController extends Controller
     public function destroy(Request $request, DocumentCategory $documentacion)
     {
         DB::transaction(function () use ($request, $documentacion) {
-            /*
-            |--------------------------------------------------------------------------
-            | GUARDAR DATOS DE LA CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //almacenamos la info que eliminamos
             $oldValues = [
                 'id' => $documentacion->id,
                 'name' => $documentacion->name,
@@ -319,14 +253,9 @@ class DocumentCategoryController extends Controller
                 'image' => $documentacion->image,
                 'created_by' => $documentacion->created_by,
             ];
-            /*
-            |--------------------------------------------------------------------------
-            | ENVIAR DOCUMENTOS A LA PAPELERA
-            |--------------------------------------------------------------------------
-            */
+            //aquí procedemos de enviar el documento con sus datos a la papelera.
             $documentacion->documents
                 ->each(function ($document) use ($request, $documentacion) {
-
                     $documentOldValues = [
                         'id' => $document->id,
                         'category_id' => $document->category_id,
@@ -337,87 +266,49 @@ class DocumentCategoryController extends Controller
                         'file_size' => $document->file_size,
                         'created_by' => $document->created_by,
                     ];
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | MARCAR QUE FUE ELIMINADO JUNTO CON LA CATEGORÍA
-                    |--------------------------------------------------------------------------
-                    */
-
+                    //Aquí le asignamos que el documento fue eliminado porque se eliminó la carpeta completa
                     $document->deleted_with_category = true;
+                    //guardamos los datos anteriores en DB
                     $document->save();
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | SOFT DELETE
-                    |--------------------------------------------------------------------------
-                    */
-
+                    //hace el proceso de enviarlo a papelera
                     $document->delete();
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | AUDITORÍA
-                    |--------------------------------------------------------------------------
-                    */
-
+                    //Auditamos el documento eliminado
                     AuditLog::create([
                         'user_id' => auth()->id(),
                         'action' => 'deleted',
-
                         'description' =>
-                            'Documento "' . $document->name .
-                            '" enviado a la papelera debido a la eliminación de la categoría "' .
+                            'EL documento "' . $document->name .
+                            '" fue enviado a la papelera porque se eliminó la carpeta "' .
                             $documentacion->name . '"',
-
                         'old_values' => $documentOldValues,
-
                         'new_values' => [
                             'deleted_at' => $document->deleted_at,
                             'deleted_with_category' => true,
                             'category_name' => $documentacion->name,
                         ],
-
                         'ip_address' => $request->ip(),
                         'user_agent' => $request->userAgent(),
                     ]);
-
                 });
-            /*
-            |--------------------------------------------------------------------------
-            | SOFT DELETE DE LA CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //Enviamos a la papelera la carpeta completa, ósea hacemos un soft delete
             $documentacion->delete();
-            /*
-            |--------------------------------------------------------------------------
-            | AUDITORÍA DE LA CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //Auditamos el proceso de eliminación
             AuditLog::create([
                 'user_id' => auth()->id(),
                 'action' => 'deleted',
-
                 'description' =>
-                    'Carpeta de "' .
+                    'La carpeta "' .
                     $documentacion->name .
-                    '" enviada a la papelera junto con sus documentos',
+                    '" fue enviada a la papelera junto con sus documentos',
 
                 'old_values' => $oldValues,
-
                 'new_values' => [
                     'deleted_at' => $documentacion->deleted_at,
                 ],
-
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
-
         });
-
         return redirect()
             ->route('documentacion.index')
             ->with(
@@ -431,11 +322,7 @@ class DocumentCategoryController extends Controller
         DB::transaction(function () use ($request, $id) {
             $documentacion = DocumentCategory::withTrashed()
                 ->findOrFail($id);
-            /*
-            |--------------------------------------------------------------------------
-            | GUARDAR DATOS ANTES DE RESTAURAR
-            |--------------------------------------------------------------------------
-            */
+            //guardamos los valores para después auditar y restaurar
             $oldValues = [
                 'id' => $documentacion->id,
                 'name' => $documentacion->name,
@@ -444,39 +331,27 @@ class DocumentCategoryController extends Controller
                 'created_by' => $documentacion->created_by,
                 'deleted_at' => $documentacion->deleted_at,
             ];
-            /*
-            |--------------------------------------------------------------------------
-            | RESTAURAR CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //procedemos a restaurar la carpeta
             $documentacion->restore();
-            /*
-            |--------------------------------------------------------------------------
-            | RESTAURAR DOCUMENTOS ELIMINADOS JUNTO CON LA CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //restauramos los documentos dentro de la carpeta (en caso de que los haya)
             $documents = Document::onlyTrashed()
                 ->where('category_id', $documentacion->id)
                 ->where('deleted_with_category', true)
                 ->get();
             foreach ($documents as $document) {
                 $document->restore();
-                // Ya no está eliminado junto con una categoría
+                // Cambiamos el estado de eliminado a disponible
                 $document->deleted_with_category = false;
                 $document->save();
             }
-            /*
-            |--------------------------------------------------------------------------
-            | AUDITORÍA DE LA CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //Auditamos la restauración
             AuditLog::create([
                 'user_id' => auth()->id(),
                 'action' => 'reactivated',
                 'description' =>
                     'La carpeta "' .
                     $documentacion->name .
-                    '" restaurada junto con sus documentos',
+                    '" fue restaurada junto con sus documentos',
                 'old_values' => $oldValues,
                 'new_values' => [
                     'id' => $documentacion->id,
@@ -504,11 +379,7 @@ class DocumentCategoryController extends Controller
         DB::transaction(function () use ($request, $id) {
             $documentacion = DocumentCategory::withTrashed()
                 ->findOrFail($id);
-            /*
-            |--------------------------------------------------------------------------
-            | DATOS DE LA CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //preparamos valores antes de hacer la eliminación definitiva
             $oldValues = [
                 'id' => $documentacion->id,
                 'name' => $documentacion->name,
@@ -518,16 +389,13 @@ class DocumentCategoryController extends Controller
                 'deleted_at' => $documentacion->deleted_at,
                 'is_active' => $documentacion->is_active,
             ];
-            /*
-            |--------------------------------------------------------------------------
-            | DOCUMENTOS DE LA CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //Buscamos si dentro de la carpeta hay documentos
             $documents = Document::withTrashed()
                 ->where('category_id', $documentacion->id)
                 ->where('is_active', true)
                 ->get();
             foreach ($documents as $document) {
+                //en caso de haber documentos preparamos estos documentos para su eliminación definitiva
                 $documentOldValues = [
                     'id' => $document->id,
                     'category_id' => $document->category_id,
@@ -541,25 +409,18 @@ class DocumentCategoryController extends Controller
                     'deleted_at' => $document->deleted_at,
                     'is_active' => $document->is_active,
                 ];
-                /*
-                |--------------------------------------------------------------------------
-                | DESACTIVAR DOCUMENTO
-                |--------------------------------------------------------------------------
-                */
+                //Eliminamos el documento (solo en la interfaz visual del usuario)
                 $document->is_active = false;
                 $document->save();
-                /*
-                |--------------------------------------------------------------------------
-                | AUDITORÍA DEL DOCUMENTO
-                |--------------------------------------------------------------------------
-                */
+                
+                //Se audita la eliminación
                 AuditLog::create([
                     'user_id' => auth()->id(),
                     'action' => 'deleted_permanently',
                     'description' =>
-                        'Documento "' .
+                        'El documento "' .
                         $document->name .
-                        '" eliminado definitivamente junto con la categoría "' .
+                        '" fue eliminado definitivamente porque se borró la categoría "' .
                         $documentacion->name .
                         '"',
                     'old_values' => $documentOldValues,
@@ -573,25 +434,17 @@ class DocumentCategoryController extends Controller
                     'user_agent' => $request->userAgent(),
                 ]);
             }
-            /*
-            |--------------------------------------------------------------------------
-            | DESACTIVAR CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //procedemos a eliminar la carpeta completa (recordemos que se borra de la interfaz del usuario)
             $documentacion->is_active = false;
             $documentacion->save();
-            /*
-            |--------------------------------------------------------------------------
-            | AUDITORÍA DE LA CATEGORÍA
-            |--------------------------------------------------------------------------
-            */
+            //Auditamos que borramos la carpeta
             AuditLog::create([
                 'user_id' => auth()->id(),
                 'action' => 'deleted_permanently',
                 'description' =>
-                    'Categoría de carpeta "' .
+                    'LA carpeta "' .
                     $documentacion->name .
-                    '" eliminada definitivamente junto con sus documentos',
+                    '" fue eliminada definitivamente junto con los documentos en su interior',
                 'old_values' => $oldValues,
                 'new_values' => [
                     'id' => $documentacion->id,

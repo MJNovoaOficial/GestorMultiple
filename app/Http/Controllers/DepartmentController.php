@@ -11,7 +11,6 @@ class DepartmentController extends Controller
     {
         $departments = Department::latest()->get();
         return view('departments.index', compact('departments'));
-        
     }
     
     public function create()
@@ -36,7 +35,6 @@ class DepartmentController extends Controller
 
     public function edit(Department $department)
     {
-
         return view('departments.edit', compact('department'));
     }
 

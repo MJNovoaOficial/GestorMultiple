@@ -15,21 +15,15 @@ class UserController extends Controller
         $status = $request->get('status', 'active');
 
         if (auth()->user()->role === 'superadmin') {
-
             $users = User::when(
-
                 $status === 'inactive',
-
                 fn ($query) => $query->where('is_active', false),
-
                 fn ($query) => $query->where('is_active', true)
-
             )
             ->latest()
             ->paginate(10);
 
         } else {
-
             $users = User::where(
                 'is_active',
                 true
@@ -37,7 +31,6 @@ class UserController extends Controller
             ->latest()
             ->get();
         }
-
         return view(
             'users.index',
             compact('users', 'status')
@@ -47,48 +40,36 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
             'name' => [
                 'required',
                 'string',
                 'max:255',
             ],
-
             'email' => [
                 'required',
                 'email',
                 'unique:users,email',
             ],
-
             'role' => [
                 'required',
                 'in:admin,superadmin',
             ],[
-
             'name.required' => 'Debes ingresar el nombre.',
             'email.required' => 'Debes ingresar el correo.',
             'email.email' => 'El correo no es válido.',
             'email.unique' => 'Ya existe un usuario con este correo.',
             'role.required' => 'Debes seleccionar un rol.',
-
         ]]);
 
         $temporaryPassword = 'Inicio.2026';
 
         $user = User::create([
-
             'name' => $validated['name'],
-
             'email' => $validated['email'],
-
             'password' => Hash::make($temporaryPassword),
-
             'role' => $validated['role'],
-
             'is_active' => true,
-
             'must_change_password' => true,
-
         ]);
 
         AuditService::log(
@@ -110,7 +91,6 @@ class UserController extends Controller
     {
         // Evitar auto eliminación
         if (auth()->id() === $user->id) {
-
             return redirect()
                 ->route('users.index')
                 ->with(
@@ -121,7 +101,6 @@ class UserController extends Controller
 
         // Solo superadmin
         if (auth()->user()->role !== 'superadmin') {
-
             abort(403);
         }
 
@@ -147,7 +126,6 @@ class UserController extends Controller
     {
         // Evitar auto modificación peligrosa
         if (auth()->id() === $user->id) {
-
             return redirect()
                 ->route('users.index')
                 ->with(
@@ -156,24 +134,17 @@ class UserController extends Controller
                 );
         }
 
-        /**
-         * Cambiar rol
-         */
+        //cambio de rol
         if ($request->type === 'role') {
-
             // Solo superadmin
             if (auth()->user()->role !== 'superadmin') {
-
                 abort(403);
             }
-
             $request->validate([
-
                 'role' => [
                     'required',
                     'in:admin,superadmin',
                 ],
-
             ]);
 
             $oldRole = $user->role;
@@ -183,27 +154,21 @@ class UserController extends Controller
             ]);
 
             AuditService::log(
-
                 $request->is_active
                     ? 'updated'
                     : 'deleted',
-
                 $user,
 
                 $request->is_active
                     ? 'Se ha activado el usuario: ' . $user->email
                     : 'Se ha eliminado el usuario: ' . $user->email,
-
                 [
                     'is_active' => $oldStatus
                 ],
-
                 [
                     'is_active' => $request->is_active
                 ]
-
             );
-
             return redirect()
                 ->route('users.index')
                 ->with(
@@ -212,19 +177,14 @@ class UserController extends Controller
                 );
         }
 
-        /**
-         * Cambiar estado
-         */
-
+        //cambio de estado
         if ($request->type === 'status') {
 
         $request->validate([
-
             'is_active' => [
                 'required',
                 'boolean',
             ],
-
         ]);
 
         if (
@@ -232,12 +192,10 @@ class UserController extends Controller
             &&
             $user->role === 'superadmin'
         ) {
-
             abort(
                 403,
                 'No tienes permisos para modificar este usuario.'
             );
-
         }
 
         $oldStatus = $user->is_active;

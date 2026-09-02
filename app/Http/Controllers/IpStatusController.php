@@ -10,7 +10,6 @@ class IpStatusController extends Controller
     public function index()
     {
         $ipStatuses = IpStatus::latest()->get();
-
         return view('ip-statuses.index', compact('ipStatuses'));
     }
 
@@ -38,7 +37,6 @@ class IpStatusController extends Controller
 
     public function edit(IpStatus $ipStatus)
     {
-
         return view('ip-statuses.edit', compact('ipStatus'));
     }
 
@@ -61,10 +59,8 @@ class IpStatusController extends Controller
     public function destroy(IpStatus $ipStatus)
     {
         $ipStatus->delete();
-
         return redirect()
             ->route('ip-statuses.index')
             ->with('success', 'Estado de IP eliminado correctamente.');
     }
-    
 }

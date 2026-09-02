@@ -38,40 +38,23 @@ class IpRangeImportController extends Controller
         $lastCreatedIp = null;
 
         for ($ip = $start; $ip <= $end; $ip++) {
-
             $currentIp = long2ip($ip);
-
-            /*
-            |--------------------------------------------------------------------------
-            | Evitar IPs reservadas
-            |--------------------------------------------------------------------------
-            */
-
+            // Evita IPs reservadas
             $lastOctet = explode('.', $currentIp)[3];
 
             if ($lastOctet == 0) {
-
                 continue;
-
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Evitar IPs duplicadas
-            |--------------------------------------------------------------------------
-            */
-
+            // Evita que se dupliquen
             $exists = IpAddress::where(
                 'ip_address',
                 $currentIp
             )->exists();
 
             if ($exists) {
-
                 $duplicates++;
-
                 continue;
-
             }
 
             IpAddress::create([
@@ -81,10 +64,9 @@ class IpRangeImportController extends Controller
             ]);
 
             $imported++;
-
         }
-        if ($lastCreatedIp) {
 
+        if ($lastCreatedIp) {
             AuditService::log(
                 'imported',
                 null,
@@ -95,7 +77,6 @@ class IpRangeImportController extends Controller
                 '. Importadas: ' . $imported .
                 ', omitidas: ' . $duplicates
             );
-
         }
 
         return redirect()
@@ -109,6 +90,4 @@ class IpRangeImportController extends Controller
                 ' duplicadas omitidas.'
             );
     }
-
-
 }

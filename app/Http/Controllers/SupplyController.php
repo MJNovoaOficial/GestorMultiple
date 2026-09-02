@@ -8,8 +8,7 @@ use App\Models\SupplyMovement;
 use App\Models\AuditLog;
 
 class SupplyController extends Controller
-{
-    
+{  
     public function index(Request $request)
     {
         $query = Supply::where(
@@ -18,24 +17,20 @@ class SupplyController extends Controller
         );
 
         if ($request->filter === 'critical') {
-
             $query->whereColumn(
                 'quantity',
                 '<=',
                 'minimum_stock'
             )
             ->where('quantity', '>', 0);
-
         }
 
         if ($request->filter === 'out') {
-
             $query->where(
                 'quantity',
                 '<=',
                 0
             );
-
         }
 
         $supplies = $query
@@ -56,25 +51,16 @@ class SupplyController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-
             'brand' => 'required|string|max:255',
-
             'printer_model' => 'required|string|max:255',
-
             'supply_type' => 'required|string|max:255',
-
             'quantity' => 'required|integer|min:0',
-
             'minimum_stock' => 'required|integer|min:0',
-
             'barcode' => 'nullable|string|max:100|unique:supplies,barcode',
-
         ]);
 
         $validated['created_by'] = auth()->id();
-
         $validated['updated_by'] = auth()->id();
-
         Supply::create($validated);
 
         return redirect()
@@ -88,9 +74,7 @@ class SupplyController extends Controller
     public function addStock(Request $request, Supply $supply)
     {
         $request->validate([
-
             'quantity' => 'required|integer|min:1',
-
         ]);
 
         $oldQuantity = $supply->quantity;
@@ -107,30 +91,22 @@ class SupplyController extends Controller
         ]);
 
         SupplyMovement::create([
-
             'supply_id' => $supply->id,
-
             'user_id' => auth()->id(),
-
             'type' => 'add',
-
             'quantity' => $request->quantity,
-
             'old_quantity' => $oldQuantity,
-
             'new_quantity' => $supply->fresh()->quantity,
-
         ]);
+
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'STOCK_AGREGADO',
-
             'description' =>
                 'Se agregaron ' .
                 $request->quantity .
                 ' unidades a ' .
                 $supply->supply_type,
-
             'ip_address' => request()->ip(),
         ]);
 
@@ -143,18 +119,14 @@ class SupplyController extends Controller
     public function removeStock(Request $request, Supply $supply)
     {
         $request->validate([
-
             'quantity' => 'required|integer|min:1',
-
         ]);
 
         if ($request->quantity > $supply->quantity) {
-
             return back()->with(
                 'error',
                 'No puedes descontar más stock del disponible.'
             );
-
         }
 
         $oldQuantity = $supply->quantity;
@@ -169,31 +141,22 @@ class SupplyController extends Controller
         ]);
 
         SupplyMovement::create([
-
             'supply_id' => $supply->id,
-
             'user_id' => auth()->id(),
-
             'type' => 'remove',
-
             'quantity' => $request->quantity,
-
             'old_quantity' => $oldQuantity,
-
             'new_quantity' => $supply->fresh()->quantity,
-
         ]);
 
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'STOCK_DESCONTADO',
-
             'description' =>
                 'Se descontaron ' .
                 $request->quantity .
                 ' unidades de ' .
                 $supply->supply_type,
-
             'ip_address' => request()->ip(),
         ]);
 
@@ -206,39 +169,28 @@ class SupplyController extends Controller
     public function destroy(Supply $supply)
     {
         SupplyMovement::create([
-
             'supply_id' => $supply->id,
-
             'user_id' => auth()->id(),
-
             'type' => 'delete',
-
             'quantity' => 0,
-
             'old_quantity' => $supply->quantity,
-
             'new_quantity' => 0,
-
         ]);
 
         $supply->update([
-
             'is_active' => false,
-
             'updated_by' => auth()->id(),
-
         ]);
 
         AuditLog::create([
             'user_id' => auth()->id(),
             'action' => 'SUMINISTRO_DESACTIVADO',
-
             'description' =>
                 'Se desactivó el suministro ' .
                 $supply->supply_type,
-
             'ip_address' => request()->ip(),
         ]);
+
         return back()->with(
             'success',
             'Suministro eliminado correctamente.'
@@ -262,12 +214,10 @@ class SupplyController extends Controller
         )->first();
 
         if (!$supply) {
-
             return response()->json([
                 'success' => false,
                 'message' => 'Suministro no encontrado.'
             ]);
-
         }
 
         return response()->json([
@@ -284,34 +234,26 @@ class SupplyController extends Controller
         ]);
 
         foreach ($request->items as $item) {
-
             $supply = Supply::find($item['id']);
-
             if (!$supply) {
                 continue;
             }
 
             $quantity = (int) $item['quantity'];
-
             $oldQuantity = $supply->quantity;
 
             if ($request->type === 'add') {
-
                 $supply->increment(
                     'quantity',
                     $quantity
                 );
-
             } else {
-
                 if ($quantity > $supply->quantity) {
-
                     return response()->json([
                         'success' => false,
                         'message' =>
                             "No hay suficiente stock para {$supply->supply_type}"
                     ], 422);
-
                 }
 
                 $supply->decrement(
@@ -323,36 +265,23 @@ class SupplyController extends Controller
             $newQuantity = $supply->fresh()->quantity;
 
             SupplyMovement::create([
-
                 'supply_id' => $supply->id,
-
                 'user_id' => auth()->id(),
-
                 'type' => $request->type,
-
                 'quantity' => $quantity,
-
                 'old_quantity' => $oldQuantity,
-
                 'new_quantity' => $newQuantity,
-
             ]);
         }
-
         AuditLog::create([
-
             'user_id' => auth()->id(),
-
             'action' =>
                 $request->type === 'add'
                     ? 'SCANNER_STOCK_AGREGADO'
                     : 'SCANNER_STOCK_DESCONTADO',
-
             'description' =>
                 'Movimiento realizado mediante escáner',
-
             'ip_address' => request()->ip(),
-
         ]);
 
         return response()->json([
