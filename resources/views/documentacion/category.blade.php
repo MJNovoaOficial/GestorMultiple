@@ -1,14 +1,9 @@
 <x-app-layout>
-
     <div class="py-8">
-
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
             {{-- ENCABEZADO --}}
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-
                 <div>
-
                     {{-- VOLVER --}}
                     <a
                         href="{{ route('documentacion.index') }}"
@@ -32,15 +27,12 @@
                             alt="Volver"
                             class="w-5 h-5 object-contain"
                         >
-
                         <span>
                             Volver a documentación
                         </span>
                     </a>
-
-
+                    {{-- CATEGORÍA --}}
                     <div class="flex items-center gap-4">
-
                         {{-- IMAGEN DE CATEGORÍA --}}
                         <div
                             class="
@@ -56,7 +48,6 @@
                                 flex-shrink-0
                             "
                         >
-
                             @if($category->image)
 
                                 <img
@@ -64,20 +55,15 @@
                                     alt="{{ $category->name }}"
                                     class="w-full h-full object-contain p-2"
                                 >
-
                             @else
-
                                 <img
                                     src="{{ asset('images/documentacion/default-category.png') }}"
                                     alt="Categoría"
                                     class="w-full h-full object-contain p-3"
                                 >
-
                             @endif
-
                         </div>
                         <div>
-
                             <h1
                                 class="
                                     text-2xl
@@ -88,9 +74,7 @@
                             >
                                 {{ $category->name }}
                             </h1>
-
                             @if($category->description)
-
                                 <p
                                     class="
                                         mt-1
@@ -101,16 +85,10 @@
                                 >
                                     {{ $category->description }}
                                 </p>
-
                             @endif
-
                         </div>
-
                     </div>
-
                 </div>
-
-
                 {{-- SUBIR ARCHIVO --}}
                 <button
                     type="button"
@@ -128,20 +106,16 @@
                         font-semibold
                         text-white
                         transition
-                    "
-                >
+                ">
                     <img
                         src="{{ asset('images/documentacion/nuevo.png') }}"
                         alt="Subir"
-                        class="w-5 h-5 object-contain"
-                    >
-                    <span>
-                        Subir archivo
-                    </span>
+                        class="w-5 h-5 object-contain">
+                        <span>
+                            Subir archivo
+                        </span>
                 </button>
             </div>
-
-
             {{-- INFORMACIÓN Y BÚSQUEDA --}}
             <div
                 class="
@@ -166,7 +140,6 @@
                         gap-4
                     "
                 >
-
                     <div>
                         <p
                             class="
@@ -190,7 +163,6 @@
                             Archivos almacenados en esta categoría.
                         </p>
                     </div>
-
                     <div
                         class="
                             px-3
@@ -206,17 +178,11 @@
                     >
                         {{ $documents->count() }}
                     </div>
-
                 </div>
-
-
                 {{-- BUSCADOR --}}
                 @if($documents->count())
-
                     <div class="mt-4">
-
                         <div class="relative">
-
                             <span
                                 class="
                                     absolute
@@ -230,46 +196,60 @@
                             >
                                 🔎
                             </span>
-
-                            <input
-                                type="text"
-                                id="document-search"
-                                placeholder="Buscar documentos..."
-                                class="
-                                    w-full
-                                    rounded-xl
-                                    border
-                                    border-slate-300
-                                    dark:border-slate-700
-                                    bg-slate-50
-                                    dark:bg-slate-900
-                                    text-sm
-                                    text-slate-700
-                                    dark:text-slate-200
-                                    placeholder-slate-400
-                                    pl-11
-                                    pr-4
-                                    py-3
-                                    outline-none
-                                    focus:border-blue-500
-                                    focus:ring-2
-                                    focus:ring-blue-500/20
-                                    transition
-                                "
+                            <form
+                                method="GET"
+                                action="{{ route('documentacion.category', $category) }}"
+                                class="mt-4"
                             >
-
+                                <div class="relative">
+                                    <span
+                                        class="
+                                            absolute
+                                            inset-y-0
+                                            left-0
+                                            flex
+                                            items-center
+                                            pl-4
+                                            text-slate-400
+                                        "
+                                    >
+                                        🔎
+                                    </span>
+                                    <input
+                                        type="text"
+                                        name="search"
+                                        value="{{ $search ?? '' }}"
+                                        placeholder="Buscar documentos..."
+                                        class="
+                                            w-full
+                                            rounded-xl
+                                            border
+                                            border-slate-300
+                                            dark:border-slate-700
+                                            bg-slate-50
+                                            dark:bg-slate-900
+                                            text-sm
+                                            text-slate-700
+                                            dark:text-slate-200
+                                            placeholder-slate-400
+                                            pl-11
+                                            pr-4
+                                            py-3
+                                            outline-none
+                                            focus:border-blue-500
+                                            focus:ring-2
+                                            focus:ring-blue-500/20
+                                            transition
+                                        "
+                                    >
+                                </div>
+                            </form>
                         </div>
-
                     </div>
-
                 @endif
-
             </div>
-
-
             {{-- LISTADO DE DOCUMENTOS --}}
             @if($documents->count())
-
                 <div
                     class="
                         rounded-2xl
@@ -281,64 +261,45 @@
                         overflow-hidden
                     "
                 >
-
                     @foreach($documents as $document)
-
                         @php
                             $extension = strtolower(
                                 pathinfo($document->file_name, PATHINFO_EXTENSION)
                             );
-
                             $icon = match ($extension) {
-
                                 'xls', 'xlsx', 'csv'
                                     => asset('images/documentacion/excel.png'),
-
                                 'pdf'
                                     => asset('images/documentacion/pdf.png'),
-
                                 'ppt', 'pptx'
                                     => asset('images/documentacion/powerpoint.png'),
-
                                 'doc', 'docx'
                                     => asset('images/documentacion/word.png'),
-
                                 'sql'
                                     => asset('images/documentacion/sql.png'),
-
                                 'txt'
                                     => asset('images/documentacion/txt.png'),
-
                                 'rar', 'zip'
                                     => asset('images/documentacion/rar.png'),
-
                                 'jpg', 'jpeg', 'png', 'gif', 'webp'
                                     => asset('images/documentacion/imagen.png'),
-                                
                                 'xml', 'xml'
                                     => asset('images/documentacion/xml.png'),
-
                                 default
                                     => asset('images/documentacion/txt.png'),
                             };
-
                             if ($document->file_size >= 1024 * 1024) {
-
                                 $fileSize = number_format(
                                     $document->file_size / 1024 / 1024,
                                     2
                                 ) . ' MB';
-
                             } else {
-
                                 $fileSize = number_format(
                                     $document->file_size / 1024,
                                     2
                                 ) . ' KB';
-
                             }
                         @endphp
-
                         <div
                             class="
                                 document-item
@@ -363,7 +324,6 @@
                                 ) }}
                             "
                         >
-
                             {{-- DOCUMENTO --}}
                             <a
                                 href="{{ route('documentacion.documents.download', $document) }}"
@@ -376,7 +336,6 @@
                                     group
                                 "
                             >
-
                                 {{-- ICONO --}}
                                 <div
                                     class="
@@ -395,7 +354,6 @@
                                         dark:border-slate-800
                                     "
                                 >
-
                                     <img
                                         src="{{ $icon }}"
                                         alt="{{ strtoupper($extension) }}"
@@ -406,13 +364,9 @@
                                             p-2
                                         "
                                     >
-
                                 </div>
-
-
                                 {{-- INFORMACIÓN --}}
                                 <div class="flex-1 min-w-0">
-
                                     {{-- NOMBRE --}}
                                     <h2
                                         class="
@@ -428,11 +382,8 @@
                                     >
                                         {{ $document->name }}
                                     </h2>
-
-
                                     {{-- DESCRIPCIÓN --}}
                                     @if($document->description)
-
                                         <p
                                             class="
                                                 mt-1
@@ -444,10 +395,8 @@
                                         >
                                             {{ $document->description }}
                                         </p>
-
                                     @else
-
-                                        <p
+                                        <P
                                             class="
                                                 mt-1
                                                 text-sm
@@ -460,8 +409,6 @@
                                         </p>
 
                                     @endif
-
-
                                     {{-- METADATOS --}}
                                     <div
                                         class="
@@ -476,36 +423,24 @@
                                             dark:text-slate-500
                                         "
                                     >
-
                                         <span>
                                             {{ strtoupper($extension) }}
                                         </span>
-
                                         <span>•</span>
-
                                         <span>
                                             {{ $fileSize }}
                                         </span>
-
                                         <span>•</span>
-
                                         <span>
                                             {{ $document->created_at->format('d/m/Y H:i') }}
                                         </span>
-
                                         <span>•</span>
-
                                         <span>
                                             {{ $document->creator->name ?? 'Usuario desconocido' }}
                                         </span>
-
                                     </div>
-
                                 </div>
-
                             </a>
-
-
                             {{-- ACCIONES --}}
                             <div
                                 class="
@@ -544,7 +479,6 @@
                                         class="w-6 h-6 object-contain"
                                     >
                                 </button>
-
                                 {{-- DESCARGAR --}}
                                 <a
                                     href="{{ route('documentacion.documents.download', $document) }}"
@@ -561,16 +495,12 @@
                                         transition
                                     "
                                 >
-
-                                    <img
+                                   <img
                                         src="{{ asset('images/documentacion/descargar.png') }}"
                                         alt="Descargar"
                                         class="w-6 h-6 object-contain"
                                     >
-
                                 </a>
-
-
                                 {{-- ELIMINAR --}}
                                 <button
                                     type="button"
@@ -598,19 +528,18 @@
                                         alt="Eliminar"
                                         class="w-6 h-6 object-contain"
                                     >
-
                                 </button>
-
                             </div>
-
                         </div>
-
                     @endforeach
-
                 </div>
-
+                {{-- PAGINACIÓN --}}
+                @if($documents->hasPages())
+                    <div class="mt-6">
+                        {{ $documents->links() }}
+                    </div>
+                @endif
             @else
-
                 {{-- SIN DOCUMENTOS --}}
                 <div
                     class="
@@ -625,12 +554,9 @@
                         text-center
                     "
                 >
-
                     <div class="text-5xl mb-5">
                         📄
                     </div>
-
-
                     <h2
                         class="
                             text-xl
@@ -641,8 +567,6 @@
                     >
                         No hay documentos
                     </h2>
-
-
                     <p
                         class="
                             mt-2
@@ -653,8 +577,6 @@
                     >
                         Esta categoría todavía no contiene documentos.
                     </p>
-
-
                     <button
                         type="button"
                         id="open-document-upload-modal-empty"
@@ -680,13 +602,9 @@
                         >
                         Subir primer archivo
                     </button>
-
                 </div>
-
             @endif
-
         </div>
-
     </div>
 
     {{-- OVERLAY DRAG & DROP --}}
@@ -704,7 +622,6 @@
             pointer-events-none
         "
     >
-
         <div
             class="
                 w-full
@@ -721,11 +638,9 @@
                 shadow-2xl
             "
         >
-
             <div class="text-6xl mb-5">
                 📎
             </div>
-
             <h2
                 class="
                     text-2xl
@@ -735,7 +650,6 @@
             >
                 Suelta tus archivos aquí
             </h2>
-
             <p
                 class="
                     mt-2
@@ -745,9 +659,7 @@
             >
                 El cargador de documentos se abrirá automáticamente.
             </p>
-
         </div>
-
     </div>
 
     @include('documentacion.partials.document-upload-modal', ['category' => $category])
@@ -762,7 +674,6 @@
             csrf_token()
         );
     </script>
-
     <script>
         /*
         |--------------------------------------------------------------------------
@@ -822,21 +733,17 @@
         const selectedCountNumber = document.getElementById(
             'document-selected-count-number'
         );
-
         /*
         |--------------------------------------------------------------------------
         | ARCHIVOS SELECCIONADOS
         |--------------------------------------------------------------------------
         */
-
         let selectedFiles = [];
-      
         /*
         |--------------------------------------------------------------------------
         | ABRIR MODAL
         |--------------------------------------------------------------------------
         */
-
         function openDocumentUploadModal() {
 
             if (!uploadModal) {
@@ -845,14 +752,11 @@
             uploadModal.classList.remove('hidden');
             uploadModal.classList.add('flex');
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | CERRAR MODAL
         |--------------------------------------------------------------------------
         */
-
         function closeDocumentUploadModal() {
 
             if (!uploadModal) {
@@ -861,67 +765,55 @@
             uploadModal.classList.add('hidden');
             uploadModal.classList.remove('flex');
         }
-
         /*
         |--------------------------------------------------------------------------
         | BOTÓN SUBIR ARCHIVO
         |--------------------------------------------------------------------------
         */
-
         if (openUploadButton) {
             openUploadButton.addEventListener(
                 'click',
                 openDocumentUploadModal
             );
         }
-
         /*
         |--------------------------------------------------------------------------
         | BOTÓN SUBIR PRIMER ARCHIVO
         |--------------------------------------------------------------------------
         */
-
         if (openUploadEmptyButton) {
             openUploadEmptyButton.addEventListener(
                 'click',
                 openDocumentUploadModal
             );
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | BOTÓN X
         |--------------------------------------------------------------------------
         */
-
         if (closeUploadButton) {
             closeUploadButton.addEventListener(
                 'click',
                 closeDocumentUploadModal
             );
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | BOTÓN CANCELAR
         |--------------------------------------------------------------------------
         */
-
         if (cancelUploadButton) {
             cancelUploadButton.addEventListener(
                 'click',
                 closeDocumentUploadModal
             );
         }
-
         /*
         |--------------------------------------------------------------------------
         | CERRAR HACIENDO CLICK FUERA
         |--------------------------------------------------------------------------
         */
-
         if (uploadModal) {
             uploadModal.addEventListener(
                 'click',
@@ -932,13 +824,11 @@
                 }
             );
         }
-
         /*
         |--------------------------------------------------------------------------
         | ICONO SEGÚN EXTENSIÓN
         |--------------------------------------------------------------------------
         */
-
         function getDocumentIcon(extension) {
             extension = extension.toLowerCase();
             const icons = {
@@ -970,17 +860,14 @@
                 // archivos XML
                 'xml': '/images/documentacion/xml.png',
             };
-
             return icons[extension]
                 ?? '/images/documentacion/txt.png';
         }
-
         /*
         |--------------------------------------------------------------------------
         | FORMATEAR TAMAÑO
         |--------------------------------------------------------------------------
         */
-
         function formatFileSize(bytes) {
             if (bytes === 0) {
                 return '0 Bytes';
@@ -1002,13 +889,11 @@
                 + units[index]
             );
         }
-
         /*
         |--------------------------------------------------------------------------
         | GENERAR NOMBRE DEL DOCUMENTO
         |--------------------------------------------------------------------------
         */
-
         function generateDocumentName(filename) {
             const nameWithoutExtension =
                 filename.replace(
@@ -1019,32 +904,25 @@
                 .replace(/[_-]+/g, ' ')
                 .trim();
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | ACTUALIZAR CONTADOR
         |--------------------------------------------------------------------------
         */
-
         function updateDocumentCount() {
             const count = selectedFiles.length;
-
             if (!selectedCount || !selectedCountNumber) {
                 return;
             }
-
             if (count === 0) {
                 selectedCount.classList.add('hidden');
                 selectedCountNumber.textContent = '0';
                 if (submitUploadButton) {
                     submitUploadButton.textContent =
                         '📤 Subir archivos';
-
                 }
                 return;
             }
-
             selectedCount.classList.remove('hidden');
             selectedCountNumber.textContent = count;
             if (submitUploadButton) {
@@ -1054,21 +932,17 @@
                         : `📤 Subir ${count} archivos`;
             }
         }
-
         /*
         |--------------------------------------------------------------------------
         | RENDERIZAR LISTA
         |--------------------------------------------------------------------------
         */
-
         function renderDocumentFileList() {
             if (!documentFileList) {
                 return;
             }
-
             documentFileList.innerHTML = '';
             selectedFiles.forEach((item, index) => {
-
                 const file = item.file;
                 const extension =
                     file.name
@@ -1088,7 +962,6 @@
                     dark:bg-slate-900
                     p-4
                 `;
-
                 container.innerHTML = `
                     <div class="flex items-start gap-3">
                         {{-- ICONO --}}
@@ -1168,7 +1041,6 @@
                                 class="w-5 h-5 object-contain"
                             >
                         </button>
-
                     </div>
                     {{-- NOMBRE --}}
                     <div class="mt-4">
@@ -1257,13 +1129,11 @@
             });
             updateDocumentCount();
         }
-
         /*
         |--------------------------------------------------------------------------
         | DRAG & DROP
         |--------------------------------------------------------------------------
         */
-
         const documentDropZone = document.getElementById(
             'document-drop-zone'
         );
@@ -1271,7 +1141,6 @@
         const documentDragOverlay = document.getElementById(
             'document-drag-overlay'
         );
-
         /*
         |--------------------------------------------------------------------------
         | AGREGAR ARCHIVOS
@@ -1303,13 +1172,11 @@
             });
             renderDocumentFileList();
         }
-
         /*
         |--------------------------------------------------------------------------
         | MOSTRAR OVERLAY
         |--------------------------------------------------------------------------
         */
-
         function showDocumentDragOverlay() {
             if (!documentDragOverlay) {
                 return;
@@ -1321,7 +1188,6 @@
                 'flex'
             );
         }
-
         /*
         |--------------------------------------------------------------------------
         | OCULTAR OVERLAY
@@ -1339,13 +1205,11 @@
                 'flex'
             );
         }
-
         /*
         |--------------------------------------------------------------------------
         | DETECTAR ARRASTRE DE ARCHIVOS
         |--------------------------------------------------------------------------
         */
-
         let isDraggingFiles = false;
 
         document.addEventListener(
@@ -1362,13 +1226,11 @@
                 showDocumentDragOverlay();
             }
         );
-
         /*
         |--------------------------------------------------------------------------
         | DRAGOVER
         |--------------------------------------------------------------------------
         */
-
         document.addEventListener(
             'dragover',
             function (event) {
@@ -1381,13 +1243,11 @@
                 event.preventDefault();
             }
         );
-
         /*
         |--------------------------------------------------------------------------
         | SOLTAR ARCHIVOS
         |--------------------------------------------------------------------------
         */
-
         document.addEventListener(
             'drop',
             function (event) {
@@ -1422,13 +1282,11 @@
                 addDocumentFiles(files);
             }
         );
-
         /*
         |--------------------------------------------------------------------------
         | SALIR DE LA VENTANA
         |--------------------------------------------------------------------------
         */
-
         document.addEventListener(
             'dragleave',
             function (event) {
@@ -1443,13 +1301,11 @@
                 }
             }
         );
-
         /*
         |--------------------------------------------------------------------------
         | ESCAPAR HTML
         |--------------------------------------------------------------------------
         */
-
         function escapeHtml(value) {
             if (!value) {
                 return '';
@@ -1462,14 +1318,11 @@
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | SELECCIONAR ARCHIVOS
         |--------------------------------------------------------------------------
         */
-
         if (documentFileInput) {
 
             documentFileInput.addEventListener(
@@ -1489,16 +1342,12 @@
             );
 
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | CAMBIAR NOMBRE
         |--------------------------------------------------------------------------
         */
-
         if (documentFileList) {
-
             documentFileList.addEventListener(
                 'input',
                 function (event) {
@@ -1519,8 +1368,6 @@
                         }
 
                     }
-
-
                     /*
                     |--------------------------------------------------------------------------
                     | CAMBIAR DESCRIPCIÓN
@@ -1547,164 +1394,121 @@
                 }
             );
         }
-
         /*
         |--------------------------------------------------------------------------
         | ELIMINAR ARCHIVO
         |--------------------------------------------------------------------------
         */
-
         window.removeDocumentFile = function (index) {
             selectedFiles.splice(index, 1);
             renderDocumentFileList();
         };
-
-
         /*
         |--------------------------------------------------------------------------
         | REINICIAR MODAL
         |--------------------------------------------------------------------------
         */
-
         function resetDocumentUploadModal() {
-
             selectedFiles = [];
-
             if (documentFileInput) {
                 documentFileInput.value = '';
             }
-
             if (documentFileList) {
                 documentFileList.innerHTML = '';
             }
-
             updateDocumentCount();
-
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | LIMPIAR AL CERRAR
         |--------------------------------------------------------------------------
         */
-
         if (cancelUploadButton) {
             cancelUploadButton.addEventListener(
                 'click',
                 resetDocumentUploadModal
             );
         }
-
         if (closeUploadButton) {
             closeUploadButton.addEventListener(
                 'click',
                 resetDocumentUploadModal
             );
         }
-
         /*
         |--------------------------------------------------------------------------
         | SUBIR DOCUMENTOS
         |--------------------------------------------------------------------------
         */
-
         if (submitUploadButton) {
-
             submitUploadButton.addEventListener(
                 'click',
                 async function () {
-
                     /*
                     |--------------------------------------------------------------------------
                     | VALIDAR QUE EXISTAN ARCHIVOS
                     |--------------------------------------------------------------------------
                     */
-
                     if (selectedFiles.length === 0) {
-
                         alert(
                             'Debes seleccionar al menos un archivo.'
                         );
-
                         return;
-
                     }
-
-
                     /*
                     |--------------------------------------------------------------------------
                     | CREAR FORMDATA
                     |--------------------------------------------------------------------------
                     */
-
                     const formData = new FormData();
-
-
                     /*
                     |--------------------------------------------------------------------------
                     | CSRF
                     |--------------------------------------------------------------------------
                     */
-
                     formData.append(
                         '_token',
                         documentCsrfToken
                     );
-
                     /*
                     |--------------------------------------------------------------------------
                     | AGREGAR ARCHIVOS
                     |--------------------------------------------------------------------------
                     */
-
                     selectedFiles.forEach(
                         (item, index) => {
-
                             formData.append(
                                 `files[${index}]`,
                                 item.file
                             );
-
                             formData.append(
                                 `names[${index}]`,
                                 item.name
                             );
-
                             formData.append(
                                 `descriptions[${index}]`,
                                 item.description ?? ''
                             );
-
                         }
                     );
-
-
                     /*
                     |--------------------------------------------------------------------------
                     | DESHABILITAR BOTÓN
                     |--------------------------------------------------------------------------
                     */
-
                     submitUploadButton.disabled = true;
-
                     submitUploadButton.classList.add(
                         'opacity-70',
                         'cursor-not-allowed'
                     );
-
                     submitUploadButton.textContent =
                         '⏳ Subiendo...';
-
-
                     try {
-
                         /*
                         |--------------------------------------------------------------------------
                         | ENVIAR AL SERVIDOR
                         |--------------------------------------------------------------------------
                         */
-
                         const response = await fetch(
                             documentStoreUrl,
                             {
@@ -1716,153 +1520,64 @@
                                 }
                             }
                         );
-
-
                         /*
                         |--------------------------------------------------------------------------
                         | ERROR HTTP
                         |--------------------------------------------------------------------------
                         */
-
                         if (!response.ok) {
-
                             let errorMessage =
                                 'No fue posible subir los documentos.';
-
                             try {
-
                                 const data =
                                     await response.json();
-
                                 if (data.message) {
-
                                     errorMessage =
                                         data.message;
-
                                 }
-
                             } catch (error) {
                                 // La respuesta no era JSON.
                             }
-
-
                             throw new Error(
                                 errorMessage
                             );
-
                         }
-
-
                         /*
                         |--------------------------------------------------------------------------
                         | ÉXITO
                         |--------------------------------------------------------------------------
                         */
-
                         window.location.reload();
-
-
                     } catch (error) {
-
                         console.error(
                             'Error al subir documentos:',
                             error
                         );
-
-
                         alert(
                             error.message ||
                             'No fue posible subir los documentos.'
                         );
-
-
                         /*
                         |--------------------------------------------------------------------------
                         | RESTAURAR BOTÓN
                         |--------------------------------------------------------------------------
                         */
-
                         submitUploadButton.disabled =
                             false;
-
                         submitUploadButton.classList.remove(
                             'opacity-70',
                             'cursor-not-allowed'
                         );
-
-
                         updateDocumentCount();
-
                     }
-
                 }
             );
-
         }
-        /*
-        |--------------------------------------------------------------------------
-        | BUSCAR DOCUMENTOS
-        |--------------------------------------------------------------------------
-        */
-
-        const documentSearch = document.getElementById(
-            'document-search'
-        );
-
-        const documentItems = document.querySelectorAll(
-            '.document-item'
-        );
-
-
-        if (documentSearch) {
-
-            documentSearch.addEventListener(
-                'input',
-                function () {
-
-                    const search =
-                        this.value
-                            .toLowerCase()
-                            .trim();
-
-
-                    documentItems.forEach(
-                        item => {
-
-                            const content =
-                                item.dataset.search || '';
-
-
-                            if (
-                                content.includes(search)
-                            ) {
-
-                                item.classList.remove(
-                                    'hidden'
-                                );
-
-                            } else {
-
-                                item.classList.add(
-                                    'hidden'
-                                );
-
-                            }
-
-                        }
-                    );
-
-                }
-            );
-
-        }
-
         /*
         |--------------------------------------------------------------------------
         | MODAL EDITAR DOCUMENTO
         |--------------------------------------------------------------------------
         */
-
         const documentEditModal = document.getElementById(
             'document-edit-modal'
         );
@@ -2067,27 +1782,20 @@
         const cancelDocumentDeleteButton = document.getElementById(
             'cancel-document-delete-modal'
         );
-
-
         /*
         |--------------------------------------------------------------------------
         | ABRIR MODAL
         |--------------------------------------------------------------------------
         */
-
         window.openDocumentDeleteModal = function (button) {
-
             if (!documentDeleteModal) {
                 return;
             }
-
-
             /*
             |--------------------------------------------------------------------------
             | OBTENER DATOS
             |--------------------------------------------------------------------------
             */
-
             const documentId =
                 button.dataset.documentId;
 
@@ -2099,46 +1807,31 @@
 
             const documentExtension =
                 button.dataset.documentExtension || '';
-
-
             /*
             |--------------------------------------------------------------------------
             | NOMBRE DEL DOCUMENTO
             |--------------------------------------------------------------------------
             */
-
             if (deleteDocumentName) {
-
                 deleteDocumentName.textContent =
                     documentName;
-
             }
-
-
             /*
             |--------------------------------------------------------------------------
             | NOMBRE DEL ARCHIVO
             |--------------------------------------------------------------------------
             */
-
             if (deleteDocumentFileName) {
-
                 deleteDocumentFileName.textContent =
                     documentFileName;
-
             }
-
-
             /*
             |--------------------------------------------------------------------------
             | ICONO
             |--------------------------------------------------------------------------
             */
-
             if (deleteDocumentFileIcon) {
-
                 const iconMap = {
-
                     pdf: '/images/documentacion/pdf.png',
                     doc: '/images/documentacion/word.png',
                     docx: '/images/documentacion/word.png',
@@ -2154,24 +1847,18 @@
                     xml: '/images/documentacion/xml.png',
                 };
 
-
                 deleteDocumentFileIcon.src =
                     iconMap[documentExtension]
                     || '/images/documentacion/default.png';
-
             }
-
             /*
             |--------------------------------------------------------------------------
             | CARGAR ICONO SEGÚN EXTENSIÓN
             |--------------------------------------------------------------------------
             */
             if (deleteDocumentFileIcon) {
-
                 const iconMap = {
-
                     pdf: '/images/documentacion/pdf.png',
-
                     doc: '/images/documentacion/word.png',
                     docx: '/images/documentacion/word.png',
                     xls: '/images/documentacion/excel.png',
@@ -2185,123 +1872,86 @@
                     png: '/images/documentacion/imagen.png',
                     xml: '/images/documentacion/xml.png',
             };
-
-
             deleteDocumentFileIcon.src =
                 iconMap[documentExtension]
                 || '';
             }
-
             /*
             |--------------------------------------------------------------------------
             | ACTION DEL FORMULARIO
             |--------------------------------------------------------------------------
             */
-
             if (documentDeleteForm) {
-
                 documentDeleteForm.action =
                     `/documentacion/documentos/${documentId}`;
-
             }
-
-
             /*
             |--------------------------------------------------------------------------
             | ABRIR MODAL
             |--------------------------------------------------------------------------
             */
-
             documentDeleteModal.classList.remove(
                 'hidden'
             );
-
             documentDeleteModal.classList.add(
                 'flex'
             );
-
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | CERRAR MODAL
         |--------------------------------------------------------------------------
         */
-
         function closeDocumentDeleteModal() {
-
             if (!documentDeleteModal) {
                 return;
             }
-
             documentDeleteModal.classList.add(
                 'hidden'
             );
-
             documentDeleteModal.classList.remove(
                 'flex'
             );
-
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | BOTÓN X
         |--------------------------------------------------------------------------
         */
-
         if (closeDocumentDeleteButton) {
-
             closeDocumentDeleteButton.addEventListener(
                 'click',
                 closeDocumentDeleteModal
             );
-
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | BOTÓN CANCELAR
         |--------------------------------------------------------------------------
         */
-
         if (cancelDocumentDeleteButton) {
-
             cancelDocumentDeleteButton.addEventListener(
                 'click',
                 closeDocumentDeleteModal
             );
-
         }
-
-
         /*
         |--------------------------------------------------------------------------
         | CERRAR AL HACER CLICK FUERA
         |--------------------------------------------------------------------------
         */
-
         if (documentDeleteModal) {
-
             documentDeleteModal.addEventListener(
                 'click',
                 function (event) {
-
                     if (
                         event.target ===
                         documentDeleteModal
                     ) {
-
                         closeDocumentDeleteModal();
-
                     }
-
                 }
             );
-
         }
     </script>
 </x-app-layout>

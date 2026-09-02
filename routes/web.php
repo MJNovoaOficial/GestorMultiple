@@ -154,7 +154,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/documentacion/documentos/{id}/permanent-delete', [DocumentController::class, 'permanentDelete'])
             ->name('documentacion.documents.permanent-delete');
         Route::resource('documentacion', DocumentCategoryController::class)
-            ->except(['create']);
+            ->except(['create', 'show']);
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría

@@ -11,16 +11,26 @@ use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
 {
-    public function index(DocumentCategory $category)
+    public function index(Request $request, DocumentCategory $category)
     {
+        $search = $request->input('search');
+
         $documents = $category->documents()
             ->where('is_active', true)
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('file_name', 'like', "%{$search}%");
+                });
+            })
             ->latest()
-            ->get();
+            ->paginate(50)
+            ->withQueryString();
 
         return view(
             'documentacion.category',
-            compact('category', 'documents')
+            compact('category', 'documents', 'search')
         );
     }
 
