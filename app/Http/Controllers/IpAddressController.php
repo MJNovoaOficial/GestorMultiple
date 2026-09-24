@@ -247,7 +247,7 @@ class IpAddressController extends Controller
         );
     }
 
-   public function exportPdf(Request $request)
+    public function exportPdf(Request $request)
     {
         ini_set('memory_limit', '1024M');
         set_time_limit(300);
@@ -406,5 +406,125 @@ class IpAddressController extends Controller
 
             throw $e;
         }
+    }
+
+    public function printPdf(Request $request)
+    {
+        ini_set('memory_limit', '1024M');
+        set_time_limit(300);
+
+        $request->validate([
+            'subnets' => 'required|array|min:1',
+            'columns' => 'required|array|min:1',
+            'status' => 'nullable|string',
+        ]);
+
+        $sections = [];
+
+        foreach ($request->subnets as $subnet) {
+
+            $query = IpAddress::with([
+                'branch',
+                'department',
+                'deviceType',
+                'ipStatus'
+            ]);
+
+            $query->where(
+                'ip_address',
+                'like',
+                $subnet . '.%'
+            );
+
+            if (!empty($request->status)) {
+
+                $query->whereHas('ipStatus', function ($query) use ($request) {
+
+                    $query->whereRaw(
+                        'LOWER(name) = ?',
+                        [strtolower($request->status)]
+                    );
+
+                });
+            }
+
+            $ips = $query
+                ->orderByRaw("
+                    CAST(PARSENAME(ip_address, 4) AS BIGINT),
+                    CAST(PARSENAME(ip_address, 3) AS BIGINT),
+                    CAST(PARSENAME(ip_address, 2) AS BIGINT),
+                    CAST(PARSENAME(ip_address, 1) AS BIGINT)
+                ")
+                ->get();
+
+            $branch = $ips->first()?->branch?->name ?? '';
+
+            $rows = $ips->map(function ($ip) use ($request) {
+
+                $row = [];
+
+                foreach ($request->columns as $column) {
+
+                    switch ($column) {
+
+                        case 'ip':
+                            $row['ip'] = $ip->ip_address;
+                            break;
+
+                        case 'status':
+                            $row['status'] =
+                                $ip->ipStatus?->name ?? '';
+                            break;
+
+                        case 'user':
+                            $row['user'] =
+                                $ip->user_assigned ?? '';
+                            break;
+
+                        case 'device':
+                            $row['device'] =
+                                $ip->deviceType?->name ?? '';
+                            break;
+
+                        case 'branch':
+                            $row['branch'] =
+                                $ip->branch?->name ?? '';
+                            break;
+
+                        case 'department':
+                            $row['department'] =
+                                $ip->department?->name ?? '';
+                            break;
+                    }
+                }
+
+                return $row;
+
+            })->toArray();
+
+            $sections[] = [
+                'subnet' => $subnet . '.x',
+                'branch' => $branch,
+                'rows' => $rows,
+            ];
+        }
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'export',
+            'description' => 'Imprimió direcciones IP.',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        $pdf = Pdf::loadView('ip-addresses.pdf', [
+            'sections' => $sections,
+            'columns' => $request->columns,
+            'status' => $request->status,
+        ]);
+
+        return $pdf
+            ->setPaper('letter', 'landscape')
+            ->stream('DireccionesIP-' . now()->format('Y-m-d') . '.pdf');
     }
 }

@@ -79,6 +79,8 @@ Route::middleware('auth')->group(function () {
             ->name('ip-addresses.export');
         Route::post('/ip-addresses/export-pdf', [IpAddressController::class, 'exportPdf'])
             ->name('ip-addresses.export-pdf');
+        Route::post('/ip-addresses/print-pdf',[IpAddressController::class, 'printPdf'])
+            ->name('ip-addresses.print-pdf');
         /*
         |--------------------------------------------------------------------------
         | Módulo de suministros de impresoras

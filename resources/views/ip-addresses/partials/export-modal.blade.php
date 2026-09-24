@@ -399,11 +399,51 @@
                         '📕 Exportar PDF';
                 }
 
+                /*
+                |--------------------------------------------------------------------------
+                | IMPRIMIR
+                |--------------------------------------------------------------------------
+                */
+                if (selectedFormat === 'print') {
+                    exportForm.action =
+                        "{{ route('ip-addresses.print-pdf') }}";
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Ocultar Sucursal
+                    |--------------------------------------------------------------------------
+                    */
+                    if (branchColumnOption) {
+                        branchColumnOption.classList.add('hidden');
+                    }
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Desactivar Sucursal
+                    |--------------------------------------------------------------------------
+                    */
+                    if (branchColumnCheckbox) {
+                        branchColumnCheckbox.checked = false;
+                        branchColumnCheckbox.disabled = true;
+                    }
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Resumen
+                    |--------------------------------------------------------------------------
+                    */
+                    summaryFormat.textContent = 'Imprimir';
+                    summaryFormat.classList.remove(
+                        'text-emerald-400',
+                        'text-red-400'
+                    );
+                    summaryFormat.classList.add(
+                        'text-blue-400'
+                    );
+                    startExport.textContent =
+                        'Imprimir';
+                }
                 updateColumnsSummary();
             }
-
-
+            
             /*
             |--------------------------------------------------------------------------
             | Contador de columnas
@@ -463,7 +503,87 @@
             */
 
             updateExportFormat();
+            
+            exportForm.addEventListener('submit', async function (event) {
+                const selectedFormat =
+                    document.querySelector(
+                        'input[name="export_format"]:checked'
+                    )?.value;
 
+                if (selectedFormat !== 'print') {
+                    return;
+                }
+                event.preventDefault();
+                const formData = new FormData(exportForm);
+                const printWindow = window.open(
+                    '',
+                    '_blank'
+                );
+
+                if (!printWindow) {
+                    alert(
+                        'El navegador bloqueó la ventana de impresión. Permite las ventanas emergentes para este sitio.'
+                    );
+                   return;
+                }
+                printWindow.document.write(`
+                    <html>
+                        <head>
+                            <title>Preparando impresión...</title>
+                        </head>
+                        <body style="
+                            font-family: Arial, sans-serif;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 100vh;
+                        ">
+                            Preparando documento para imprimir...
+                        </body>
+                    </html>
+                `);
+
+                try {
+                    const response = await fetch(
+                        exportForm.action,
+                        {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        }
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(
+                            'No se pudo generar el PDF.'
+                        );
+                    }
+
+                    const blob = await response.blob();
+                    const pdfUrl = URL.createObjectURL(blob);
+                    printWindow.location.href = pdfUrl;
+
+                    printWindow.onload = function () {
+                        setTimeout(() => {
+                            printWindow.onafterprint = function () {
+                                URL.revokeObjectURL(pdfUrl);
+                                printWindow.close();
+                            };
+                            printWindow.print();
+                        }, 1000);
+                    };
+
+                } catch (error) {
+                    printWindow.close();
+                    console.error(error);
+                    alert(
+                        'Ocurrió un error al preparar el documento para imprimir.'
+                    );
+                }
+
+            });
         });
     </script>
 </div>
