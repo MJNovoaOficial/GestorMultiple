@@ -1080,6 +1080,28 @@
                             data-index="${index}"
                         >
                     </div>
+                    ${item.error ? `
+                        <div class="
+                            mt-3
+                            rounded-lg
+                            border
+                            border-red-200
+                            dark:border-red-900
+                            bg-red-50
+                            dark:bg-red-950/30
+                            px-3
+                            py-2
+                            text-xs
+                            text-red-600
+                            dark:text-red-400
+                        ">
+                            <span class="font-semibold">
+                                ⚠️ Error:
+                            </span>
+
+                            ${escapeHtml(item.error)}
+                        </div>
+                    ` : ''}
                     {{-- DESCRIPCIÓN --}}
                     <div class="mt-3">
                         <label
@@ -1440,42 +1462,48 @@
         |--------------------------------------------------------------------------
         */
         if (submitUploadButton) {
-            submitUploadButton.addEventListener('click', async function () {
-                /*
-                |--------------------------------------------------------------------------
-                | VALIDAR QUE EXISTAN ARCHIVOS
-                |--------------------------------------------------------------------------
-                */
-                if (selectedFiles.length === 0) {
-                    alert(
-                        'Debes seleccionar al menos un archivo.'
-                    );
-                    return;
-                }
-                /*
-                |--------------------------------------------------------------------------
-                | CALCULAR LOTES
-                |--------------------------------------------------------------------------
-                */
-                const totalFiles = selectedFiles.length;
-                const totalBatches = Math.ceil(
-                    totalFiles / BATCH_SIZE
-                );
-                let uploadedFiles = 0;
-                /*
-                |--------------------------------------------------------------------------
-                | DESHABILITAR BOTÓN
-                |--------------------------------------------------------------------------
-                */
-                submitUploadButton.disabled = true;
-                submitUploadButton.classList.add(
-                    'opacity-70',
-                    'cursor-not-allowed'
-                );
-                try {
+            submitUploadButton.addEventListener(
+                'click',
+                async function () {
                     /*
                     |--------------------------------------------------------------------------
-                    | SUBIR LOTE POR LOTE
+                    | VALIDAR QUE EXISTAN ARCHIVOS
+                    |--------------------------------------------------------------------------
+                    */
+                    if (selectedFiles.length === 0) {
+                        alert(
+                            'Debes seleccionar al menos un archivo.'
+                        );
+                        return;
+                    }
+                    /*
+                    |--------------------------------------------------------------------------
+                    | PREPARAR SUBIDA
+                    |--------------------------------------------------------------------------
+                    */
+                    submitUploadButton.disabled = true;
+                    submitUploadButton.classList.add(
+                        'opacity-70',
+                        'cursor-not-allowed'
+                    );
+
+                    const totalFiles = selectedFiles.length;
+                    let uploadedFiles = 0;
+                    let failedFiles = [];
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CALCULAR CANTIDAD DE LOTES
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const totalBatches = Math.ceil(
+                        totalFiles / BATCH_SIZE
+                    );
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | PROCESAR LOTES
                     |--------------------------------------------------------------------------
                     */
 
@@ -1484,151 +1512,309 @@
                         batchIndex < totalBatches;
                         batchIndex++
                     ) {
-                    /*
-                    |--------------------------------------------------------------------------
-                    | OBTENER ARCHIVOS DEL LOTE ACTUAL
-                    |--------------------------------------------------------------------------
-                    */
-                        const startIndex = batchIndex * BATCH_SIZE;
-                        const batch = selectedFiles.slice(startIndex, startIndex + BATCH_SIZE);
+
+                        const startIndex =
+                            batchIndex * BATCH_SIZE;
+
+                        const batch =
+                            selectedFiles.slice(
+                                startIndex,
+                                startIndex + BATCH_SIZE
+                            );
+
                         /*
                         |--------------------------------------------------------------------------
-                        | ACTUALIZAR BOTÓN
+                        | CREAR FORMDATA
                         |--------------------------------------------------------------------------
                         */
-                        submitUploadButton.textContent = `⏳ Subiendo lote ${batchIndex + 1} de ${totalBatches}...`;
-                        /*
-                        |--------------------------------------------------------------------------
-                        | CREAR FORMDATA DEL LOTE
-                        |--------------------------------------------------------------------------
-                        */
+
                         const formData = new FormData();
-                        /*
-                        |--------------------------------------------------------------------------
-                        | CSRF
-                        |--------------------------------------------------------------------------
-                        */
+
                         formData.append(
                             '_token',
                             documentCsrfToken
                         );
+
                         /*
                         |--------------------------------------------------------------------------
                         | AGREGAR ARCHIVOS DEL LOTE
                         |--------------------------------------------------------------------------
                         */
+
                         batch.forEach(
                             (item, index) => {
+
                                 formData.append(
                                     `files[${index}]`,
                                     item.file
                                 );
+
                                 formData.append(
                                     `names[${index}]`,
-                                    item.name
+                                    item.name ?? ''
                                 );
+
                                 formData.append(
                                     `descriptions[${index}]`,
                                     item.description ?? ''
                                 );
                             }
                         );
+
                         /*
                         |--------------------------------------------------------------------------
-                        | ENVIAR LOTE AL SERVIDOR
+                        | ACTUALIZAR BOTÓN
                         |--------------------------------------------------------------------------
                         */
-                        const response = await fetch(
-                            documentStoreUrl,
-                            {
-                                method: 'POST',
-                                body: formData,
-                                headers: {
-                                    'X-Requested-With':
-                                        'XMLHttpRequest',
-                                        'Accept':
-                                        'application/json'
-                                }
-                            }
-                        );
-                        /*
-                        |--------------------------------------------------------------------------
-                        | VALIDAR RESPUESTA
-                        |--------------------------------------------------------------------------
-                        */
-                        if (!response.ok) {
-                            let errorMessage =
-                                'No fue posible subir los documentos.';
-                            try {
-                                const data =
-                                    await response.json();
-                                if (data.message) {
-                                    errorMessage = data.message;
-                                }
-                                } catch (error) {
-                                    // La respuesta no era JSON.
-                                }
-                                throw new Error(
-                                    errorMessage
-                                );
-                            }
-                        /*
-                        |--------------------------------------------------------------------------
-                        | CONTABILIZAR ARCHIVOS SUBIDOS
-                        |--------------------------------------------------------------------------
-                        */
-                        uploadedFiles += batch.length;
-                        /*
-                        |--------------------------------------------------------------------------
-                        | ACTUALIZAR PROGRESO
-                        |--------------------------------------------------------------------------
-                        */
+
                         submitUploadButton.textContent =
                             `⏳ ${uploadedFiles} de ${totalFiles} archivos subidos`;
+
+                        try {
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | ENVIAR LOTE
+                            |--------------------------------------------------------------------------
+                            */
+
+                            const response = await fetch(
+                                documentStoreUrl,
+                                {
+                                    method: 'POST',
+
+                                    body: formData,
+
+                                    headers: {
+                                        'X-Requested-With':
+                                            'XMLHttpRequest',
+
+                                        'Accept':
+                                            'application/json'
+                                    }
+                                }
+                            );
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | LEER RESPUESTA
+                            |--------------------------------------------------------------------------
+                            */
+
+                            let data = {};
+
+                            try {
+
+                                data = await response.json();
+
+                            } catch (error) {
+
+                                data = {};
+
+                            }
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | ERROR HTTP DEL LOTE
+                            |--------------------------------------------------------------------------
+                            |
+                            | Si por alguna razón falla todo el lote,
+                            | marcamos todos sus archivos como fallidos,
+                            | pero CONTINUAMOS con el siguiente lote.
+                            |
+                            */
+
+                            if (!response.ok) {
+
+                                batch.forEach(
+                                    (item) => {
+
+                                        item.error =
+                                            data.message ||
+                                            'No fue posible procesar este archivo.';
+
+                                        failedFiles.push(item);
+
+                                    }
+                                );
+
+                                continue;
+                            }
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | ARCHIVOS SUBIDOS CORRECTAMENTE
+                            |--------------------------------------------------------------------------
+                            */
+
+                            uploadedFiles +=
+                                Number(data.uploaded || 0);
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | ARCHIVOS FALLIDOS
+                            |--------------------------------------------------------------------------
+                            */
+
+                            if (
+                                Array.isArray(data.failed) &&
+                                data.failed.length > 0
+                            ) {
+
+                                data.failed.forEach(
+                                    (failure) => {
+
+                                        const item =
+                                            batch[failure.index];
+
+                                        if (!item) {
+                                            return;
+                                        }
+
+                                        item.error =
+                                            Array.isArray(
+                                                failure.errors
+                                            )
+                                                ? failure.errors.join(' ')
+                                                : (
+                                                    failure.errors ||
+                                                    'No fue posible subir este archivo.'
+                                                );
+
+                                        failedFiles.push(item);
+
+                                    }
+                                );
+                            }
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | ACTUALIZAR PROGRESO
+                            |--------------------------------------------------------------------------
+                            */
+
+                            submitUploadButton.textContent =
+                                `⏳ ${uploadedFiles} de ${totalFiles} archivos subidos`;
+
+                        } catch (error) {
+
+                            console.error(
+                                'Error al subir lote:',
+                                error
+                            );
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | SI FALLA EL FETCH
+                            |--------------------------------------------------------------------------
+                            |
+                            | No detenemos todo el proceso.
+                            | Marcamos este lote como fallido
+                            | y seguimos con el siguiente.
+                            |
+                            */
+
+                            batch.forEach(
+                                (item) => {
+
+                                    item.error =
+                                        error.message ||
+                                        'No fue posible subir este archivo.';
+
+                                    failedFiles.push(item);
+
+                                }
+                            );
                         }
-                        /*
-                        |--------------------------------------------------------------------------
-                        | ÉXITO
-                        |--------------------------------------------------------------------------
-                        */
-                        submitUploadButton.textContent = '✅ Archivos subidos correctamente';
-                        /*
-                        |--------------------------------------------------------------------------
-                        | RECARGAR PÁGINA
-                        |--------------------------------------------------------------------------
-                        */
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 800);
-                }catch (error){
-                    console.error(
-                        'Error al subir documentos:',
-                        error
-                    );
+                    }
+
                     /*
                     |--------------------------------------------------------------------------
-                    | MOSTRAR ERROR
+                    | FINALIZÓ TODA LA SUBIDA
                     |--------------------------------------------------------------------------
                     */
-                    alert(
-                        error.message ||
-                        'No fue posible subir los documentos.'
+
+                    console.log(
+                        'Archivos subidos:',
+                        uploadedFiles
                     );
+
+                    console.log(
+                        'Archivos fallidos:',
+                        failedFiles
+                    );
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SI NO HUBO ERRORES
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (failedFiles.length === 0) {
+
+                        alert(
+                            `¡Listo! Se subieron ${uploadedFiles} documento(s) correctamente.`
+                        );
+
+                        window.location.reload();
+
+                        return;
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CONSERVAR SOLAMENTE LOS ARCHIVOS FALLIDOS
+                    |--------------------------------------------------------------------------
+                    |
+                    | Los archivos exitosos desaparecen de la lista.
+                    | Los fallidos permanecen para poder corregirlos
+                    | y volver a intentar.
+                    |
+                    */
+
+                    selectedFiles = failedFiles;
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | VOLVER A MOSTRAR LA LISTA
+                    |--------------------------------------------------------------------------
+                    */
+
+                    renderDocumentFileList();
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | MOSTRAR RESUMEN
+                    |--------------------------------------------------------------------------
+                    */
+
+                    alert(
+                        `Proceso terminado.\n\n` +
+                        `✅ Subidos correctamente: ${uploadedFiles}\n` +
+                        `❌ Con errores: ${failedFiles.length}\n\n` +
+                        `Revisa los documentos marcados en rojo, ` +
+                        `corrige el problema y vuelve a presionar "Reintentar".`
+                    );
+
                     /*
                     |--------------------------------------------------------------------------
                     | RESTAURAR BOTÓN
                     |--------------------------------------------------------------------------
                     */
+
                     submitUploadButton.disabled = false;
+
                     submitUploadButton.classList.remove(
                         'opacity-70',
                         'cursor-not-allowed'
                     );
+
                     submitUploadButton.textContent =
-                        `📤 Subir ${totalFiles} archivos`;
-                        updateDocumentCount();
+                        `🔄 Reintentar ${failedFiles.length} documento(s)`;
+
                 }
-            });
+            );
+
         }
         /*
         |--------------------------------------------------------------------------
