@@ -667,12 +667,8 @@
     @include('documentacion.partials.document-delete-modal')
 
     <script>
-        const documentStoreUrl =
-            @json(route('documentacion.documents.store', $category));
-
-        const documentCsrfToken = @json(
-            csrf_token()
-        );
+        const documentStoreUrl = @json(route('documentacion.documents.store', $category));
+        const documentCsrfToken = @json(csrf_token());
     </script>
     <script>
         /*
@@ -739,6 +735,9 @@
         |--------------------------------------------------------------------------
         */
         let selectedFiles = [];
+        //creación de lote de archivos para subirlos de 15 en 15
+        const BATCH_SIZE = 15;
+        
         /*
         |--------------------------------------------------------------------------
         | ABRIR MODAL
@@ -1441,72 +1440,102 @@
         |--------------------------------------------------------------------------
         */
         if (submitUploadButton) {
-            submitUploadButton.addEventListener(
-                'click',
-                async function () {
-                    /*
-                    |--------------------------------------------------------------------------
-                    | VALIDAR QUE EXISTAN ARCHIVOS
-                    |--------------------------------------------------------------------------
-                    */
-                    if (selectedFiles.length === 0) {
-                        alert(
-                            'Debes seleccionar al menos un archivo.'
-                        );
-                        return;
-                    }
-                    /*
-                    |--------------------------------------------------------------------------
-                    | CREAR FORMDATA
-                    |--------------------------------------------------------------------------
-                    */
-                    const formData = new FormData();
-                    /*
-                    |--------------------------------------------------------------------------
-                    | CSRF
-                    |--------------------------------------------------------------------------
-                    */
-                    formData.append(
-                        '_token',
-                        documentCsrfToken
+            submitUploadButton.addEventListener('click', async function () {
+                /*
+                |--------------------------------------------------------------------------
+                | VALIDAR QUE EXISTAN ARCHIVOS
+                |--------------------------------------------------------------------------
+                */
+                if (selectedFiles.length === 0) {
+                    alert(
+                        'Debes seleccionar al menos un archivo.'
                     );
+                    return;
+                }
+                /*
+                |--------------------------------------------------------------------------
+                | CALCULAR LOTES
+                |--------------------------------------------------------------------------
+                */
+                const totalFiles = selectedFiles.length;
+                const totalBatches = Math.ceil(
+                    totalFiles / BATCH_SIZE
+                );
+                let uploadedFiles = 0;
+                /*
+                |--------------------------------------------------------------------------
+                | DESHABILITAR BOTÓN
+                |--------------------------------------------------------------------------
+                */
+                submitUploadButton.disabled = true;
+                submitUploadButton.classList.add(
+                    'opacity-70',
+                    'cursor-not-allowed'
+                );
+                try {
                     /*
                     |--------------------------------------------------------------------------
-                    | AGREGAR ARCHIVOS
+                    | SUBIR LOTE POR LOTE
                     |--------------------------------------------------------------------------
                     */
-                    selectedFiles.forEach(
-                        (item, index) => {
-                            formData.append(
-                                `files[${index}]`,
-                                item.file
-                            );
-                            formData.append(
-                                `names[${index}]`,
-                                item.name
-                            );
-                            formData.append(
-                                `descriptions[${index}]`,
-                                item.description ?? ''
-                            );
-                        }
-                    );
+
+                    for (
+                        let batchIndex = 0;
+                        batchIndex < totalBatches;
+                        batchIndex++
+                    ) {
                     /*
                     |--------------------------------------------------------------------------
-                    | DESHABILITAR BOTÓN
+                    | OBTENER ARCHIVOS DEL LOTE ACTUAL
                     |--------------------------------------------------------------------------
                     */
-                    submitUploadButton.disabled = true;
-                    submitUploadButton.classList.add(
-                        'opacity-70',
-                        'cursor-not-allowed'
-                    );
-                    submitUploadButton.textContent =
-                        '⏳ Subiendo...';
-                    try {
+                        const startIndex = batchIndex * BATCH_SIZE;
+                        const batch = selectedFiles.slice(startIndex, startIndex + BATCH_SIZE);
                         /*
                         |--------------------------------------------------------------------------
-                        | ENVIAR AL SERVIDOR
+                        | ACTUALIZAR BOTÓN
+                        |--------------------------------------------------------------------------
+                        */
+                        submitUploadButton.textContent = `⏳ Subiendo lote ${batchIndex + 1} de ${totalBatches}...`;
+                        /*
+                        |--------------------------------------------------------------------------
+                        | CREAR FORMDATA DEL LOTE
+                        |--------------------------------------------------------------------------
+                        */
+                        const formData = new FormData();
+                        /*
+                        |--------------------------------------------------------------------------
+                        | CSRF
+                        |--------------------------------------------------------------------------
+                        */
+                        formData.append(
+                            '_token',
+                            documentCsrfToken
+                        );
+                        /*
+                        |--------------------------------------------------------------------------
+                        | AGREGAR ARCHIVOS DEL LOTE
+                        |--------------------------------------------------------------------------
+                        */
+                        batch.forEach(
+                            (item, index) => {
+                                formData.append(
+                                    `files[${index}]`,
+                                    item.file
+                                );
+                                formData.append(
+                                    `names[${index}]`,
+                                    item.name
+                                );
+                                formData.append(
+                                    `descriptions[${index}]`,
+                                    item.description ?? ''
+                                );
+                            }
+                        );
+                        /*
+                        |--------------------------------------------------------------------------
+                        | ENVIAR LOTE AL SERVIDOR
                         |--------------------------------------------------------------------------
                         */
                         const response = await fetch(
@@ -1515,14 +1544,16 @@
                                 method: 'POST',
                                 body: formData,
                                 headers: {
-                                    'X-Requested-With': 'XMLHttpRequest',
-                                    'Accept': 'application/json'
+                                    'X-Requested-With':
+                                        'XMLHttpRequest',
+                                        'Accept':
+                                        'application/json'
                                 }
                             }
                         );
                         /*
                         |--------------------------------------------------------------------------
-                        | ERROR HTTP
+                        | VALIDAR RESPUESTA
                         |--------------------------------------------------------------------------
                         */
                         if (!response.ok) {
@@ -1532,46 +1563,72 @@
                                 const data =
                                     await response.json();
                                 if (data.message) {
-                                    errorMessage =
-                                        data.message;
+                                    errorMessage = data.message;
                                 }
-                            } catch (error) {
-                                // La respuesta no era JSON.
+                                } catch (error) {
+                                    // La respuesta no era JSON.
+                                }
+                                throw new Error(
+                                    errorMessage
+                                );
                             }
-                            throw new Error(
-                                errorMessage
-                            );
+                        /*
+                        |--------------------------------------------------------------------------
+                        | CONTABILIZAR ARCHIVOS SUBIDOS
+                        |--------------------------------------------------------------------------
+                        */
+                        uploadedFiles += batch.length;
+                        /*
+                        |--------------------------------------------------------------------------
+                        | ACTUALIZAR PROGRESO
+                        |--------------------------------------------------------------------------
+                        */
+                        submitUploadButton.textContent =
+                            `⏳ ${uploadedFiles} de ${totalFiles} archivos subidos`;
                         }
                         /*
                         |--------------------------------------------------------------------------
                         | ÉXITO
                         |--------------------------------------------------------------------------
                         */
-                        window.location.reload();
-                    } catch (error) {
-                        console.error(
-                            'Error al subir documentos:',
-                            error
-                        );
-                        alert(
-                            error.message ||
-                            'No fue posible subir los documentos.'
-                        );
+                        submitUploadButton.textContent = '✅ Archivos subidos correctamente';
                         /*
                         |--------------------------------------------------------------------------
-                        | RESTAURAR BOTÓN
+                        | RECARGAR PÁGINA
                         |--------------------------------------------------------------------------
                         */
-                        submitUploadButton.disabled =
-                            false;
-                        submitUploadButton.classList.remove(
-                            'opacity-70',
-                            'cursor-not-allowed'
-                        );
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 800);
+                }catch (error){
+                    console.error(
+                        'Error al subir documentos:',
+                        error
+                    );
+                    /*
+                    |--------------------------------------------------------------------------
+                    | MOSTRAR ERROR
+                    |--------------------------------------------------------------------------
+                    */
+                    alert(
+                        error.message ||
+                        'No fue posible subir los documentos.'
+                    );
+                    /*
+                    |--------------------------------------------------------------------------
+                    | RESTAURAR BOTÓN
+                    |--------------------------------------------------------------------------
+                    */
+                    submitUploadButton.disabled = false;
+                    submitUploadButton.classList.remove(
+                        'opacity-70',
+                        'cursor-not-allowed'
+                    );
+                    submitUploadButton.textContent =
+                        `📤 Subir ${totalFiles} archivos`;
                         updateDocumentCount();
-                    }
                 }
-            );
+            });
         }
         /*
         |--------------------------------------------------------------------------

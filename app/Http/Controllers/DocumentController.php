@@ -7,6 +7,7 @@ use App\Models\DocumentCategory;
 use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
 class DocumentController extends Controller
@@ -44,7 +45,6 @@ class DocumentController extends Controller
 
     public function store(Request $request, DocumentCategory $category)
     {
-        //validamos los datos antes de guardar
         $request->validate([
             'files' => 'required|array|min:1',
             'files.*' => 'required|file|max:51200',
@@ -57,26 +57,19 @@ class DocumentController extends Controller
         ]);
 
         DB::beginTransaction();
-
+        // Guardamos las rutas por si necesitamos eliminarlas
+        // en caso de que algo falle.
+        $storedPaths = [];
         try {
-
             foreach ($request->file('files') as $index => $file) {
-
-                //recogemos los datos del nombre y descripción
-                $name = $request->input(
-                    "names.$index"
-                );
-                $description = $request->input(
-                    "descriptions.$index"
-                );
-                //ubicación de donde ser guardará la imagen subida por el usuario
+                $name = $request->input("names.$index");
+                $description = $request->input("descriptions.$index");
                 $path = $file->store(
                     'documentacion/' . $category->id,
                     'public'
                 );
-
+                $storedPaths[] = $path;
                 $document = Document::create([
-
                     'category_id' => $category->id,
                     'name' => $name,
                     'description' => $description,
@@ -86,7 +79,6 @@ class DocumentController extends Controller
                     'file_size' => $file->getSize(),
                     'created_by' => auth()->id(),
                 ]);
-                //Auditoría al subir el archivo
                 AuditLog::create([
                     'user_id' => auth()->id(),
                     'action' => 'created',
@@ -104,17 +96,42 @@ class DocumentController extends Controller
                 ]);
             }
             DB::commit();
+            // Respuesta para las peticiones AJAX
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'uploaded' => count($request->file('files')),
+                ]);
+            }
+            // Mantener compatibilidad con una petición normal
             return redirect()
-                ->route(
-                    'documentacion.category',
-                    $category
-                )
+                ->route('documentacion.category', $category)
                 ->with(
                     'success',
                     'Los documentos fueron subidos correctamente.'
                 );
-        } catch (\Throwable $e) {
+
+        }catch (\Throwable $e) {
             DB::rollBack();
+            // Si algo falla, eliminamos los archivos que alcanzaron
+            // a guardarse físicamente.
+            foreach ($storedPaths as $path) {
+                Storage::disk('public')->delete($path);
+            }
+            // Registrar el error real en Laravel
+            Log::error('Error al subir documentos', [
+                'category_id' => $category->id,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No fue posible subir los documentos.',
+                ], 500);
+            }
+
             return back()
                 ->withInput()
                 ->with(
