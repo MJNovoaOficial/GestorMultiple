@@ -114,6 +114,14 @@ class IpAddressController extends Controller
             'user_assigned' => 'nullable|string|max:255',
             'department_id' => 'nullable|exists:departments,id',
             'device_type_id' => 'nullable|exists:device_types,id',
+            'mac' => [
+                'nullable',
+                'string',
+                'regex:/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/',
+            ],
+        ],
+        [
+            'mac.regex' => 'La dirección MAC debe tener exactamente 12 caracteres hexadecimales.',
         ]);
 
         //estado automático
@@ -130,6 +138,7 @@ class IpAddressController extends Controller
         $ipAddress->update([
             'user_assigned' => $request->user_assigned,
             'department_id' => $request->department_id,
+            'mac' => $request->mac,
             'device_type_id' => $request->device_type_id,
             'ip_status_id' => $statusId,
         ]);

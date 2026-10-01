@@ -8,6 +8,7 @@ class IpAddress extends Model
 {
     protected $fillable = [
         'ip_address',
+        'mac',
         'branch_id',
         'department_id',
         'device_type_id',

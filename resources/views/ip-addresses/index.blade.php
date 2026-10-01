@@ -130,7 +130,7 @@
                         <input
                             type="text"
                             id="globalSearch"
-                            placeholder="Buscar IP, usuario, dispositivo, sucursal..."
+                            placeholder="Buscar IP, MAC, usuario, dispositivo, sucursal..."
                             class="
                                 w-full md:w-96
                                 bg-[#1E293B]
@@ -201,6 +201,10 @@
                         </th>
 
                         <th class="px-6 py-4 text-center">
+                            MAC
+                        </th>
+
+                        <th class="px-6 py-4 text-center">
                             Estado
                         </th>
 
@@ -239,6 +243,7 @@
                             data-search="{{ strtolower(
                                 $ip->ip_address . ' ' .
                                 ($ip->ipStatus?->name ?? '') . ' ' .
+                                ($ip->mac ?? '') . ' ' .
                                 ($ip->user_assigned ?? '') . ' ' .
                                 ($ip->deviceType?->name ?? '') . ' ' .
                                 ($ip->branch?->name ?? '') . ' ' .
@@ -251,6 +256,43 @@
                             {{-- IP --}}
                             <td class="px-6 py-4 text-white font-medium">
                                 {{ $ip->ip_address }}
+                            </td>
+
+                            {{-- MAC --}}
+                            <td class="px-6 py-4 text-center text-gray-300">
+                                <template x-if="!editing">
+                                    <div>
+                                        @if($ip->mac)
+                                            {{ $ip->mac }}
+                                        @else
+                                            <span class="text-gray-500 italic">
+                                                Sin asignación
+                                            </span>
+                                        @endif
+                                    </div>
+                                </template>
+
+                                <template x-if="editing">
+                                    <div>
+                                        <input
+                                            type="text"
+                                            name="mac"
+                                            value="{{ $ip->mac }}"
+                                            placeholder="AA:BB:CC:DD:EE:FF"
+                                            form="form-{{ $ip->id }}"
+                                            maxlength="17"
+                                            class="mac-input
+                                                bg-[#1E293B]
+                                                border border-gray-700
+                                                rounded-lg
+                                                px-3 py-2
+                                                text-white
+                                                text-sm
+                                                w-52
+                                            "
+                                        >
+                                    </div>
+                                </template>
                             </td>
 
                             {{-- Estado --}}
@@ -542,7 +584,7 @@
 
                         <tr>
 
-                            <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            <td colspan="8" class="px-6 py-8 text-center text-gray-500">
 
                                 No hay IPs registradas.
 
@@ -564,7 +606,22 @@
     @include('ip-addresses.partials.ping-modal')
 
     <script>
-
+        // FORMATEAR MAC AUTOMÁTICAMENTE
+        document.addEventListener('input', function (event) {
+            if (!event.target.classList.contains('mac-input')) {
+                return;
+            }
+            let value = event.target.value
+                .replace(/[^a-fA-F0-9]/g, '')
+                .toUpperCase();
+            // Máximo 12 caracteres hexadecimales
+            value = value.substring(0, 12);
+            // Agregar ":" cada 2 caracteres
+            const groups = value.match(/.{1,2}/g);
+            event.target.value = groups
+                ? groups.join(':')
+                : '';
+        });
         // BUSCADOR GLOBAL
         const globalSearch =
             document.getElementById('globalSearch');
