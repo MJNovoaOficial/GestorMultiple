@@ -350,6 +350,12 @@
                                         IP
                                     </th>
                                     @break
+                                
+                                @case('mac')
+                                    <th class="col-mac">
+                                        MAC
+                                    </th>
+                                    @break
 
                                 @case('status')
                                     <th class="col-status">
