@@ -53,6 +53,11 @@ class IpAddressesSheet implements FromCollection, WithHeadings, WithTitle
 
                             $row[] = $ip->ip_address;
                             break;
+                        
+                        case 'mac':
+
+                            $row[] = $ip->mac ?? '';
+                            break;
 
                         case 'status':
 
@@ -101,6 +106,11 @@ class IpAddressesSheet implements FromCollection, WithHeadings, WithTitle
                     $titles[] = 'IP';
                     break;
 
+                case 'mac':
+                    
+                    $titles[] = 'MAC';
+                    break;
+                    
                 case 'status':
 
                     $titles[] = 'Estado';
