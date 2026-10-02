@@ -311,6 +311,9 @@ class IpAddressController extends Controller
                             case 'ip':
                                 $row['ip'] = $ip->ip_address;
                                 break;
+                            case 'mac':
+                                $row['mac'] = $ip->mac ?? '';
+                                break;
                             case 'status':
                                 $row['status'] = $ip->ipStatus?->name ?? '';
                                 break;
@@ -479,7 +482,9 @@ class IpAddressController extends Controller
                         case 'ip':
                             $row['ip'] = $ip->ip_address;
                             break;
-
+                        case 'mac':
+                            $row['mac'] = $ip->mac ?? '';
+                            break;
                         case 'status':
                             $row['status'] =
                                 $ip->ipStatus?->name ?? '';

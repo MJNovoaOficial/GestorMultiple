@@ -203,6 +203,7 @@
                     <div class="export-columns-grid">
                         @foreach([
                             'ip' => 'IP',
+                            'mac' => 'MAC',
                             'status' => 'Estado',
                             'user' => 'Usuario Responsable',
                             'device' => 'Dispositivo',
