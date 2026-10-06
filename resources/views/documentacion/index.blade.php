@@ -11,7 +11,7 @@
                     Manuales, procedimientos y documentación interna.
                 </p>
             </div>
-            <div>
+            <div class="flex items-center gap-3">
                 <button
                     type="button"
                     id="open-category-modal"
@@ -36,7 +36,35 @@
                         class="w-5 h-5 object-contain"
                     >
                     <span>
-                        Nueva Carpeta
+                        Crear Nueva Carpeta
+                    </span>
+                </button>
+
+                <button
+                    type="button"
+                    id="open-folder-upload-modal"
+                    class="
+                        inline-flex
+                        items-center
+                        gap-2
+                        rounded-xl
+                        bg-emerald-600
+                        hover:bg-emerald-700
+                        px-4
+                        py-2.5
+                        text-sm
+                        font-semibold
+                        text-white
+                        transition
+                    "
+                >
+                    <img
+                        src="{{ asset('images/documentacion/carpeta.png') }}"
+                        alt="Subir carpeta"
+                        class="w-5 h-5 object-contain"
+                    >
+                    <span>
+                        Subir carpeta
                     </span>
                 </button>
             </div>
@@ -679,6 +707,9 @@
     @include('documentacion.partials.category-modal')
     @include('documentacion.partials.category-edit-modal')
     @include('documentacion.partials.category-delete-modal')
+    @include('documentacion.partials.document-folder-upload-modal', [
+        'parentCategoryId' => null,
+    ])
 
     {{-- CAMBIO DE VISTA --}}
     <script>

@@ -143,6 +143,10 @@ Route::middleware('auth')->group(function () {
             ->name('documentacion.permanent-delete');
         Route::get('/documentacion/{category}',[DocumentController::class, 'index'])
             ->name('documentacion.category');
+        Route::post('/documentacion/upload-folder', [DocumentController::class, 'prepareFolderUpload'])
+            ->name('documentacion.folder.prepare');
+        Route::post('/documentacion/{category}/upload-folder', [DocumentController::class, 'uploadFolderBatch'])
+            ->name('documentacion.folder.upload');
         Route::post('/documentacion/{category}/documents',[DocumentController::class, 'store'])
             ->name('documentacion.documents.store');
         Route::get('/documentacion/documentos/{document}/download',[DocumentController::class, 'download'])

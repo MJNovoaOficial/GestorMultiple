@@ -256,6 +256,391 @@ class DocumentController extends Controller
             );
     }
 
+    /**
+     * Prepara la estructura de carpetas para una importación.
+     */
+    public function prepareFolderUpload(Request $request)
+    {
+        $validated = $request->validate([
+            'parent_id' => [
+                'nullable',
+                'integer',
+                'exists:document_categories,id',
+            ],
+
+            'folders' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'folders.*' => [
+                'required',
+                'string',
+                'max:1000',
+            ],
+        ]);
+
+        $parentId = $validated['parent_id'] ?? null;
+
+        /*
+        |--------------------------------------------------------------------------
+        | CACHE DE CARPETAS CREADAS / ENCONTRADAS
+        |--------------------------------------------------------------------------
+        */
+        $categoryMap = [];
+        foreach ($validated['folders'] as $folderPath) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | NORMALIZAR RUTA
+            |--------------------------------------------------------------------------
+            */
+
+            $folderPath = str_replace('\\', '/', $folderPath);
+            $folderPath = trim($folderPath, '/');
+
+            if ($folderPath === '') {
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | EVITAR TRAVERSAL
+            |--------------------------------------------------------------------------
+            */
+
+            $parts = explode('/', $folderPath);
+            $parts = array_values(
+                array_filter(
+                    $parts,
+                    fn ($part) => $part !== '' && $part !== '.' && $part !== '..'
+                )
+            );
+            if (empty($parts)) {
+                continue;
+            }
+            /*
+            |--------------------------------------------------------------------------
+            | CREAR CADA NIVEL DE LA ESTRUCTURA
+            |--------------------------------------------------------------------------
+            */
+
+            $currentParentId = $parentId;
+            $currentPath = '';
+            foreach ($parts as $folderName) {
+
+                $currentPath = $currentPath === ''
+                    ? $folderName
+                    : $currentPath . '/' . $folderName;
+
+                /*
+                |--------------------------------------------------------------------------
+                | SI YA LA PROCESAMOS EN ESTA PETICIÓN
+                |--------------------------------------------------------------------------
+                */
+
+                if (isset($categoryMap[$currentPath])) {
+                    $currentParentId = $categoryMap[$currentPath];
+                    continue;
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | BUSCAR SI YA EXISTE EN ESE NIVEL
+                |--------------------------------------------------------------------------
+                */
+
+                $category = DocumentCategory::query()
+                    ->where('name', $folderName)
+                    ->where('parent_id', $currentParentId)
+                    ->where('is_active', true)
+                    ->first();
+
+                /*
+                |--------------------------------------------------------------------------
+                | SI NO EXISTE, CREARLA
+                |--------------------------------------------------------------------------
+                */
+
+                if (!$category) {
+                    $category = DocumentCategory::create([
+                        'name' => $folderName,
+                        'description' => null,
+                        'image' => null,
+                        'created_by' => auth()->id(),
+                        'parent_id' => $currentParentId,
+                    ]);
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | AUDITORÍA
+                    |--------------------------------------------------------------------------
+                    */
+                    AuditLog::create([
+                        'user_id' => auth()->id(),
+                        'action' => 'create',
+                        'description' =>
+                            'Creación de carpeta "' .
+                            $category->name .
+                            '" mediante importación de carpeta',
+
+                        'old_values' => null,
+
+                        'new_values' => [
+                            'id' => $category->id,
+                            'name' => $category->name,
+                            'description' => $category->description,
+                            'image' => $category->image,
+                            'parent_id' => $category->parent_id,
+                            'created_by' => $category->created_by,
+                        ],
+
+                        'ip_address' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]);
+                }
+                /*
+                |--------------------------------------------------------------------------
+                | GUARDAR EN MAPA
+                |--------------------------------------------------------------------------
+                */
+
+                $categoryMap[$currentPath] = $category->id;
+
+                $currentParentId = $category->id;
+            }
+        }
+
+        $rootCategoryPath = array_key_first($categoryMap);
+
+        return response()->json([
+            'success' => true,
+            'root_category_id' => $categoryMap[$rootCategoryPath] ?? null,
+            'categories' => $categoryMap,
+        ]);
+    }
+
+    /**
+     * Sube un lote de archivos pertenecientes a una carpeta importada.
+     */
+    public function uploadFolderBatch(Request $request, DocumentCategory $category)
+    {
+        $files = $request->file('files', []);
+        if (empty($files)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se recibieron archivos.',
+            ], 422);
+        }
+        $uploaded = 0;
+        $failed = [];
+
+        foreach ($files as $index => $file) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | RUTA RELATIVA
+            |--------------------------------------------------------------------------
+            */
+
+            $relativePath = $request->input(
+                "relative_paths.$index"
+            );
+            if (!$relativePath) {
+                $failed[] = [
+                    'index' => $index,
+                    'file_name' => $file->getClientOriginalName(),
+                    'errors' => [
+                        'No se recibió la ruta relativa del archivo.',
+                    ],
+                ];
+
+                continue;
+            }
+            /*
+            |--------------------------------------------------------------------------
+            | VALIDAR ARCHIVO
+            |--------------------------------------------------------------------------
+            */
+            $validator = Validator::make(
+                [
+                    'file' => $file,
+                ],
+                [
+                    'file' => 'required|file|max:51200',
+                ]
+            );
+
+            if ($validator->fails()) {
+                $failed[] = [
+                    'index' => $index,
+                    'file_name' => $file->getClientOriginalName(),
+                    'errors' => $validator->errors()->all(),
+                ];
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | NORMALIZAR RUTA
+            |--------------------------------------------------------------------------
+            */
+
+            $relativePath = str_replace('\\', '/', $relativePath);
+            $relativePath = trim($relativePath, '/');
+            $parts = explode('/', $relativePath);
+            $parts = array_values(
+                array_filter(
+                    $parts,
+                    fn ($part) => $part !== '' && $part !== '.' && $part !== '..'
+                )
+            );
+
+            if (count($parts) < 2) {
+                $failed[] = [
+                    'index' => $index,
+                    'file_name' => $file->getClientOriginalName(),
+                    'errors' => [
+                        'La ruta del archivo no contiene una carpeta válida.',
+                    ],
+                ];
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | OBTENER RUTA DE LA CARPETA
+            |--------------------------------------------------------------------------
+            */
+
+            array_pop($parts);
+            $folderPath = implode('/', $parts);
+
+            /*
+            |--------------------------------------------------------------------------
+            | BUSCAR CATEGORÍA DESTINO
+            |--------------------------------------------------------------------------
+            */
+
+            $folderParts = explode('/', $folderPath);
+            $currentCategory = $category;
+            foreach ($folderParts as $folderName) {
+                /*
+                | La primera carpeta debe ser la categoría recibida
+                */
+                if ($folderName === $currentCategory->name) {
+                    continue;
+                }
+                $currentCategory = $currentCategory
+                    ->children()
+                    ->where('name', $folderName)
+                    ->where('is_active', true)
+                    ->first();
+
+                if (!$currentCategory) {
+                    $failed[] = [
+                        'index' => $index,
+                        'file_name' => $file->getClientOriginalName(),
+                        'errors' => [
+                            'No fue posible encontrar la carpeta destino.',
+                        ],
+                    ];
+                    continue 2;
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | GUARDAR DOCUMENTO
+            |--------------------------------------------------------------------------
+            */
+            DB::beginTransaction();
+            $storedPath = null;
+            try {
+
+                $storedPath = $file->store(
+                    'documentacion/' . $currentCategory->id,
+                    'public'
+                );
+
+                $document = Document::create([
+                    'category_id' => $currentCategory->id,
+                    'name' => pathinfo(
+                        $file->getClientOriginalName(),
+                        PATHINFO_FILENAME
+                    ),
+                    'description' => null,
+                    'file_path' => $storedPath,
+                    'file_name' => $file->getClientOriginalName(),
+                    'file_type' => $file->getClientOriginalExtension(),
+                    'file_size' => $file->getSize(),
+                    'created_by' => auth()->id(),
+                ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | AUDITORÍA
+                |--------------------------------------------------------------------------
+                */
+
+                AuditLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'created',
+                    'description' =>
+                        'Se ha subido el documento "' .
+                        $document->name .
+                        '" mediante importación de carpeta',
+                    'old_values' => null,
+                    'new_values' => [
+                        'id' => $document->id,
+                        'name' => $document->name,
+                        'description' => $document->description,
+                        'category_id' => $document->category_id,
+                        'file_name' => $document->file_name,
+                        'file_type' => $document->file_type,
+                        'file_size' => $document->file_size,
+                    ],
+                ]);
+
+                DB::commit();
+                $uploaded++;
+
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                if (
+                    $storedPath &&
+                    Storage::disk('public')->exists($storedPath)
+                ) {
+                    Storage::disk('public')->delete($storedPath);
+                }
+
+                Log::error(
+                    'Error al subir documento mediante importación de carpeta',
+                    [
+                        'category_id' => $currentCategory->id ?? null,
+                        'user_id' => auth()->id(),
+                        'file_name' => $file->getClientOriginalName(),
+                        'error' => $e->getMessage(),
+                    ]
+                );
+
+                $failed[] = [
+                    'index' => $index,
+                    'file_name' => $file->getClientOriginalName(),
+                    'errors' => [
+                        'No fue posible guardar el documento.',
+                    ],
+                ];
+            }
+        }
+        return response()->json([
+            'success' => true,
+            'uploaded' => $uploaded,
+            'failed' => $failed,
+        ]);
+    }
+
     public function download(Document $document)
     {
         if (!$document->is_active) {

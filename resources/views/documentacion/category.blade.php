@@ -119,7 +119,7 @@
                         </svg>
 
                         <span>
-                            Nueva subcarpeta
+                            Crear Nueva carpeta
                         </span>
                     </button>
 
@@ -140,14 +140,45 @@
                             font-semibold
                             text-white
                             transition
-                    ">
+                        "
+                    >
                         <img
                             src="{{ asset('images/documentacion/nuevo.png') }}"
                             alt="Subir"
-                            class="w-5 h-5 object-contain">
-                            <span>
-                                Subir archivo
-                            </span>
+                            class="w-5 h-5 object-contain"
+                        >
+                        <span>
+                            Subir archivo
+                        </span>
+                    </button>
+
+                    {{-- SUBIR CARPETA --}}
+                    <button
+                        type="button"
+                        id="open-folder-upload-modal"
+                        class="
+                            inline-flex
+                            items-center
+                            gap-2
+                            rounded-xl
+                            bg-emerald-600
+                            hover:bg-emerald-700
+                            px-4
+                            py-2.5
+                            text-sm
+                            font-semibold
+                            text-white
+                            transition
+                        "
+                    >
+                        <img
+                            src="{{ asset('images/documentacion/carpeta.png') }}"
+                            alt="Subir carpeta"
+                            class="w-5 h-5 object-contain"
+                        >
+                        <span>
+                            Subir carpeta
+                        </span>
                     </button>
                 </div>
             </div>
@@ -976,6 +1007,10 @@
     @include('documentacion.partials.category-edit-modal')
     @include('documentacion.partials.category-delete-modal')
     @include('documentacion.partials.category-move-modal')
+
+    @include('documentacion.partials.document-folder-upload-modal', [
+        'parentCategoryId' => $category->id,
+    ])
     
     <script>
         /*
