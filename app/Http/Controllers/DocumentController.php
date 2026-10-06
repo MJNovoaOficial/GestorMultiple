@@ -23,6 +23,10 @@ class DocumentController extends Controller
             ->withCount('documents')
             ->orderBy('name')
             ->get();
+        
+        foreach ($subcategories as $subcategory) {
+            $subcategory->last_activity = $this->getLastActivityForCategory($subcategory);
+        }
 
         // Obtener los documentos de la categoría actual
         $documents = $category->documents()
@@ -37,6 +41,23 @@ class DocumentController extends Controller
             ->latest()
             ->paginate(50)
             ->withQueryString();
+
+        $documentAudits = AuditLog::query()
+            ->with('user')
+            ->where('action', '!=', 'created')
+            ->latest('created_at')
+            ->get();
+
+        foreach ($documents as $document) {
+            $document->last_activity = $documentAudits->first(function ($audit) use ($document) {
+                $newValues = $audit->new_values ?? [];
+                $oldValues = $audit->old_values ?? [];
+
+                return
+                    (isset($newValues['id']) && (int) $newValues['id'] === (int) $document->id) ||
+                    (isset($oldValues['id']) && (int) $oldValues['id'] === (int) $document->id);
+            });
+        }
 
         return view(
             'documentacion.category',
@@ -126,6 +147,22 @@ class DocumentController extends Controller
             | TRANSACCIÓN INDIVIDUAL
             |--------------------------------------------------------------------------
             */
+            $existingDocument = Document::query()
+                ->where('category_id', $category->id)
+                ->where('file_name', $file->getClientOriginalName())
+                ->where('is_active', true)
+                ->first();
+
+            $replaceDocumentId = $request->input('replace_document_id');
+
+            if ($existingDocument && (int) $replaceDocumentId !== (int) $existingDocument->id) {
+                return response()->json([
+                    'success' => false,
+                    'requires_confirmation' => true,
+                    'document_id' => $existingDocument->id,
+                    'file_name' => $file->getClientOriginalName(),
+                ], 409);
+            }
             DB::beginTransaction();
             $storedPath = null;
             try {
@@ -138,11 +175,64 @@ class DocumentController extends Controller
                     'documentacion/' . $category->id,
                     'public'
                 );
-                /*
-                |--------------------------------------------------------------------------
-                | CREAR DOCUMENTO
-                |--------------------------------------------------------------------------
-                */
+
+                if ($existingDocument && (int) $replaceDocumentId === (int) $existingDocument->id) {
+                    $oldPath = $existingDocument->file_path;
+
+                    $oldValues = [
+                        'id' => $existingDocument->id,
+                        'category_id' => $existingDocument->category_id,
+                        'name' => $existingDocument->name,
+                        'description' => $existingDocument->description,
+                        'file_path' => $existingDocument->file_path,
+                        'file_name' => $existingDocument->file_name,
+                        'file_type' => $existingDocument->file_type,
+                        'file_size' => $existingDocument->file_size,
+                    ];
+
+                    $existingDocument->update([
+                        'file_path' => $storedPath,
+                        'file_name' => $file->getClientOriginalName(),
+                        'file_type' => $file->getClientOriginalExtension(),
+                        'file_size' => $file->getSize(),
+                    ]);
+
+                    AuditLog::create([
+                        'user_id' => auth()->id(),
+                        'action' => 'replaced',
+                        'description' =>
+                            'Se reemplazó el archivo del documento "' .
+                            $existingDocument->name .
+                            '"',
+                        'old_values' => $oldValues,
+                        'new_values' => [
+                            'id' => $existingDocument->id,
+                            'category_id' => $existingDocument->category_id,
+                            'name' => $existingDocument->name,
+                            'description' => $existingDocument->description,
+                            'file_path' => $existingDocument->file_path,
+                            'file_name' => $existingDocument->file_name,
+                            'file_type' => $existingDocument->file_type,
+                            'file_size' => $existingDocument->file_size,
+                        ],
+                        'ip_address' => $request->ip(),
+                        'user_agent' => $request->userAgent(),
+                    ]);
+
+                    DB::commit();
+
+                    if (
+                        $oldPath &&
+                        $oldPath !== $storedPath &&
+                        Storage::disk('public')->exists($oldPath)
+                    ) {
+                        Storage::disk('public')->delete($oldPath);
+                    }
+
+                    $uploaded++;
+                    continue;
+                }
+
                 $document = Document::create([
                     'category_id' => $category->id,
                     'name' => $documentName,
@@ -153,31 +243,6 @@ class DocumentController extends Controller
                     'file_size' => $file->getSize(),
                     'created_by' => auth()->id(),
                 ]);
-                /*
-                |--------------------------------------------------------------------------
-                | AUDITORÍA
-                |--------------------------------------------------------------------------
-                */
-                AuditLog::create([
-                    'user_id' => auth()->id(),
-                    'action' => 'created',
-                    'description' =>
-                        'Se ha subido el documento "' .
-                        $document->name .
-                        '"',
-                    'old_values' => null,
-                    'new_values' => [
-                        'id' => $document->id,
-                        'name' => $document->name,
-                        'description' => $document->description,
-                        'category_id' => $document->category_id,
-                        'file_name' => $document->file_name,
-                        'file_type' => $document->file_type,
-                        'file_size' => $document->file_size,
-                    ],
-                ]);
-                DB::commit();
-                $uploaded++;
             } catch (\Throwable $e) {
                 DB::rollBack();
                 /*
@@ -814,6 +879,7 @@ class DocumentController extends Controller
         // se rescata los nombres antiguos
         $oldValues = [
             'id' => $document->id,
+            'category_id' => $document->category_id,
             'name' => $document->name,
             'description' => $document->description,
         ];
@@ -833,6 +899,7 @@ class DocumentController extends Controller
             'old_values' => $oldValues,
             'new_values' => [
                 'id' => $document->id,
+                'category_id' => $document->category_id,
                 'name' => $document->name,
                 'description' => $document->description,
             ],
@@ -1021,4 +1088,57 @@ class DocumentController extends Controller
                 'El documento fue eliminado definitivamente.'
             );
     }    
+
+    private function getLastActivityForCategory(DocumentCategory $category)
+    {
+        $categoryIds = collect([$category->id]);
+
+        $findChildren = function ($parentId) use (&$findChildren, &$categoryIds) {
+            $children = DocumentCategory::query()
+                ->where('parent_id', $parentId)
+                ->where('is_active', true)
+                ->get(['id']);
+
+            foreach ($children as $child) {
+                $categoryIds->push($child->id);
+                $findChildren($child->id);
+            }
+        };
+
+        $findChildren($category->id);
+
+        $audits = AuditLog::query()
+            ->with('user')
+            ->latest('created_at')
+            ->get();
+
+        foreach ($audits as $audit) {
+            $newValues = $audit->new_values ?? [];
+            $oldValues = $audit->old_values ?? [];
+
+            $relatedCategoryIds = collect();
+
+            if (isset($newValues['category_id'])) {
+                $relatedCategoryIds->push((int) $newValues['category_id']);
+            }
+
+            if (isset($oldValues['category_id'])) {
+                $relatedCategoryIds->push((int) $oldValues['category_id']);
+            }
+
+            if (isset($newValues['id'])) {
+                $relatedCategoryIds->push((int) $newValues['id']);
+            }
+
+            if (isset($oldValues['id'])) {
+                $relatedCategoryIds->push((int) $oldValues['id']);
+            }
+
+            if ($relatedCategoryIds->intersect($categoryIds)->isNotEmpty()) {
+                return $audit;
+            }
+        }
+
+        return null;
+    }
 }

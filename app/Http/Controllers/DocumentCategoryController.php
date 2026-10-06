@@ -12,6 +12,58 @@ use Illuminate\Support\Facades\DB;
 
 class DocumentCategoryController extends Controller
 {
+    private function getLastActivityForCategory(DocumentCategory $category)
+    {
+        $categoryIds = collect([$category->id]);
+
+        $findChildren = function ($parentId) use (&$findChildren, &$categoryIds) {
+            $children = DocumentCategory::query()
+                ->where('parent_id', $parentId)
+                ->where('is_active', true)
+                ->get(['id']);
+
+            foreach ($children as $child) {
+                $categoryIds->push($child->id);
+                $findChildren($child->id);
+            }
+        };
+
+        $findChildren($category->id);
+
+        $audits = AuditLog::query()
+            ->with('user')
+            ->latest('created_at')
+            ->get();
+
+        foreach ($audits as $audit) {
+            $newValues = $audit->new_values ?? [];
+            $oldValues = $audit->old_values ?? [];
+
+            $relatedCategoryIds = collect();
+
+            if (isset($newValues['category_id'])) {
+                $relatedCategoryIds->push((int) $newValues['category_id']);
+            }
+
+            if (isset($oldValues['category_id'])) {
+                $relatedCategoryIds->push((int) $oldValues['category_id']);
+            }
+
+            if (isset($newValues['id'])) {
+                $relatedCategoryIds->push((int) $newValues['id']);
+            }
+
+            if (isset($oldValues['id'])) {
+                $relatedCategoryIds->push((int) $oldValues['id']);
+            }
+
+            if ($relatedCategoryIds->intersect($categoryIds)->isNotEmpty()) {
+                return $audit;
+            }
+        }
+
+        return null;
+    }
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -47,12 +99,19 @@ class DocumentCategoryController extends Controller
             ->orderBy($sort, $direction)
             ->get();
 
-        return view('documentacion.index', compact(
-            'categories',
-            'search',
-            'sort',
-            'direction'
-        ));
+        foreach ($categories as $category) {
+            $category->last_activity = $this->getLastActivityForCategory($category);
+        }
+
+        return view(
+            'documentacion.index',
+            compact(
+                'categories',
+                'search',
+                'sort',
+                'direction'
+            )
+        );
     }
 
     public function store(Request $request)

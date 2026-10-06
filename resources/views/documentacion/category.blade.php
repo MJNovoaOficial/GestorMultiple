@@ -463,6 +463,17 @@
                                                 : 'documentos'
                                             }}
                                         </p>
+
+                                        @if($subcategory->last_activity)
+                                            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">
+                                                Última modificación por
+                                                <span class="font-medium text-slate-500 dark:text-slate-400">
+                                                    {{ $subcategory->last_activity->user?->name ?? 'Usuario desconocido' }}
+                                                </span>
+                                                el
+                                                {{ $subcategory->last_activity->created_at?->format('d/m/Y H:i') }}
+                                            </p>
+                                        @endif
                                     </div>
                                 </a>
                                 {{-- ACCIONES --}}
@@ -791,8 +802,23 @@
                                         </span>
                                         <span>•</span>
                                         <span>
-                                            {{ $document->creator->name ?? 'Usuario desconocido' }}
+                                            Subido por {{ $document->creator->name ?? 'Usuario desconocido' }}
                                         </span>
+                                        <span>•</span>
+                                        @if($document->last_activity)
+                                            <span>
+                                                Última modificación por
+                                                {{ $document->last_activity->user?->name ?? 'Usuario desconocido' }}
+                                            </span>
+                                            <span>el</span>
+                                            <span>
+                                                {{ $document->last_activity->created_at?->format('d/m/Y H:i') }}
+                                            </span>
+                                        @else
+                                            <span>
+                                                No ha sido modificado aún
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </a>
@@ -2586,7 +2612,7 @@
                             | ENVIAR LOTE
                             |--------------------------------------------------------------------------
                             */
-                            const response = await fetch(
+                            let response = await fetch(
                                 documentStoreUrl,
                                 {
                                     method: 'POST',
@@ -2626,17 +2652,60 @@
                             */
 
                             if (!response.ok) {
-                                batch.forEach(
-                                    (item) => {
+                                if (response.status === 409 && data.requires_confirmation) {
+                                    const fileName = data.file_name || 'este archivo';
+
+                                    const replace = confirm(
+                                        `Ya existe un archivo llamado "${fileName}" en esta carpeta.\n\n` +
+                                        `¿Deseas reemplazar la versión actual?`
+                                    );
+
+                                    if (!replace) {
+                                        batch.forEach((item) => {
+                                            item.error = 'El archivo ya existe y no fue reemplazado.';
+                                            failedFiles.push(item);
+                                        });
+
+                                        continue;
+                                    }
+
+                                    formData.append(
+                                        'replace_document_id',
+                                        data.document_id
+                                    );
+
+                                    const replaceResponse = await fetch(
+                                        documentStoreUrl,
+                                        {
+                                            method: 'POST',
+                                            body: formData,
+                                            headers: {
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'Accept': 'application/json'
+                                            }
+                                        }
+                                    );
+
+                                    response = replaceResponse;
+
+                                    try {
+                                        data = await response.json();
+                                    } catch (error) {
+                                        data = {};
+                                    }
+                                }
+
+                                if (!response.ok) {
+                                    batch.forEach((item) => {
                                         item.error =
                                             data.message ||
                                             'No fue posible procesar este archivo.';
                                         failedFiles.push(item);
-                                    }
-                                );
-                                continue;
-                            }
+                                    });
 
+                                    continue;
+                                }
+                            }
                             /*
                             |--------------------------------------------------------------------------
                             | ARCHIVOS SUBIDOS CORRECTAMENTE
@@ -2755,20 +2824,6 @@
                     */
 
                     renderDocumentFileList();
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | MOSTRAR RESUMEN
-                    |--------------------------------------------------------------------------
-                    */
-
-                    alert(
-                        `Proceso terminado.\n\n` +
-                        `✅ Subidos correctamente: ${uploadedFiles}\n` +
-                        `❌ Con errores: ${failedFiles.length}\n\n` +
-                        `Revisa los documentos marcados en rojo, ` +
-                        `corrige el problema y vuelve a presionar "Reintentar".`
-                    );
 
                     /*
                     |--------------------------------------------------------------------------

@@ -580,7 +580,7 @@
                                 Categoría
                             </th>
                             <th class="px-6 py-4 text-center">
-                                Documentos
+                                Contenido
                             </th>
                             <th class="px-6 py-4 text-center">
                                 Última modificación
@@ -668,7 +668,14 @@
                                         dark:text-slate-300
                                     "
                                 >
+                                    @if($category->children_count > 0)
+                                        {{ $category->children_count }}
+                                        {{ $category->children_count === 1 ? 'carpeta' : 'carpetas' }}
+                                        ·
+                                    @endif
+
                                     {{ $category->documents_count }}
+                                    {{ $category->documents_count === 1 ? 'documento' : 'documentos' }}
                                 </td>
                                 <td
                                     class="
@@ -679,7 +686,18 @@
                                         dark:text-slate-300
                                     "
                                 >
-                                    {{ $category->updated_at?->format('d/m/Y H:i') }}
+                                    @if($category->last_activity)
+                                        <div class="font-medium text-slate-700 dark:text-slate-200">
+                                            {{ $category->last_activity->user?->name ?? 'Usuario desconocido' }}
+                                        </div>
+                                        <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                            {{ $category->last_activity->created_at?->format('d/m/Y H:i') }}
+                                        </div>
+                                    @else
+                                        <span class="text-slate-400 dark:text-slate-500">
+                                            Sin actividad registrada
+                                        </span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

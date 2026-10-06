@@ -150,6 +150,16 @@
                                             'label' => 'Descontado',
                                             'class' => 'bg-red-600',
                                         ],
+
+                                        'replaced' => [
+                                            'label' => 'Reemplazado',
+                                            'class' => 'bg-yellow-600',
+                                        ],
+
+                                        'moved' => [
+                                            'label' => 'Movido',
+                                            'class' => 'bg-yellow-600',
+                                        ],
                                     ];
 
                                     $actionData =
