@@ -157,6 +157,10 @@ Route::middleware('auth')->group(function () {
             ->name('documentacion.documents.permanent-delete');
         Route::resource('documentacion', DocumentCategoryController::class)
             ->except(['create', 'show']);
+        Route::patch('/documentacion/{documentacion}/move',[DocumentCategoryController::class, 'move'])
+            ->name('documentacion.move');
+        Route::get('/documentacion/{documentacion}/move-targets', [DocumentCategoryController::class, 'moveTargets'])
+            ->name('documentacion.move-targets');
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría

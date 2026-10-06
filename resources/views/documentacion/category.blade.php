@@ -34,22 +34,19 @@
                     {{-- CATEGORÍA --}}
                     <div class="flex items-center gap-4">
                         {{-- IMAGEN DE CATEGORÍA --}}
-                        <div
-                            class="
-                                w-16
-                                h-16
-                                rounded-2xl
-                                bg-slate-100
-                                dark:bg-slate-900
-                                flex
-                                items-center
-                                justify-center
-                                overflow-hidden
-                                flex-shrink-0
-                            "
-                        >
+                        <div class="
+                            w-16
+                            h-16
+                            rounded-2xl
+                            bg-slate-100
+                            dark:bg-slate-900
+                            flex
+                            items-center
+                            justify-center
+                            overflow-hidden
+                            flex-shrink-0
+                        " >
                             @if($category->image)
-
                                 <img
                                     src="{{ asset('storage/' . $category->image) }}"
                                     alt="{{ $category->name }}"
@@ -64,58 +61,97 @@
                             @endif
                         </div>
                         <div>
-                            <h1
-                                class="
-                                    text-2xl
-                                    font-bold
-                                    text-slate-800
-                                    dark:text-white
-                                "
-                            >
+                            <h1 class="
+                                text-2xl
+                                font-bold
+                                text-slate-800
+                                dark:text-white
+                            ">
                                 {{ $category->name }}
                             </h1>
                             @if($category->description)
-                                <p
-                                    class="
-                                        mt-1
-                                        text-sm
-                                        text-slate-500
-                                        dark:text-slate-400
-                                    "
-                                >
+                                <p class="
+                                    mt-1
+                                    text-sm
+                                    text-slate-500
+                                    dark:text-slate-400
+                                ">
                                     {{ $category->description }}
                                 </p>
                             @endif
                         </div>
                     </div>
                 </div>
-                {{-- SUBIR ARCHIVO --}}
-                <button
-                    type="button"
-                    id="open-document-upload-modal"
-                    class="
-                        inline-flex
-                        items-center
-                        gap-2
-                        rounded-xl
-                        bg-blue-600
-                        hover:bg-blue-700
-                        px-4
-                        py-2.5
-                        text-sm
-                        font-semibold
-                        text-white
-                        transition
-                ">
-                    <img
-                        src="{{ asset('images/documentacion/nuevo.png') }}"
-                        alt="Subir"
-                        class="w-5 h-5 object-contain">
+
+                {{--Botones --}}
+                <div class="flex items-center gap-3">
+                    {{-- NUEVA SUBCARPETA --}}
+                    <button
+                        type="button"
+                        id="open-subcategory-modal"
+                        class="
+                            inline-flex
+                            items-center
+                            gap-2
+                            rounded-xl
+                            bg-slate-700
+                            hover:bg-slate-600
+                            px-4
+                            py-2.5
+                            text-sm
+                            font-semibold
+                            text-white
+                            transition
+                        "
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 4v16m8-8H4"
+                            />
+                        </svg>
+
                         <span>
-                            Subir archivo
+                            Nueva subcarpeta
                         </span>
-                </button>
+                    </button>
+
+                    {{-- SUBIR ARCHIVO --}}
+                    <button
+                        type="button"
+                        id="open-document-upload-modal"
+                        class="
+                            inline-flex
+                            items-center
+                            gap-2
+                            rounded-xl
+                            bg-blue-600
+                            hover:bg-blue-700
+                            px-4
+                            py-2.5
+                            text-sm
+                            font-semibold
+                            text-white
+                            transition
+                    ">
+                        <img
+                            src="{{ asset('images/documentacion/nuevo.png') }}"
+                            alt="Subir"
+                            class="w-5 h-5 object-contain">
+                            <span>
+                                Subir archivo
+                            </span>
+                    </button>
+                </div>
             </div>
+            
             {{-- INFORMACIÓN Y BÚSQUEDA --}}
             <div
                 class="
@@ -248,6 +284,294 @@
                     </div>
                 @endif
             </div>
+            {{-- Acciones--}}
+
+            {{-- SUBCARPETAS --}}
+            @if($subcategories->count())
+
+                <div class="mb-6">
+
+                    {{-- TÍTULO --}}
+                    <div class="mb-3">
+
+                        <p
+                            class="
+                                text-sm
+                                font-semibold
+                                text-slate-700
+                                dark:text-slate-200
+                            "
+                        >
+                            Carpetas
+                        </p>
+
+                        <p
+                            class="
+                                mt-1
+                                text-xs
+                                text-slate-500
+                                dark:text-slate-400
+                            "
+                        >
+                            Carpetas contenidas en esta categoría.
+                        </p>
+
+                    </div>
+
+
+                    {{-- LISTA DE CARPETAS --}}
+                    <div
+                        class="
+                            overflow-hidden
+                            rounded-2xl
+                            border
+                            border-slate-200
+                            dark:border-slate-800
+                            bg-white
+                            dark:bg-[#020817]
+                        "
+                    >
+                        @foreach($subcategories as $subcategory)
+                            <div
+                                class="
+                                    relative
+                                    group
+                                    flex
+                                    items-center
+                                    justify-between
+                                    gap-4
+                                    px-5
+                                    py-4
+                                    border-b
+                                    border-slate-200
+                                    dark:border-slate-800
+                                    last:border-b-0
+                                    hover:bg-slate-50
+                                    dark:hover:bg-slate-900/60
+                                    transition
+                                "
+                            >
+                                {{-- CONTENIDO DE LA CARPETA --}}
+                                <a
+                                    href="{{ route('documentacion.category', $subcategory) }}"
+                                    class="
+                                        flex
+                                        items-center
+                                        gap-4
+                                        min-w-0
+                                        flex-1
+                                    "
+                                >
+                                    {{-- ICONO --}}
+                                    <div
+                                        class="
+                                            w-12
+                                            h-12
+                                            rounded-xl
+                                            bg-slate-100
+                                            dark:bg-slate-900
+                                            flex
+                                            items-center
+                                            justify-center
+                                            flex-shrink-0
+                                            overflow-hidden
+                                        "
+                                    >
+                                        @if($subcategory->image)
+                                            <img
+                                                src="{{ asset('storage/' . $subcategory->image) }}"
+                                                alt="{{ $subcategory->name }}"
+                                                class="w-full h-full object-contain p-1"
+                                            >
+                                        @else
+                                            <img
+                                                src="{{ asset('images/documentacion/default-category.png') }}"
+                                                alt="Carpeta"
+                                                class="w-full h-full object-contain p-2"
+                                            >
+                                        @endif
+                                    </div>
+                                    {{-- INFORMACIÓN --}}
+                                    <div class="min-w-0">
+                                        <p
+                                            class="
+                                                font-semibold
+                                                text-slate-800
+                                                dark:text-slate-200
+                                                group-hover:text-blue-500
+                                                transition
+                                                truncate
+                                            "
+                                        >
+                                            {{ $subcategory->name }}
+                                        </p>
+                                        @if($subcategory->description)
+                                            <p
+                                                class="
+                                                    mt-1
+                                                    text-xs
+                                                    text-slate-500
+                                                    dark:text-slate-400
+                                                    truncate
+                                                "
+                                            >
+                                                {{ $subcategory->description }}
+                                            </p>
+                                        @endif
+                                        <p
+                                            class="
+                                                mt-1
+                                                text-xs
+                                                text-slate-500
+                                                dark:text-slate-400
+                                            "
+                                        >
+                                            {{ $subcategory->documents_count }}
+                                            {{ $subcategory->documents_count == 1
+                                                ? 'documento'
+                                                : 'documentos'
+                                            }}
+                                        </p>
+                                    </div>
+                                </a>
+                                {{-- ACCIONES --}}
+                                <div class="relative flex-shrink-0">
+                                    {{-- BOTÓN ⋮ --}}
+                                    <button
+                                        type="button"
+                                        class="
+                                            w-9
+                                            h-9
+                                            rounded-lg
+                                            flex
+                                            items-center
+                                            justify-center
+                                            text-slate-400
+                                            hover:text-slate-700
+                                            hover:bg-slate-200
+                                            dark:hover:text-slate-200
+                                            dark:hover:bg-slate-800
+                                            transition
+                                        "
+                                        onclick="toggleSubcategoryMenu(event, {{ $subcategory->id }})"
+                                        title="Acciones"
+                                    >
+                                        ⋮
+                                    </button>
+                                    {{-- MENÚ --}}
+                                    <div
+                                        id="subcategory-menu-{{ $subcategory->id }}"
+                                        class="
+                                            hidden
+                                            fixed
+                                            z-[9999]
+                                            z-30
+                                            w-44
+                                            rounded-xl
+                                            border
+                                            border-slate-200
+                                            dark:border-slate-700
+                                            bg-white
+                                            dark:bg-slate-900
+                                            shadow-xl
+                                            overflow-hidden
+                                        "
+                                    >
+                                        {{-- EDITAR --}}
+                                        <button
+                                            type="button"
+                                            class="
+                                                w-full
+                                                flex
+                                                items-center
+                                                gap-3
+                                                px-4
+                                                py-2.5
+                                                text-sm
+                                                text-slate-700
+                                                dark:text-slate-200
+                                                hover:bg-slate-100
+                                                dark:hover:bg-slate-800
+                                                transition
+                                            "
+                                            onclick="openCategoryEditModal(
+                                                event,
+                                                {{ $subcategory->id }},
+                                                @js($subcategory->name),
+                                                @js($subcategory->description),
+                                                @js($subcategory->image)
+                                            )"
+                                        >
+                                            <span>✏️</span>
+                                            <span>Editar</span>
+                                        </button>
+                                        {{-- MOVER --}}
+                                        <button
+                                            type="button"
+                                            class="
+                                                w-full
+                                                flex
+                                                items-center
+                                                gap-3
+                                                px-4
+                                                py-2.5
+                                                text-sm
+                                                text-slate-700
+                                                dark:text-slate-200
+                                                hover:bg-slate-100
+                                                dark:hover:bg-slate-800
+                                                transition
+                                            "
+                                            onclick="openCategoryMoveModal(
+                                                event,
+                                                {{ $subcategory->id }},
+                                                @js($subcategory->name)
+                                            )"
+                                        >
+                                            <span>📂</span>
+                                            <span>Mover</span>
+                                        </button>
+                                        {{-- SEPARADOR --}}
+                                        <div
+                                            class="
+                                                border-t
+                                                border-slate-200
+                                                dark:border-slate-700
+                                            "
+                                        ></div>
+                                        {{-- ELIMINAR --}}
+                                        <button
+                                            type="button"
+                                            class="
+                                                w-full
+                                                flex
+                                                items-center
+                                                gap-3
+                                                px-4
+                                                py-2.5
+                                                text-sm
+                                                text-red-600
+                                                hover:bg-red-50
+                                                dark:text-red-400
+                                                dark:hover:bg-red-950/30
+                                                transition
+                                            "
+                                            onclick="openCategoryDeleteModal(
+                                                event,
+                                                {{ $subcategory->id }},
+                                                @js($subcategory->name)
+                                            )"
+                                        >
+                                            <span>🗑️</span>
+                                            <span>Eliminar</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
             {{-- LISTADO DE DOCUMENTOS --}}
             @if($documents->count())
                 <div
@@ -539,69 +863,51 @@
                         {{ $documents->links() }}
                     </div>
                 @endif
-            @else
-                {{-- SIN DOCUMENTOS --}}
-                <div
-                    class="
-                        rounded-2xl
-                        border
-                        border-dashed
-                        border-slate-300
-                        dark:border-slate-700
-                        bg-white
-                        dark:bg-[#020817]
-                        p-16
-                        text-center
-                    "
-                >
-                    <div class="text-5xl mb-5">
-                        📄
+            @elseif(!$subcategories->count())
+                {{-- SIN DOCUMENTOS NI SUBCARPETAS --}}
+                <div class="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-[#020817] px-6 py-12 text-center">
+                    <div class="mx-auto w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center">
+                        <svg
+                            class="w-8 h-8 text-slate-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.5"
+                                d="M9 13h6m-3-3v6m-7 5h10a2 2 0 002-2V7.828a2 2 0 00-.586-1.414l-3.828-3.828A2 2 0 0011.172 2H5a2 2 0 00-2 2v14a2 2 0 002 2z"
+                            />
+                        </svg>
                     </div>
-                    <h2
-                        class="
-                            text-xl
-                            font-bold
-                            text-slate-700
-                            dark:text-slate-200
-                        "
-                    >
+                    <h2 class="mt-4 text-lg font-semibold text-slate-700 dark:text-slate-200">
                         No hay documentos
                     </h2>
-                    <p
-                        class="
-                            mt-2
-                            text-sm
-                            text-slate-500
-                            dark:text-slate-400
-                        "
-                    >
-                        Esta categoría todavía no contiene documentos.
+                    <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                        Esta categoría todavía no contiene documentos ni subcarpetas.
                     </p>
-                    <button
-                        type="button"
-                        id="open-document-upload-modal-empty"
-                        class="
-                            inline-flex
-                            items-center
-                            gap-2
-                            mt-6
-                            px-5
-                            py-2.5
-                            rounded-xl
-                            bg-blue-600
-                            hover:bg-blue-700
-                            text-white
-                            font-semibold
-                            transition
-                        "
-                    >
-                        <img
-                            src="{{ asset('images/documentacion/nuevo.png') }}"
-                            alt="Subir"
-                            class="w-5 h-5 object-contain"
+                    @if(auth()->user()->can('create', App\Models\Document::class))
+                        <a
+                            href="{{ route('documentacion.create', ['category_id' => $category->id]) }}"
+                            class="inline-flex items-center gap-2 mt-6 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition"
                         >
-                        Subir primer archivo
-                    </button>
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 4v16m8-8H4"
+                                />
+                            </svg>
+                            Subir documento
+                        </a>
+                    @endif
                 </div>
             @endif
         </div>
@@ -662,13 +968,728 @@
         </div>
     </div>
 
+    @include('documentacion.partials.category-subcategory-modal', ['category' => $category])
     @include('documentacion.partials.document-upload-modal', ['category' => $category])
     @include('documentacion.partials.document-edit-modal')
     @include('documentacion.partials.document-delete-modal')
 
+    @include('documentacion.partials.category-edit-modal')
+    @include('documentacion.partials.category-delete-modal')
+    @include('documentacion.partials.category-move-modal')
+    
     <script>
+        /*
+        |--------------------------------------------------------------------------
+        | MODAL NUEVA SUBCARPETA
+        |--------------------------------------------------------------------------
+        */
+
+        const subcategoryModal = document.getElementById('subcategory-modal');
+        const openSubcategoryButton = document.getElementById('open-subcategory-modal');
+        const closeSubcategoryButton = document.getElementById('close-subcategory-modal');
+        const cancelSubcategoryButton = document.getElementById('cancel-subcategory-modal');
+
+        /*
+        |--------------------------------------------------------------------------
+        | ABRIR MODAL
+        |--------------------------------------------------------------------------
+        */
+
+        function openSubcategoryModal() {
+            if (!subcategoryModal) {
+                return;
+            }
+            subcategoryModal.classList.remove('hidden');
+            subcategoryModal.classList.add('flex');
+            const nameInput = document.getElementById('subcategory-name');
+            
+            if (nameInput) {
+                setTimeout(() => {
+                    nameInput.focus();
+                }, 100);
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | MENÚ DE SUBCARPETAS
+        |--------------------------------------------------------------------------
+        */
+
+        window.toggleSubcategoryMenu = function (event, subcategoryId) {
+            event.stopPropagation();
+            
+            const menu = document.getElementById(`subcategory-menu-${subcategoryId}`);
+
+            if (!menu) {
+                return;
+            }
+            // Cerrar otros menús
+            document
+                .querySelectorAll('[id^="subcategory-menu-"]')
+                .forEach(otherMenu => {
+
+                    if (otherMenu !== menu) {
+                        otherMenu.classList.add('hidden');
+                    }
+
+                });
+
+            // Si ya estaba abierto, cerrarlo
+            if (!menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                return;
+            }
+
+            // Mostrar temporalmente para obtener dimensiones
+            menu.classList.remove('hidden');
+
+            const button = event.currentTarget;
+            const buttonRect = button.getBoundingClientRect();
+            const menuWidth = menu.offsetWidth;
+            const menuHeight = menu.offsetHeight;
+            const spacing = 8;
+
+            /*
+            |--------------------------------------------------------------------------
+            | POSICIÓN HORIZONTAL
+            |--------------------------------------------------------------------------
+            */
+            let left =
+                buttonRect.right - menuWidth;
+            /*
+            |--------------------------------------------------------------------------
+            | POSICIÓN VERTICAL
+            |--------------------------------------------------------------------------
+            */
+            let top =
+                buttonRect.bottom + spacing;
+            /*
+            |--------------------------------------------------------------------------
+            | SI NO CABE ABAJO → ABRIR HACIA ARRIBA
+            |--------------------------------------------------------------------------
+            */
+            if (
+                top + menuHeight >
+                window.innerHeight - spacing
+            ) {
+                top =
+                    buttonRect.top -
+                    menuHeight -
+                    spacing;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | EVITAR QUE SE SALGA POR LA IZQUIERDA
+            |--------------------------------------------------------------------------
+            */
+
+            if (left < spacing) {
+                left = spacing;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | EVITAR QUE SE SALGA POR LA DERECHA
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                left + menuWidth >
+                window.innerWidth - spacing
+            ) {
+                left =
+                    window.innerWidth -
+                    menuWidth -
+                    spacing;
+            }
+            menu.style.left = `${left}px`;
+            menu.style.top = `${top}px`;
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | ABRIR MODAL DE EDICIÓN DE SUBCARPETA
+        |--------------------------------------------------------------------------
+        */
+
+        window.openCategoryEditModal = function (
+            event,
+            categoryId,
+            categoryName,
+            categoryDescription,
+            categoryImage
+        ) {
+
+            event.stopPropagation();
+            
+            const modal = document.getElementById('category-edit-modal');
+            const form = document.getElementById('category-edit-form');
+            const nameInput = document.getElementById('edit-category-name');
+            const descriptionInput = document.getElementById('edit-category-description');
+            const imagePreview = document.getElementById('edit-category-image-preview');
+            const removeImageContainer = document.getElementById('remove-category-image-container');
+            const removeImageCheckbox = document.getElementById('remove-category-image');
+
+            if (!modal || !form) {
+                return;
+            }
+
+            // Cargar nombre
+            nameInput.value = categoryName ?? '';
+
+            // Cargar descripción
+            descriptionInput.value =
+                categoryDescription ?? '';
+
+            // Configurar URL
+            form.action =
+                `/documentacion/${categoryId}`;
+
+            // Cargar imagen
+            if (categoryImage) {
+                imagePreview.src =
+                    `/storage/${categoryImage}`;
+                removeImageContainer.classList.remove(
+                    'hidden'
+                );
+            } else {
+                imagePreview.src =
+                    '/images/documentacion/default-category.png';
+                removeImageContainer.classList.add(
+                    'hidden'
+                );
+            }
+
+            // Reiniciar checkbox
+            if (removeImageCheckbox) {
+                removeImageCheckbox.checked = false;
+            }
+
+            // Mostrar modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR MODAL DE EDICIÓN
+        |--------------------------------------------------------------------------
+        */
+
+        window.closeCategoryEditModal = function () {
+            
+            const modal = document.getElementById('category-edit-modal');
+            const imageInput = document.getElementById('edit-category-image');
+            const removeImageCheckbox = document.getElementById('remove-category-image');
+
+            if (!modal) {
+                return;
+            }
+
+            // Ocultar modal
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+
+            // Limpiar archivo seleccionado
+            if (imageInput) {
+                imageInput.value = '';
+            }
+
+            // Desmarcar checkbox
+            if (removeImageCheckbox) {
+                removeImageCheckbox.checked = false;
+            }
+        };
+        /*
+        | ======================================================
+        | MODAL MOVER CATEGORÍA
+        | =====================================================
+        */
+
+        window.openCategoryMoveModal = async function (
+            event,
+            categoryId,
+            categoryName
+        ) {
+            event.stopPropagation();
+
+            const modal = document.getElementById('category-move-modal');
+            const form = document.getElementById('category-move-form');
+            const nameElement = document.getElementById('category-move-name');
+            const parentSelect = document.getElementById('category-move-parent');
+            const loading = document.getElementById('category-move-loading');
+            const error = document.getElementById('category-move-error');
+            const submitButton = document.getElementById('submit-category-move');
+
+            if (!modal || !form || !parentSelect) return;
+
+            // Nombre de la carpeta
+            if (nameElement) {
+                nameElement.textContent = categoryName ?? '';
+            }
+
+            // Configurar URL del formulario
+            form.action = `/documentacion/${categoryId}/move`;
+
+            // Limpiar estado anterior
+            parentSelect.innerHTML = '';
+
+            if (loading) {
+                loading.classList.remove('hidden');
+            }
+
+            if (error) {
+                error.classList.add('hidden');
+                error.textContent = '';
+            }
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            // Mostrar modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            try {
+                const response = await fetch(
+                    `/documentacion/${categoryId}/move-targets`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('No se pudieron cargar las carpetas.');
+                }
+
+                const data = await response.json();
+                parentSelect.innerHTML = '';
+
+                /*
+                |--------------------------------------------------------------------------
+                | CARPETA RAÍZ
+                |--------------------------------------------------------------------------
+                */
+                if (!data.is_root) {
+                    const rootOption = document.createElement('option');
+                    rootOption.value = '';
+                    rootOption.textContent = '📁 Carpeta Raíz / Sin carpeta';
+                    parentSelect.appendChild(rootOption);
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | CARPETAS DISPONIBLES
+                |--------------------------------------------------------------------------
+                */
+
+                if (Array.isArray(data.targets)) {
+                    data.targets.forEach(category => {
+                        const option = document.createElement('option');
+                        option.value = category.id;
+                        option.textContent = `📁 ${category.name}`;
+                        parentSelect.appendChild(option);
+                    });
+                }
+
+                if (loading) {
+                    loading.classList.add('hidden');
+                }
+
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.classList.remove(
+                        'opacity-50',
+                        'cursor-not-allowed'
+                    );
+                }
+
+            } catch (err) {
+                console.error('Error cargando destinos:', err);
+                if (loading) {
+                    loading.classList.add('hidden');
+                }
+                if (error) {
+                    error.textContent =
+                        'No se pudieron cargar las carpetas disponibles.';
+                    error.classList.remove('hidden');
+                }
+            }
+        };
+        window.closeCategoryMoveModal = function () {
+            const modal = document.getElementById('category-move-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('category-move-modal');
+            const closeButton = document.getElementById('close-category-move-modal');
+            const cancelButton = document.getElementById('cancel-category-move-modal');
+
+            if (!modal) return;
+
+            // Botón X
+            if (closeButton) {
+                closeButton.addEventListener('click', function () {
+                    window.closeCategoryMoveModal();
+                });
+            }
+
+            // Botón Cancelar
+            if (cancelButton) {
+                cancelButton.addEventListener('click', function () {
+                    window.closeCategoryMoveModal();
+                });
+            }
+
+            // Click fuera del modal
+            modal.addEventListener('click', function (event) {
+                if (event.target === modal) {
+                    window.closeCategoryMoveModal();
+                }
+            });
+
+            // ESC
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    window.closeCategoryMoveModal();
+                }
+            });
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | ABRIR MODAL DE ELIMINACIÓN
+        |--------------------------------------------------------------------------
+        */
+
+        window.openCategoryDeleteModal = function (
+            event,
+            categoryId,
+            categoryName
+        ) {
+
+            event.stopPropagation();
+            
+            const modal = document.getElementById('category-delete-modal');
+            const form = document.getElementById('category-delete-form');
+            const categoryNameElement = document.getElementById('category-delete-name');
+
+            if (!modal || !form) {
+                return;
+            }
+
+            // Mostrar nombre de la categoría
+            if (categoryNameElement) {
+                categoryNameElement.textContent =
+                    categoryName ?? '';
+            }
+
+            // Configurar URL del formulario
+            form.action =
+                `/documentacion/${categoryId}`;
+
+            // Mostrar modal
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR MODAL DE ELIMINACIÓN
+        |--------------------------------------------------------------------------
+        */
+
+        window.closeCategoryDeleteModal = function () {
+            const modal = document.getElementById('category-delete-modal');
+            if (!modal) {
+                return;
+            }
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTONES DE CIERRE - ELIMINAR
+        |--------------------------------------------------------------------------
+        */
+    
+        const closeCategoryDeleteButton = document.getElementById('close-category-delete-modal');
+        const cancelCategoryDeleteButton = document.getElementById('cancel-category-delete-modal');
+        const categoryDeleteModal = document.getElementById('category-delete-modal');
+   
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN X
+        |--------------------------------------------------------------------------
+        */
+
+        if (closeCategoryDeleteButton) {
+            closeCategoryDeleteButton.addEventListener(
+                'click',
+                function () {
+                    closeCategoryDeleteModal();
+                }
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN CANCELAR
+        |--------------------------------------------------------------------------
+        */
+
+        if (cancelCategoryDeleteButton) {
+            cancelCategoryDeleteButton.addEventListener(
+                'click',
+                function () {
+                    closeCategoryDeleteModal();
+                }
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CLICK FUERA
+        |--------------------------------------------------------------------------
+        */
+
+        if (categoryDeleteModal) {
+            categoryDeleteModal.addEventListener(
+                'click',
+                function (event) {
+                    if (
+                        event.target ===
+                        categoryDeleteModal
+                    ) {
+                        closeCategoryDeleteModal();
+                    }
+                }
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | ESC
+        |--------------------------------------------------------------------------
+        */
+
+        document.addEventListener(
+            'keydown',
+            function (event) {
+                if (
+                    event.key === 'Escape' &&
+                    categoryDeleteModal &&
+                    !categoryDeleteModal.classList.contains(
+                        'hidden'
+                    )
+                ) {
+                    closeCategoryDeleteModal();
+                }
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTONES DE CIERRE
+        |--------------------------------------------------------------------------
+        */
+
+        const closeCategoryEditButton = document.getElementById('close-category-edit-modal');
+        const cancelCategoryEditButton = document.getElementById('cancel-category-edit-modal');
+        const categoryEditModal = document.getElementById('category-edit-modal');
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN X
+        |--------------------------------------------------------------------------
+        */
+
+        if (closeCategoryEditButton) {
+            closeCategoryEditButton.addEventListener(
+                'click',
+                function () {
+                    closeCategoryEditModal();
+                }
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN CANCELAR
+        |--------------------------------------------------------------------------
+        */
+
+        if (cancelCategoryEditButton) {
+            cancelCategoryEditButton.addEventListener(
+                'click',
+                function () {
+                    closeCategoryEditModal();
+                }
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CLICK FUERA DEL MODAL
+        |--------------------------------------------------------------------------
+        */
+
+        if (categoryEditModal) {
+            categoryEditModal.addEventListener(
+                'click',
+                function (event) {
+                    if (
+                        event.target ===
+                        categoryEditModal
+                    ) {
+                        closeCategoryEditModal();
+                    }
+                }
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | ESC
+        |--------------------------------------------------------------------------
+        */
+
+        document.addEventListener(
+            'keydown',
+            function (event) {
+                if (
+                    event.key === 'Escape' &&
+                    categoryEditModal &&
+                    !categoryEditModal.classList.contains(
+                        'hidden'
+                    )
+                ) {
+                    closeCategoryEditModal();
+                }
+            }
+        );
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR MODAL
+        |--------------------------------------------------------------------------
+        */
+
+        function closeSubcategoryModal() {
+            if (!subcategoryModal) {
+                return;
+            }
+            subcategoryModal.classList.add('hidden');
+            subcategoryModal.classList.remove('flex');
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR MENÚS AL HACER CLICK AFUERA
+        |--------------------------------------------------------------------------
+        */
+
+        document.addEventListener('click', function () {
+            document
+                .querySelectorAll('[id^="subcategory-menu-"]')
+                .forEach(menu => {
+                    menu.classList.add('hidden');
+                });
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN NUEVA SUBCARPETA
+        |--------------------------------------------------------------------------
+        */
+
+        if (openSubcategoryButton) {
+            openSubcategoryButton.addEventListener(
+                'click',
+                openSubcategoryModal
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN X
+        |--------------------------------------------------------------------------
+        */
+
+        if (closeSubcategoryButton) {
+            closeSubcategoryButton.addEventListener(
+                'click',
+                closeSubcategoryModal
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BOTÓN CANCELAR
+        |--------------------------------------------------------------------------
+        */
+
+        if (cancelSubcategoryButton) {
+            cancelSubcategoryButton.addEventListener(
+                'click',
+                closeSubcategoryModal
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR HACIENDO CLICK FUERA
+        |--------------------------------------------------------------------------
+        */
+
+        if (subcategoryModal) {
+            subcategoryModal.addEventListener(
+                'click',
+                function (event) {
+                    if (event.target === subcategoryModal) {
+                        closeSubcategoryModal();
+                    }
+                }
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CERRAR CON ESC
+        |--------------------------------------------------------------------------
+        */
+
+        document.addEventListener(
+            'keydown',
+            function (event) {
+                if (
+                    event.key === 'Escape' &&
+                    subcategoryModal &&
+                    !subcategoryModal.classList.contains('hidden')
+                ) {
+                    closeSubcategoryModal();
+                }
+            }
+        );
+    </script>
+    <script>
+
         const documentStoreUrl = @json(route('documentacion.documents.store', $category));
         const documentCsrfToken = @json(csrf_token());
+
     </script>
     <script>
         /*
@@ -676,37 +1697,15 @@
         | MODAL SUBIR DOCUMENTOS
         |--------------------------------------------------------------------------
         */
-        const uploadModal = document.getElementById(
-            'document-upload-modal'
-        );
 
-        const editDocumentFileIcon = document.getElementById(
-            'edit-document-file-icon'
-        );
-  
-        const deleteDocumentFileIcon = document.getElementById(
-            'delete-document-file-icon'
-        );
-
-        const openUploadButton = document.getElementById(
-            'open-document-upload-modal'
-        );
-
-        const openUploadEmptyButton = document.getElementById(
-            'open-document-upload-modal-empty'
-        );
-
-        const closeUploadButton = document.getElementById(
-            'close-document-upload-modal'
-        );
-
-        const cancelUploadButton = document.getElementById(
-            'cancel-document-upload-modal'
-        );
-
-        const submitUploadButton = document.getElementById(
-            'submit-document-upload'
-        );
+        const uploadModal = document.getElementById('document-upload-modal');
+        const editDocumentFileIcon = document.getElementById('edit-document-file-icon');
+        const deleteDocumentFileIcon = document.getElementById('delete-document-file-icon');
+        const openUploadButton = document.getElementById('open-document-upload-modal');
+        const openUploadEmptyButton = document.getElementById('open-document-upload-modal-empty');
+        const closeUploadButton = document.getElementById('close-document-upload-modal');
+        const cancelUploadButton = document.getElementById('cancel-document-upload-modal');
+        const submitUploadButton = document.getElementById('submit-document-upload');
 
         /*
         |--------------------------------------------------------------------------
@@ -714,21 +1713,11 @@
         |--------------------------------------------------------------------------
         */
 
-        const documentFileInput = document.getElementById(
-            'document-file'
-        );
+        const documentFileInput = document.getElementById('document-file');
+        const documentFileList = document.getElementById('document-file-list');
+        const selectedCount = document.getElementById('document-selected-count');
+        const selectedCountNumber = document.getElementById('document-selected-count-number');
 
-        const documentFileList = document.getElementById(
-            'document-file-list'
-        );
-
-        const selectedCount = document.getElementById(
-            'document-selected-count'
-        );
-
-        const selectedCountNumber = document.getElementById(
-            'document-selected-count-number'
-        );
         /*
         |--------------------------------------------------------------------------
         | ARCHIVOS SELECCIONADOS
@@ -737,14 +1726,12 @@
         let selectedFiles = [];
         //creación de lote de archivos para subirlos de 15 en 15
         const BATCH_SIZE = 15;
-        
         /*
         |--------------------------------------------------------------------------
         | ABRIR MODAL
         |--------------------------------------------------------------------------
         */
         function openDocumentUploadModal() {
-
             if (!uploadModal) {
                 return;
             }
@@ -757,7 +1744,6 @@
         |--------------------------------------------------------------------------
         */
         function closeDocumentUploadModal() {
-
             if (!uploadModal) {
                 return;
             }
@@ -1155,13 +2141,8 @@
         | DRAG & DROP
         |--------------------------------------------------------------------------
         */
-        const documentDropZone = document.getElementById(
-            'document-drop-zone'
-        );
-
-        const documentDragOverlay = document.getElementById(
-            'document-drag-overlay'
-        );
+        const documentDropZone = document.getElementById('document-drop-zone');
+        const documentDragOverlay = document.getElementById('document-drag-overlay');
         /*
         |--------------------------------------------------------------------------
         | AGREGAR ARCHIVOS
@@ -1282,19 +2263,15 @@
                 const files =
                     event.dataTransfer.files;
 
-
                 hideDocumentDragOverlay();
 
                 isDraggingFiles = false;
-
                 /*
                 |--------------------------------------------------------------------------
                 | Abrir modal
                 |--------------------------------------------------------------------------
                 */
-
                 openDocumentUploadModal();
-
                 /*
                 |--------------------------------------------------------------------------
                 | Agregar archivos
@@ -1331,7 +2308,6 @@
             if (!value) {
                 return '';
             }
-
             return String(value)
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -1345,14 +2321,12 @@
         |--------------------------------------------------------------------------
         */
         if (documentFileInput) {
-
             documentFileInput.addEventListener(
                 'change',
                 function () {
                     addDocumentFiles(
                         this.files
                     );
-
                     /*
                     |--------------------------------------------------------------------------
                     | Permitir seleccionar nuevamente
@@ -1361,7 +2335,6 @@
                     this.value = '';
                 }
             );
-
         }
         /*
         |--------------------------------------------------------------------------
@@ -1387,7 +2360,6 @@
                             selectedFiles[index].name =
                                 event.target.value;
                         }
-
                     }
                     /*
                     |--------------------------------------------------------------------------
@@ -1512,16 +2484,8 @@
                         batchIndex < totalBatches;
                         batchIndex++
                     ) {
-
-                        const startIndex =
-                            batchIndex * BATCH_SIZE;
-
-                        const batch =
-                            selectedFiles.slice(
-                                startIndex,
-                                startIndex + BATCH_SIZE
-                            );
-
+                        const startIndex = batchIndex * BATCH_SIZE;
+                        const batch = selectedFiles.slice(startIndex, startIndex + BATCH_SIZE);
                         /*
                         |--------------------------------------------------------------------------
                         | CREAR FORMDATA
@@ -1543,48 +2507,39 @@
 
                         batch.forEach(
                             (item, index) => {
-
                                 formData.append(
                                     `files[${index}]`,
                                     item.file
                                 );
-
                                 formData.append(
                                     `names[${index}]`,
                                     item.name ?? ''
                                 );
-
                                 formData.append(
                                     `descriptions[${index}]`,
                                     item.description ?? ''
                                 );
                             }
                         );
-
                         /*
                         |--------------------------------------------------------------------------
                         | ACTUALIZAR BOTÓN
                         |--------------------------------------------------------------------------
                         */
-
                         submitUploadButton.textContent =
                             `⏳ ${uploadedFiles} de ${totalFiles} archivos subidos`;
 
                         try {
-
                             /*
                             |--------------------------------------------------------------------------
                             | ENVIAR LOTE
                             |--------------------------------------------------------------------------
                             */
-
                             const response = await fetch(
                                 documentStoreUrl,
                                 {
                                     method: 'POST',
-
                                     body: formData,
-
                                     headers: {
                                         'X-Requested-With':
                                             'XMLHttpRequest',
@@ -1602,15 +2557,10 @@
                             */
 
                             let data = {};
-
                             try {
-
                                 data = await response.json();
-
                             } catch (error) {
-
                                 data = {};
-
                             }
 
                             /*
@@ -1625,19 +2575,14 @@
                             */
 
                             if (!response.ok) {
-
                                 batch.forEach(
                                     (item) => {
-
                                         item.error =
                                             data.message ||
                                             'No fue posible procesar este archivo.';
-
                                         failedFiles.push(item);
-
                                     }
                                 );
-
                                 continue;
                             }
 
@@ -1660,17 +2605,13 @@
                                 Array.isArray(data.failed) &&
                                 data.failed.length > 0
                             ) {
-
                                 data.failed.forEach(
                                     (failure) => {
-
                                         const item =
                                             batch[failure.index];
-
                                         if (!item) {
                                             return;
                                         }
-
                                         item.error =
                                             Array.isArray(
                                                 failure.errors
@@ -1680,9 +2621,7 @@
                                                     failure.errors ||
                                                     'No fue posible subir este archivo.'
                                                 );
-
                                         failedFiles.push(item);
-
                                     }
                                 );
                             }
@@ -1692,12 +2631,9 @@
                             | ACTUALIZAR PROGRESO
                             |--------------------------------------------------------------------------
                             */
-
                             submitUploadButton.textContent =
                                 `⏳ ${uploadedFiles} de ${totalFiles} archivos subidos`;
-
                         } catch (error) {
-
                             console.error(
                                 'Error al subir lote:',
                                 error
@@ -1716,13 +2652,10 @@
 
                             batch.forEach(
                                 (item) => {
-
                                     item.error =
                                         error.message ||
                                         'No fue posible subir este archivo.';
-
                                     failedFiles.push(item);
-
                                 }
                             );
                         }
@@ -1734,15 +2667,8 @@
                     |--------------------------------------------------------------------------
                     */
 
-                    console.log(
-                        'Archivos subidos:',
-                        uploadedFiles
-                    );
-
-                    console.log(
-                        'Archivos fallidos:',
-                        failedFiles
-                    );
+                    console.log('Archivos subidos:', uploadedFiles);
+                    console.log('Archivos fallidos:', failedFiles);
 
                     /*
                     |--------------------------------------------------------------------------
@@ -1751,13 +2677,10 @@
                     */
 
                     if (failedFiles.length === 0) {
-
                         alert(
                             `¡Listo! Se subieron ${uploadedFiles} documento(s) correctamente.`
                         );
-
                         window.location.reload();
-
                         return;
                     }
 
@@ -1821,33 +2744,13 @@
         | MODAL EDITAR DOCUMENTO
         |--------------------------------------------------------------------------
         */
-        const documentEditModal = document.getElementById(
-            'document-edit-modal'
-        );
-
-        const documentEditForm = document.getElementById(
-            'document-edit-form'
-        );
-
-        const editDocumentName = document.getElementById(
-            'edit-document-name'
-        );
-
-        const editDocumentDescription = document.getElementById(
-            'edit-document-description'
-        );
-
-        const editDocumentFileName = document.getElementById(
-            'edit-document-file-name'
-        );
-
-        const closeDocumentEditButton = document.getElementById(
-            'close-document-edit-modal'
-        );
-
-        const cancelDocumentEditButton = document.getElementById(
-            'cancel-document-edit-modal'
-        );
+        const documentEditModal = document.getElementById('document-edit-modal');
+        const documentEditForm = document.getElementById('document-edit-form');
+        const editDocumentName = document.getElementById('edit-document-name');
+        const editDocumentDescription = document.getElementById('edit-document-description');
+        const editDocumentFileName = document.getElementById('edit-document-file-name');
+        const closeDocumentEditButton = document.getElementById('close-document-edit-modal');
+        const cancelDocumentEditButton = document.getElementById('cancel-document-edit-modal');
         /*
         |--------------------------------------------------------------------------
         | ABRIR MODAL
@@ -1862,16 +2765,11 @@
             | OBTENER DATOS DEL DOCUMENTO
             |--------------------------------------------------------------------------
             */
-            const documentId =
-                button.dataset.documentId;
-            const documentName =
-                button.dataset.documentName || '';
-            const documentDescription =
-                button.dataset.documentDescription || '';
-            const documentFileName =
-                button.dataset.documentFileName || '';
-            const documentExtension =
-                button.dataset.documentExtension || '';
+            const documentId = button.dataset.documentId;
+            const documentName = button.dataset.documentName || '';
+            const documentDescription = button.dataset.documentDescription || '';
+            const documentFileName = button.dataset.documentFileName || '';
+            const documentExtension = button.dataset.documentExtension || '';
             /*
             |--------------------------------------------------------------------------
             | RELLENAR CAMPOS
@@ -2002,29 +2900,12 @@
         |--------------------------------------------------------------------------
         */
 
-        const documentDeleteModal = document.getElementById(
-            'document-delete-modal'
-        );
-
-        const documentDeleteForm = document.getElementById(
-            'document-delete-form'
-        );
-
-        const deleteDocumentName = document.getElementById(
-            'delete-document-name'
-        );
-
-        const deleteDocumentFileName = document.getElementById(
-            'delete-document-file-name'
-        );
-
-        const closeDocumentDeleteButton = document.getElementById(
-            'close-document-delete-modal'
-        );
-
-        const cancelDocumentDeleteButton = document.getElementById(
-            'cancel-document-delete-modal'
-        );
+        const documentDeleteModal = document.getElementById('document-delete-modal');
+        const documentDeleteForm = document.getElementById('document-delete-form');
+        const deleteDocumentName = document.getElementById('delete-document-name');
+        const deleteDocumentFileName = document.getElementById('delete-document-file-name');
+        const closeDocumentDeleteButton = document.getElementById('close-document-delete-modal');
+        const cancelDocumentDeleteButton = document.getElementById('cancel-document-delete-modal');
         /*
         |--------------------------------------------------------------------------
         | ABRIR MODAL
@@ -2039,17 +2920,13 @@
             | OBTENER DATOS
             |--------------------------------------------------------------------------
             */
-            const documentId =
-                button.dataset.documentId;
+            const documentId = button.dataset.documentId;
 
-            const documentName =
-                button.dataset.documentName || '';
+            const documentName = button.dataset.documentName || '';
 
-            const documentFileName =
-                button.dataset.documentFileName || '';
+            const documentFileName = button.dataset.documentFileName || '';
 
-            const documentExtension =
-                button.dataset.documentExtension || '';
+            const documentExtension = button.dataset.documentExtension || '';
             /*
             |--------------------------------------------------------------------------
             | NOMBRE DEL DOCUMENTO
@@ -2090,9 +2967,7 @@
                     xml: '/images/documentacion/xml.png',
                 };
 
-                deleteDocumentFileIcon.src =
-                    iconMap[documentExtension]
-                    || '/images/documentacion/default.png';
+                deleteDocumentFileIcon.src = iconMap[documentExtension] || '/images/documentacion/default.png';
             }
             /*
             |--------------------------------------------------------------------------
@@ -2115,9 +2990,7 @@
                     png: '/images/documentacion/imagen.png',
                     xml: '/images/documentacion/xml.png',
             };
-            deleteDocumentFileIcon.src =
-                iconMap[documentExtension]
-                || '';
+            deleteDocumentFileIcon.src = iconMap[documentExtension] || '';
             }
             /*
             |--------------------------------------------------------------------------

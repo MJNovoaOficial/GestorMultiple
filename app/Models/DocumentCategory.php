@@ -15,6 +15,7 @@ class DocumentCategory extends Model
         'description',
         'image',
         'created_by',
+        'parent_id',
     ];
 
     /**
@@ -31,5 +32,15 @@ class DocumentCategory extends Model
     public function documents()
     {
         return $this->hasMany(Document::class, 'category_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(DocumentCategory::class, 'parent_id');
+    }
+    
+    public function children()
+    {
+        return $this->hasMany(DocumentCategory::class, 'parent_id');
     }
 }

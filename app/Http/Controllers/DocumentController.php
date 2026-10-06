@@ -17,6 +17,14 @@ class DocumentController extends Controller
     {
         $search = $request->input('search');
 
+        // Obtener las subcarpetas de la categoría actual
+        $subcategories = $category->children()
+            ->where('is_active', true)
+            ->withCount('documents')
+            ->orderBy('name')
+            ->get();
+
+        // Obtener los documentos de la categoría actual
         $documents = $category->documents()
             ->where('is_active', true)
             ->when($search, function ($query, $search) {
@@ -32,7 +40,12 @@ class DocumentController extends Controller
 
         return view(
             'documentacion.category',
-            compact('category', 'documents', 'search')
+            compact(
+                'category',
+                'subcategories',
+                'documents',
+                'search'
+            )
         );
     }
 
@@ -57,10 +70,8 @@ class DocumentController extends Controller
             return back()
                 ->with('error', 'No se recibieron archivos.');
         }
-
         $uploaded = 0;
         $failed = [];
-
         /*
         |--------------------------------------------------------------------------
         | PROCESAR CADA DOCUMENTO INDIVIDUALMENTE
@@ -85,10 +96,8 @@ class DocumentController extends Controller
                 [
                     'file' =>
                         'required|file|max:51200',
-
                     'name' =>
                         'required|string|max:255',
-
                     'description' =>
                         'nullable|string',
                 ]

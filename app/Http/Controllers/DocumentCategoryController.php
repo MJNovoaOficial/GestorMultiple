@@ -33,7 +33,11 @@ class DocumentCategoryController extends Controller
         }
 
         $categories = DocumentCategory::query()
-            ->withCount('documents')
+            ->whereNull('parent_id')
+            ->withCount([
+                'documents',
+                'children',
+            ])
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
@@ -59,10 +63,18 @@ class DocumentCategoryController extends Controller
                 'string',
                 'max:255',
             ],
+
             'description' => [
                 'nullable',
                 'string',
             ],
+
+            'parent_id' => [
+                'nullable',
+                'integer',
+                'exists:document_categories,id',
+            ],
+
             'image' => [
                 'nullable',
                 'image',
@@ -81,6 +93,7 @@ class DocumentCategoryController extends Controller
         $category = DocumentCategory::create([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
+            'parent_id' => $validated['parent_id'] ?? null,
             'image' => $imagePath,
             'created_by' => auth()->id(),
         ]);
@@ -205,6 +218,115 @@ class DocumentCategoryController extends Controller
                 'success',
                 'La categoría fue actualizada correctamente.'
             );
+    }
+
+    public function move(Request $request, DocumentCategory $documentacion)
+    {
+        $validated = $request->validate([
+            'parent_id' => [
+                'nullable',
+                'integer',
+                'exists:document_categories,id',
+            ],
+        ]);
+
+        $newParentId = $validated['parent_id'] ?? null;
+
+        // No permitir mover dentro de sí misma
+        if ($newParentId == $documentacion->id) {
+            return back()->withErrors([
+                'parent_id' =>
+                    'Una carpeta no puede moverse dentro de sí misma.',
+            ]);
+        }
+
+        // No permitir mover dentro de un descendiente
+        $parent = $newParentId
+            ? DocumentCategory::find($newParentId)
+            : null;
+
+        while ($parent) {
+
+            if ($parent->id == $documentacion->id) {
+                return back()->withErrors([
+                    'parent_id' =>
+                        'No puedes mover una carpeta dentro de una de sus subcarpetas.',
+                ]);
+            }
+
+            $parent = $parent->parent_id
+                ? DocumentCategory::find($parent->parent_id)
+                : null;
+        }
+
+        $oldParentId = $documentacion->parent_id;
+
+        $documentacion->parent_id = $newParentId;
+        $documentacion->save();
+
+        AuditLog::create([
+            'user_id' => auth()->id(),
+            'action' => 'moved',
+            'description' =>
+                'Se movió la carpeta "' .
+                $documentacion->name .
+                '"',
+            'old_values' => [
+                'parent_id' => $oldParentId,
+            ],
+            'new_values' => [
+                'parent_id' => $newParentId,
+            ],
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+        ]);
+
+        return back()->with(
+            'success',
+            'La carpeta fue movida correctamente.'
+        );
+    }
+
+    public function moveTargets(DocumentCategory $documentacion)
+    {
+        $categories = DocumentCategory::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get([
+                'id',
+                'name',
+                'parent_id',
+            ]);
+
+        $excludedIds = [ $documentacion->id, ];
+
+        if ($documentacion->parent_id !== null) {
+            $excludedIds[] = $documentacion->parent_id;
+        }
+
+        $findChildren = function ($parentId) use (
+            &$findChildren,
+            &$excludedIds,
+            $categories
+        ) {
+            foreach ($categories->where('parent_id', $parentId) as $child) {
+
+                $excludedIds[] = $child->id;
+
+                $findChildren($child->id);
+            }
+        };
+
+        $findChildren($documentacion->id);
+
+        $targets = $categories
+            ->whereNotIn('id', $excludedIds)
+            ->values();
+
+        return response()->json([
+            'is_root' => $documentacion->parent_id === null,
+            'targets' => $targets,
+        ]);
     }
 
     public function trash()
