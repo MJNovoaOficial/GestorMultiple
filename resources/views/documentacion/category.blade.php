@@ -834,6 +834,21 @@
                                         class="w-6 h-6 object-contain"
                                     >
                                 </button>
+                                {{-- MOVER --}}
+                                <button
+                                    type="button"
+                                    title="Mover documento"
+                                    class="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-amber-50 dark:hover:bg-amber-950/30 transition"
+                                    data-document-id="{{ $document->id }}"
+                                    data-document-name="{{ $document->name }}"
+                                    onclick="openDocumentMoveModal(this)"
+                                >
+                                    <img
+                                        src="{{ asset('images/documentacion/carpeta.png') }}"
+                                        alt="Mover"
+                                        class="w-6 h-6 object-contain"
+                                    >
+                                </button>
                                 {{-- DESCARGAR --}}
                                 <a
                                     href="{{ route('documentacion.documents.download', $document) }}"
@@ -1007,6 +1022,7 @@
     @include('documentacion.partials.category-edit-modal')
     @include('documentacion.partials.category-delete-modal')
     @include('documentacion.partials.category-move-modal')
+    @include('documentacion.partials.document-move-modal')
 
     @include('documentacion.partials.document-folder-upload-modal', [
         'parentCategoryId' => $category->id,

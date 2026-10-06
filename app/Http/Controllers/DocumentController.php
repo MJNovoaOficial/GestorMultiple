@@ -655,6 +655,122 @@ class DocumentController extends Controller
         );
     }
 
+    public function move(Request $request, Document $document)
+    {
+        if (!$document->is_active) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'category_id' => [
+                'required',
+                'integer',
+                'exists:document_categories,id',
+                function ($attribute, $value, $fail) use ($document) {
+                    if ((int) $value === (int) $document->category_id) {
+                        $fail('El documento ya se encuentra en esa carpeta.');
+                    }
+                },
+            ],
+        ]);
+
+        $newCategory = DocumentCategory::query()
+            ->where('id', $validated['category_id'])
+            ->where('is_active', true)
+            ->firstOrFail();
+
+        $oldCategory = $document->category;
+
+        $oldPath = $document->file_path;
+        $fileName = $document->file_name;
+        $newPath = 'documentacion/' . $newCategory->id . '/' . $fileName;
+
+        if (!Storage::disk('public')->exists($oldPath)) {
+            return back()->with('error', 'No se encontró el archivo físico del documento.');
+        }
+
+        if (Storage::disk('public')->exists($newPath)) {
+            return back()->with(
+                'error',
+                'Ya existe un archivo con el mismo nombre en la carpeta de destino.'
+            );
+        }
+
+        DB::beginTransaction();
+
+        try {
+            if (!Storage::disk('public')->move($oldPath, $newPath)) {
+                throw new \RuntimeException('No fue posible mover el archivo físico.');
+            }
+
+            $oldValues = [
+                'category_id' => $document->category_id,
+                'file_path' => $oldPath,
+            ];
+
+            $document->category_id = $newCategory->id;
+            $document->file_path = $newPath;
+            $document->save();
+
+            AuditLog::create([
+                'user_id' => auth()->id(),
+                'action' => 'moved',
+                'description' => 'Documento "' . $document->name . '" movido de "' . $oldCategory->name . '" a "' . $newCategory->name . '"',
+                'old_values' => $oldValues,
+                'new_values' => [
+                    'category_id' => $document->category_id,
+                    'file_path' => $document->file_path,
+                ],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            DB::commit();
+
+            return back()->with(
+                'success',
+                'El documento fue movido correctamente.'
+            );
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Error al mover documento', [
+                'document_id' => $document->id,
+                'old_category_id' => $oldCategory->id,
+                'new_category_id' => $newCategory->id,
+                'old_path' => $oldPath,
+                'new_path' => $newPath,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with(
+                'error',
+                'No fue posible mover el documento.'
+            );
+        }
+    }
+
+    public function moveTargets(Document $document)
+    {
+        if (!$document->is_active) {
+            abort(404);
+        }
+
+        $categories = DocumentCategory::query()
+            ->where('is_active', true)
+            ->where('id', '!=', $document->category_id)
+            ->orderBy('name')
+            ->get([
+                'id',
+                'name',
+                'parent_id',
+            ]);
+
+        return response()->json([
+            'targets' => $categories,
+        ]);
+    }
+
     public function trash()
     {
         //cargamos la categoría a la que pertenece el documento

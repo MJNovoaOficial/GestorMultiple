@@ -165,6 +165,10 @@ Route::middleware('auth')->group(function () {
             ->name('documentacion.move');
         Route::get('/documentacion/{documentacion}/move-targets', [DocumentCategoryController::class, 'moveTargets'])
             ->name('documentacion.move-targets');
+        Route::post('/documentacion/documentos/{document}/move', [DocumentController::class, 'move'])
+            ->name('documentacion.documents.move');
+        Route::get('/documentacion/documentos/{document}/move-targets', [DocumentController::class, 'moveTargets'])
+            ->name('documentacion.documents.move-targets');
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría
