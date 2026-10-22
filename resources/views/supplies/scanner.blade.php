@@ -547,7 +547,10 @@
         const sidebarButton = document.getElementById('toggleSidebarBtn');
 
         if (sidebar && sidebarButton) {
-            let sidebarHidden = false;
+            // Ocultar la sidebar al iniciar el terminal.
+            let sidebarHidden = true;
+
+            sidebar.style.display = 'none';
 
             sidebarButton.addEventListener('click', () => {
                 sidebarHidden = !sidebarHidden;
