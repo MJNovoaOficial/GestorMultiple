@@ -108,6 +108,9 @@ Route::middleware('auth')->group(function () {
             ->name('supplies.scanner.find');
         Route::post('/supplies/scanner/process',[SupplyController::class, 'processScannerMovement'])
             ->name('supplies.scanner.process');
+        Route::post('/supplies/scanner/keep-alive', function () {
+            return response()->json(['success' => true]);})
+            ->name('supplies.scanner.keepalive');
         /*
         |--------------------------------------------------------------------------
         | Módulo de dispositivos

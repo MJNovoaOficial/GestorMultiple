@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Supply;
 use App\Models\SupplyMovement;
 use App\Models\AuditLog;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SupplyController extends Controller
 {  
@@ -208,11 +210,10 @@ class SupplyController extends Controller
             'barcode' => 'required'
         ]);
 
-        $supply = Supply::where(
-            'barcode',
-            $request->barcode
-        )->first();
-
+        $supply = Supply::where('barcode', $request->barcode)
+            ->where('is_active', true)
+            ->first();
+            
         if (!$supply) {
             return response()->json([
                 'success' => false,
@@ -228,64 +229,96 @@ class SupplyController extends Controller
 
     public function processScannerMovement(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'type' => 'required|in:add,remove',
+
             'items' => 'required|array|min:1',
+
+            'items.*.id' => 'required|integer|distinct',
+            'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        foreach ($request->items as $item) {
-            $supply = Supply::find($item['id']);
-            if (!$supply) {
-                continue;
+        return DB::transaction(function () use ($request, $validated) {
+            $movementType = $validated['type'];
+            $items = collect($validated['items']);
+
+            // Bloquear y validar todos los suministros antes de modificar stock.
+            $supplies = Supply::whereIn(
+                'id',
+                $items->pluck('id')
+            )
+            ->where('is_active', true)
+            ->lockForUpdate()
+            ->get()
+            ->keyBy('id');
+
+            if ($supplies->count() !== $items->count()) {
+                throw ValidationException::withMessages([
+                    'items' => 'Uno o más suministros no existen o están inactivos.',
+                ]);
             }
 
-            $quantity = (int) $item['quantity'];
-            $oldQuantity = $supply->quantity;
+            // Validar el stock de todos los productos antes de realizar cambios.
+            if ($movementType === 'remove') {
+                foreach ($items as $item) {
+                    $supply = $supplies->get($item['id']);
 
-            if ($request->type === 'add') {
-                $supply->increment(
-                    'quantity',
-                    $quantity
-                );
-            } else {
-                if ($quantity > $supply->quantity) {
-                    return response()->json([
-                        'success' => false,
-                        'message' =>
-                            "No hay suficiente stock para {$supply->supply_type}"
-                    ], 422);
+                    if ((int) $item['quantity'] > (int) $supply->quantity) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => "Stock insuficiente para {$supply->supply_type}. Disponible: {$supply->quantity}. Solicitado: {$item['quantity']}.",
+                        ], 422);
+                    }
+                }
+            }
+
+            foreach ($items as $item) {
+                $supply = $supplies->get($item['id']);
+                $quantity = (int) $item['quantity'];
+                $oldQuantity = (int) $supply->quantity;
+
+                $newQuantity = $movementType === 'add'
+                    ? $oldQuantity + $quantity
+                    : $oldQuantity - $quantity;
+
+                $supply->quantity = $newQuantity;
+                $supply->updated_by = auth()->id();
+
+                if ($movementType === 'add') {
+                    $supply->last_critical_alert_at = null;
+                    $supply->last_out_alert_at = null;
                 }
 
-                $supply->decrement(
-                    'quantity',
-                    $quantity
-                );
+                $supply->save();
+
+                SupplyMovement::create([
+                    'supply_id' => $supply->id,
+                    'user_id' => auth()->id(),
+                    'type' => $movementType,
+                    'quantity' => $quantity,
+                    'old_quantity' => $oldQuantity,
+                    'new_quantity' => $newQuantity,
+                ]);
             }
 
-            $newQuantity = $supply->fresh()->quantity;
-
-            SupplyMovement::create([
-                'supply_id' => $supply->id,
+            AuditLog::create([
                 'user_id' => auth()->id(),
-                'type' => $request->type,
-                'quantity' => $quantity,
-                'old_quantity' => $oldQuantity,
-                'new_quantity' => $newQuantity,
-            ]);
-        }
-        AuditLog::create([
-            'user_id' => auth()->id(),
-            'action' =>
-                $request->type === 'add'
+                'action' => $movementType === 'add'
                     ? 'SCANNER_STOCK_AGREGADO'
                     : 'SCANNER_STOCK_DESCONTADO',
-            'description' =>
-                'Movimiento realizado mediante escáner',
-            'ip_address' => request()->ip(),
-        ]);
+                'description' => sprintf(
+                    'Movimiento mediante escáner (%s). Productos: %d. Unidades: %d.',
+                    $movementType === 'add' ? 'ingreso' : 'retiro',
+                    $items->count(),
+                    $items->sum('quantity')
+                ),
+                'ip_address' => $request->ip(),
+            ]);
 
-        return response()->json([
-            'success' => true
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Movimiento guardado correctamente.',
+            ]);
+        });
     }
 }

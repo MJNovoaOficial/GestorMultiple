@@ -41,30 +41,26 @@
             p-6
         ">
 
-            {{-- Tipo Movimiento --}}
-            <div class="flex gap-6 mb-6">
+            {{-- Modo de movimiento activo --}}
+            <div class="mb-6">
+                <div
+                    id="movementMode"
+                    class="rounded-2xl border-2 border-red-500
+                        bg-red-950 p-6 text-center"
+                >
+                    <div class="text-sm uppercase tracking-widest text-slate-300">
+                        Modo de operación
+                    </div>
 
-                <label class="text-white">
-                    <input
-                        type="radio"
-                        name="movement_type"
-                        value="remove"
-                        checked
-                    >
+                    <div id="movementModeLabel"
+                        class="mt-2 text-4xl font-black text-red-400">
+                        RETIRAR
+                    </div>
 
-                    Retirar
-                </label>
-
-                <label class="text-white">
-                    <input
-                        type="radio"
-                        name="movement_type"
-                        value="add"
-                    >
-
-                    Ingresar
-                </label>
-
+                    <div class="mt-2 text-slate-300">
+                        Escanea los productos o un código de comando.
+                    </div>
+                </div>
             </div>
 
             {{-- Input Scanner --}}
@@ -93,21 +89,18 @@
                 rounded-xl
                 p-5
             ">
-
                 <h2 class="
                     text-lg font-semibold
                     text-white mb-4
                 ">
                     Último producto leído
                 </h2>
-
                 <div
                     id="lastScanned"
                     class="text-slate-400"
                 >
                     Aún no se ha escaneado ningún producto.
                 </div>
-
             </div>
 
             {{-- Productos escaneados --}}
@@ -118,7 +111,6 @@
                 rounded-xl
                 p-5
             ">
-
                 <h2 class="
                     text-lg font-semibold
                     text-white mb-4
@@ -130,13 +122,10 @@
                     id="scannedItems"
                     class="space-y-2"
                 >
-
                     <div class="text-slate-400">
                         No hay productos escaneados.
                     </div>
-
                 </div>
-
             </div>
 
             {{-- Resumen --}}
@@ -144,414 +133,431 @@
                 mt-6
                 flex items-center justify-between
             ">
+                <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
+                    <div id="totalItems"
+                        class="text-xl font-bold text-white">
+                        Total artículos: 0
+                    </div>
 
-                <div
-                    id="totalItems"
-                    class="
-                        text-lg
-                        font-semibold
-                        text-white
-                    "
-                >
-                    Total artículos: 0
+                    <div class="text-right">
+                        <div class="text-sm text-slate-400">
+                            Guardado automático por inactividad
+                        </div>
+
+                        <div id="autoSaveStatus"
+                            class="mt-1 font-semibold text-emerald-400">
+                            Esperando escaneos
+                        </div>
+                    </div>
                 </div>
-
-                <div class="flex gap-3">
-
-                    <button
-                        type="button"
-                        id="clearBtn"
-                        class="
-                            px-4 py-2
-                            rounded-xl
-                            bg-slate-700
-                            hover:bg-slate-600
-                            text-white
-                        "
-                    >
-                        Limpiar
-                    </button>
-
-                    <button
-                        type="button"
-                        id="confirmBtn"
-                        class="
-                            px-4 py-2
-                            rounded-xl
-                            bg-green-600
-                            hover:bg-green-700
-                            text-white
-                            font-semibold
-                        "
-                    >
-                        Confirmar Movimiento
-                    </button>
-
-                </div>
-
             </div>
-
         </div>
-
     </div>
     <script>
-        const barcodeInput =
-            document.getElementById('barcodeInput');
-
+        const barcodeInput = document.getElementById('barcodeInput');
         const scannedProducts = {};
 
-        barcodeInput.addEventListener(
-            'keydown',
-            async (e) => {
+        const COMMANDS = {
+            RETIRAR: 'CMD-RETIRAR',
+            INGRESAR: 'CMD-INGRESAR',
+            GUARDAR: 'CMD-GUARDAR'
+        };
 
-                if (e.key !== 'Enter') {
-                    return;
-                }
+        const CSRF_TOKEN = '{{ csrf_token() }}';
 
-                e.preventDefault();
+        let movementType = 'remove';
+        let saveInProgress = false;
+        let lastActivity = Date.now();
+        let autoSaveTimer = null;
 
-                const barcode =
-                    barcodeInput.value.trim();
+        const AUTO_SAVE_DELAY = 5 * 60 * 1000;
+        const KEEP_ALIVE_DELAY = 4 * 60 * 1000;
 
-                if (!barcode) {
-                    return;
-                }
+        function scannedItems() {
+            return Object.values(scannedProducts);
+        }
 
-                barcodeInput.value = '';
+        function clearScannedProducts() {
+            Object.keys(scannedProducts).forEach(id => {
+                delete scannedProducts[id];
+            });
+        }
 
-                try {
+        function setAutoSaveStatus(message, error = false) {
+            const element = document.getElementById('autoSaveStatus');
 
-                    const response =
-                        await fetch(
-                            "{{ route('supplies.scanner.find') }}",
-                            {
-                                method: 'POST',
+            element.textContent = message;
+            element.classList.toggle('text-red-400', error);
+            element.classList.toggle('text-emerald-400', !error);
+        }
 
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN':
-                                        '{{ csrf_token() }}'
-                                },
+        function updateMovementMode() {
+            const panel = document.getElementById('movementMode');
+            const label = document.getElementById('movementModeLabel');
 
-                                body: JSON.stringify({
-                                    barcode
-                                })
-                            }
-                        );
+            const isRemove = movementType === 'remove';
 
-                    const data =
-                        await response.json();
+            label.textContent = isRemove ? 'RETIRAR' : 'INGRESAR';
 
-                    if (!data.success) {
+            panel.classList.toggle('border-red-500', isRemove);
+            panel.classList.toggle('bg-red-950', isRemove);
+            panel.classList.toggle('border-emerald-500', !isRemove);
+            panel.classList.toggle('bg-emerald-950', !isRemove);
 
-                        setScannerStatus(
-                            data.message,
-                            'error'
-                        );
+            label.classList.toggle('text-red-400', isRemove);
+            label.classList.toggle('text-emerald-400', !isRemove);
+        }
 
-                        return;
-                    }
+        function renderScannedItems() {
+            const container = document.getElementById('scannedItems');
+            const totalElement = document.getElementById('totalItems');
 
-                    const lastScanned =
-                        document.getElementById(
-                            'lastScanned'
-                        );
-
-                    lastScanned.innerHTML = `
-                        <div class="space-y-1">
-
-                            <div class="font-semibold text-white">
-                                ${data.supply.supply_type}
-                            </div>
-
-                            <div class="text-slate-300">
-                                ${data.supply.brand}
-                            </div>
-
-                            <div class="text-slate-400">
-                                ${data.supply.printer_model}
-                            </div>
-
-                            <div class="text-green-400">
-                                Stock actual:
-                                ${data.supply.quantity}
-                            </div>
-
-                        </div>
-                    `;
-
-                    const id =
-                        data.supply.id;
-
-                    if (!scannedProducts[id]) {
-
-                        scannedProducts[id] = {
-                            id: data.supply.id,
-                            supply_type:
-                                data.supply.supply_type,
-                            quantity: 0
-                        };
-
-                    }
-
-                    scannedProducts[id].quantity++;
-
-                    setScannerStatus(
-                        `${data.supply.supply_type} agregado correctamente.`
-                    );
-
-                    renderScannedItems();
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    setScannerStatus(
-                        'Error al buscar el producto.',
-                        'error'
-                    );
-
-                }
-
-            }
-        );
-
-        function renderScannedItems()
-        {
-            const container =
-                document.getElementById(
-                    'scannedItems'
-                );
-
-            const totalItems =
-                document.getElementById(
-                    'totalItems'
-                );
-
-            container.innerHTML = '';
+            container.replaceChildren();
 
             let total = 0;
 
-            Object.values(scannedProducts)
-                .forEach(product => {
+            scannedItems().forEach(product => {
+                total += product.quantity;
 
-                    total += product.quantity;
+                const row = document.createElement('div');
+                row.className =
+                    'flex justify-between text-white border-b ' +
+                    'border-gray-700 py-2';
 
-                    container.innerHTML += `
-                        <div class="
-                            flex
-                            justify-between
-                            text-white
-                            border-b
-                            border-gray-700
-                            py-2
-                        ">
-                            <span>
-                                ${product.supply_type}
-                            </span>
+                const name = document.createElement('span');
+                name.textContent = product.supply_type;
 
-                            <span class="font-semibold">
-                                x${product.quantity}
-                            </span>
-                        </div>
-                    `;
-                });
+                const quantity = document.createElement('span');
+                quantity.className = 'font-semibold';
+                quantity.textContent = `x${product.quantity}`;
 
-            totalItems.innerHTML =
-                `Total artículos: ${total}`;
+                row.append(name, quantity);
+                container.appendChild(row);
+            });
+
+            if (total === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'text-slate-400';
+                empty.textContent = 'No hay productos pendientes.';
+                container.appendChild(empty);
+            }
+
+            totalElement.textContent = `Total artículos: ${total}`;
         }
 
-        document.getElementById('clearBtn')
-            .addEventListener('click', () => {
+        function setScannerStatus(message, type = 'success') {
+            const status = document.getElementById('scannerStatus');
 
-                Object.keys(scannedProducts)
-                    .forEach(key => {
-                        delete scannedProducts[key];
-                    });
+            status.textContent = message;
 
-                document.getElementById(
-                    'lastScanned'
-                ).innerHTML =
-                    'Aún no se ha escaneado ningún producto.';
+            status.className = 'mt-4 rounded-xl border p-4 ' +
+                (type === 'success'
+                    ? 'border-green-700 bg-green-900 text-green-300'
+                    : 'border-red-700 bg-red-900 text-red-300');
+        }
 
+        function resetAutoSaveTimer() {
+            lastActivity = Date.now();
+
+            clearTimeout(autoSaveTimer);
+
+            autoSaveTimer = setTimeout(async () => {
+                if (scannedItems().length > 0) {
+                    setAutoSaveStatus('Guardando por inactividad...');
+                    await saveMovement(true);
+                } else {
+                    setAutoSaveStatus('Sin productos pendientes');
+                }
+            }, AUTO_SAVE_DELAY);
+        }
+
+        async function saveMovement(automatic = false) {
+            if (saveInProgress) {
+                return false;
+            }
+
+            const items = scannedItems();
+
+            if (items.length === 0) {
+                if (!automatic) {
+                    setScannerStatus('No hay productos pendientes.', 'error');
+                }
+
+                return true;
+            }
+
+            saveInProgress = true;
+            setAutoSaveStatus('Guardando movimiento...');
+
+            try {
+                const response = await fetch(
+                    "{{ route('supplies.scanner.process') }}",
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        },
+                        body: JSON.stringify({
+                            type: movementType,
+                            items: items
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    setScannerStatus(
+                        data.message || 'No se pudo guardar el movimiento.',
+                        'error'
+                    );
+
+                    setAutoSaveStatus('Guardado pendiente: revisar error', true);
+                    return false;
+                }
+
+                clearScannedProducts();
                 renderScannedItems();
 
-                document.getElementById(
-                    'scannerStatus'
-                ).classList.add(
-                    'hidden'
+                document.getElementById('lastScanned').textContent =
+                    'Aún no se ha escaneado ningún producto.';
+
+                setScannerStatus(
+                    automatic
+                        ? 'Movimiento guardado automáticamente.'
+                        : 'Movimiento guardado correctamente.'
                 );
 
+                setAutoSaveStatus('Último lote guardado correctamente');
+
+                return true;
+
+            } catch (error) {
+                console.error('Error guardando movimiento:', error);
+
+                setScannerStatus(
+                    'Error de conexión. Los productos siguen pendientes.',
+                    'error'
+                );
+
+                setAutoSaveStatus('Error al guardar; lote pendiente', true);
+                return false;
+
+            } finally {
+                saveInProgress = false;
                 barcodeInput.focus();
-
-            });
-
-        document.getElementById('confirmBtn')
-            .addEventListener('click', async () => {
-
-                const items =
-                    Object.values(scannedProducts);
-
-                if (items.length === 0) {
-
-                    setScannerStatus(
-                        'No hay productos escaneados.',
-                        'error'
-                    );
-
-                    return;
-                }
-
-                const movementType =
-                    document.querySelector(
-                        'input[name="movement_type"]:checked'
-                    ).value;
-
-                try {
-
-                    const response =
-                        await fetch(
-                            "{{ route('supplies.scanner.process') }}",
-                            {
-                                method: 'POST',
-
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN':
-                                        '{{ csrf_token() }}'
-                                },
-
-                                body: JSON.stringify({
-                                    type: movementType,
-                                    items
-                                })
-                            }
-                        );
-
-                    const data =
-                        await response.json();
-
-                    if (!data.success) {
-
-                        setScannerStatus(
-                            data.message,
-                            'error'
-                        );
-
-                        return;
-                    }
-
-                    setScannerStatus(
-                        'Movimiento registrado correctamente.'
-                    );
-
-                    Object.keys(scannedProducts)
-                        .forEach(key => {
-                            delete scannedProducts[key];
-                        });
-
-                    document.getElementById(
-                        'lastScanned'
-                    ).innerHTML =
-                        'Aún no se ha escaneado ningún producto.';
-
-                    renderScannedItems();
-
-                    barcodeInput.focus();
-
-                } catch (error) {
-
-                    console.error(error);
-
-                    setScannerStatus(
-                        'Error al registrar movimiento.',
-                        'error'
-                    );
-
-                }
-
-            });
-
-        function setScannerStatus(
-            message,
-            type = 'success'
-        )
-        {
-            const status =
-                document.getElementById(
-                    'scannerStatus'
-                );
-
-            status.textContent =
-                message;
-
-            status.classList.remove(
-                'hidden',
-                'bg-green-900',
-                'text-green-300',
-                'border-green-700',
-                'bg-red-900',
-                'text-red-300',
-                'border-red-700'
-            );
-
-            if (type === 'success') {
-
-                status.classList.add(
-                    'bg-green-900',
-                    'text-green-300',
-                    'border',
-                    'border-green-700'
-                );
-
-            } else {
-
-                status.classList.add(
-                    'bg-red-900',
-                    'text-red-300',
-                    'border',
-                    'border-red-700'
-                );
-
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-
-            const sidebar =
-                document.getElementById('sidebar');
-
-            const button =
-                document.getElementById('toggleSidebarBtn');
-
-            if (!sidebar || !button) {
+        async function changeMovementMode(newMode) {
+            if (newMode === movementType) {
+                setScannerStatus(`El modo ${newMode === 'remove' ? 'RETIRAR' : 'INGRESAR'} ya está activo.`);
                 return;
             }
 
-            let hidden = false;
+            // Guardar primero el lote anterior.
+            const saved = await saveMovement(false);
 
-            button.addEventListener('click', () => {
+            if (!saved) {
+                setScannerStatus(
+                    'No se cambió el modo porque el lote anterior no se guardó.',
+                    'error'
+                );
+                return;
+            }
 
-                hidden = !hidden;
+            movementType = newMode;
+            updateMovementMode();
+            resetAutoSaveTimer();
 
-                if (hidden) {
+            setScannerStatus(
+                `Modo cambiado a ${newMode === 'remove' ? 'RETIRAR' : 'INGRESAR'}.`
+            );
 
-                    sidebar.style.display = 'none';
+            barcodeInput.focus();
+        }
 
-                    button.innerHTML =
-                        '<i class="bi bi-layout-sidebar"></i> Mostrar menú';
+        async function handleBarcode(barcode) {
+            const command = barcode
+                .trim()
+                .toUpperCase()
+                .replace(/['’]/g, '-');
 
-                } else {
+            if (command === COMMANDS.RETIRAR) {
+                await changeMovementMode('remove');
+                return;
+            }
 
-                    sidebar.style.display = '';
+            if (command === COMMANDS.INGRESAR) {
+                await changeMovementMode('add');
+                return;
+            }
 
-                    button.innerHTML =
-                        '<i class="bi bi-layout-sidebar"></i> Ocultar menú';
+            if (command === COMMANDS.GUARDAR) {
+                await saveMovement(false);
+                resetAutoSaveTimer();
+                return;
+            }
 
+            // No procesar productos durante un guardado.
+            if (saveInProgress) {
+                setScannerStatus(
+                    'Espera a que termine el guardado antes de escanear otro producto.',
+                    'error'
+                );
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    "{{ route('supplies.scanner.find') }}",
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        },
+                        body: JSON.stringify({ barcode })
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
                 }
 
-            });
+                const data = await response.json();
 
+                if (!data.success) {
+                    setScannerStatus(
+                        data.message || 'No se encontró el producto.',
+                        'error'
+                    );
+                    return;
+                }
+
+                const supply = data.supply;
+                const id = supply.id;
+
+                if (!scannedProducts[id]) {
+                    scannedProducts[id] = {
+                        id: supply.id,
+                        supply_type: supply.supply_type,
+                        quantity: 0
+                    };
+                }
+
+                scannedProducts[id].quantity++;
+
+                const lastScanned = document.getElementById('lastScanned');
+                lastScanned.replaceChildren();
+
+                const details = document.createElement('div');
+                details.className = 'space-y-1';
+
+                [
+                    [supply.supply_type, 'font-semibold text-white'],
+                    [supply.brand || '', 'text-slate-300'],
+                    [supply.printer_model || '', 'text-slate-400'],
+                    [`Stock actual: ${supply.quantity}`, 'text-emerald-400']
+                ].forEach(([text, className]) => {
+                    const line = document.createElement('div');
+                    line.className = className;
+                    line.textContent = text;
+                    details.appendChild(line);
+                });
+
+                lastScanned.appendChild(details);
+
+                renderScannedItems();
+
+                setScannerStatus(
+                    `${supply.supply_type} agregado al lote de ${
+                        movementType === 'remove' ? 'retiro' : 'ingreso'
+                    }.`
+                );
+
+                setAutoSaveStatus('Hay productos pendientes de guardar');
+                resetAutoSaveTimer();
+
+            } catch (error) {
+                console.error('Error buscando producto:', error);
+
+                setScannerStatus(
+                    'Error de conexión al buscar el producto.',
+                    'error'
+                );
+            }
+        }
+
+        barcodeInput.addEventListener('keydown', async event => {
+            if (event.key !== 'Enter') {
+                return;
+            }
+
+            event.preventDefault();
+
+            const barcode = barcodeInput.value.trim();
+            barcodeInput.value = '';
+
+            if (!barcode) {
+                barcodeInput.focus();
+                return;
+            }
+
+            resetAutoSaveTimer();
+            await handleBarcode(barcode);
+
+            barcodeInput.focus();
         });
+
+        // Mantener viva la sesión mientras el terminal siga abierto.
+        setInterval(async () => {
+            try {
+                const response = await fetch(
+                    "{{ route('supplies.scanner.keepalive') }}",
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': CSRF_TOKEN
+                        }
+                    }
+                );
+
+                if (response.status === 401 || response.status === 419) {
+                    setScannerStatus(
+                        'La sesión expiró. Vuelve a iniciar sesión.',
+                        'error'
+                    );
+                }
+            } catch (error) {
+                console.error('Error manteniendo la sesión:', error);
+            }
+        }, KEEP_ALIVE_DELAY);
+
+        // Ocultar/mostrar el menú lateral, si existe.
+        const sidebar = document.getElementById('sidebar');
+        const sidebarButton = document.getElementById('toggleSidebarBtn');
+
+        if (sidebar && sidebarButton) {
+            let sidebarHidden = false;
+
+            sidebarButton.addEventListener('click', () => {
+                sidebarHidden = !sidebarHidden;
+                sidebar.style.display = sidebarHidden ? 'none' : '';
+            });
+        }
+
+        updateMovementMode();
+        renderScannedItems();
+        resetAutoSaveTimer();
+        barcodeInput.focus();
     </script>
 </x-app-layout>
