@@ -397,6 +397,8 @@
                                         'iso'  => 'cd.png',
                                         'img'  => 'cd.png',
                                         'xml'  => 'xml.png',
+                                        'exe'  => 'exe.png',
+                                        'apk'  => 'android.png',
                                     ];
 
                                     $icon = $iconMap[$extension] ?? '/images/documentacion/default.png';

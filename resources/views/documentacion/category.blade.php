@@ -675,6 +675,10 @@
                                     => asset('images/documentacion/xml.png'),
                                 'iso', 'img'
                                     => asset('images/documentacion/cd.png'),
+                                'exe'
+                                    => asset('images/documentacion/exe.png'),
+                                'apk'
+                                    => asset('images/documentacion/android.png'),
                                 default
                                     => asset('images/documentacion/txt.png'),
                             };
@@ -2037,6 +2041,9 @@
                 // ISO o IMG
                 'iso': '/images/documentacion/cd.png',
                 'img': '/images/documentacion/cd.png',
+                //apps
+                'exe': '/images/documentacion/exe.png',
+                'apk': '/images/documentacion/android.png',
             };
             return icons[extension]
                 ?? '/images/documentacion/txt.png';
