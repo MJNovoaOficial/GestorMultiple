@@ -1081,6 +1081,95 @@
     <script>
         /*
         |--------------------------------------------------------------------------
+        | Constantes del Modal de subir archivos
+        |--------------------------------------------------------------------------
+        */ 
+        const documentProgressContainer =
+            document.getElementById('document-upload-progress-container');
+
+        const documentProgressStatus =
+            document.getElementById('document-upload-progress-status');
+
+        const documentProgressPercent =
+            document.getElementById('document-upload-progress-percent');
+
+        const documentProgressBar =
+            document.getElementById('document-upload-progress-bar');
+
+        const documentProgressTrack =
+            document.getElementById('document-upload-progress-track');
+
+        const documentProgressDetails =
+            document.getElementById('document-upload-progress-details');
+        
+        function updateDocumentProgress(percent, status, details) {
+            const value = Math.max(0, Math.min(100, Math.round(percent)));
+
+            documentProgressContainer?.classList.remove('hidden');
+
+            if (documentProgressBar) {
+                documentProgressBar.style.width = `${value}%`;
+            }
+
+            if (documentProgressPercent) {
+                documentProgressPercent.textContent = `${value}%`;
+            }
+
+            if (documentProgressStatus) {
+                documentProgressStatus.textContent = status;
+            }
+
+            if (documentProgressDetails) {
+                documentProgressDetails.textContent = details;
+            }
+
+            documentProgressTrack?.setAttribute('aria-valuenow', value);
+        }
+
+        function uploadDocumentRequest(url, formData, onProgress = null) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+
+                xhr.open('POST', url, true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.setRequestHeader('Accept', 'application/json');
+
+                xhr.upload.addEventListener('progress', event => {
+                    if (event.lengthComputable && typeof onProgress === 'function') {
+                        onProgress(event.loaded, event.total);
+                    }
+                });
+
+                xhr.addEventListener('load', () => {
+                    let data = {};
+
+                    try {
+                        data = JSON.parse(xhr.responseText || '{}');
+                    } catch (_) {
+                        data = {};
+                    }
+
+                    resolve({
+                        ok: xhr.status >= 200 && xhr.status < 300,
+                        status: xhr.status,
+                        json: async () => data
+                    });
+                });
+
+                xhr.addEventListener('error', () => {
+                    reject(new Error('Error de conexión durante la subida.'));
+                });
+
+                xhr.addEventListener('abort', () => {
+                    reject(new Error('La subida fue cancelada.'));
+                });
+
+                xhr.send(formData);
+            });
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | MODAL NUEVA SUBCARPETA
         |--------------------------------------------------------------------------
         */
@@ -1793,12 +1882,12 @@
 
     </script>
     <script>
+
         /*
         |--------------------------------------------------------------------------
         | MODAL SUBIR DOCUMENTOS
         |--------------------------------------------------------------------------
         */
-
         const uploadModal = document.getElementById('document-upload-modal');
         const editDocumentFileIcon = document.getElementById('edit-document-file-icon');
         const deleteDocumentFileIcon = document.getElementById('delete-document-file-icon');
@@ -2566,6 +2655,16 @@
                     const totalFiles = selectedFiles.length;
                     let uploadedFiles = 0;
                     let failedFiles = [];
+                    const totalUploadBytes = selectedFiles.reduce(
+                        (sum, item) => sum + item.file.size,
+                        0
+                    );
+
+                    updateDocumentProgress(
+                        0,
+                        'Preparando subida...',
+                        `0 de ${totalFiles} documentos procesados`
+                    );
 
                     /*
                     |--------------------------------------------------------------------------
@@ -2639,18 +2738,30 @@
                             | ENVIAR LOTE
                             |--------------------------------------------------------------------------
                             */
-                            let response = await fetch(
+                            let response = await uploadDocumentRequest(
                                 documentStoreUrl,
-                                {
-                                    method: 'POST',
-                                    body: formData,
-                                    headers: {
-                                        'X-Requested-With':
-                                            'XMLHttpRequest',
+                                formData,
+                                (loaded, total) => {
+                                    const previousBytes = selectedFiles
+                                        .slice(0, startIndex)
+                                        .reduce((sum, item) => sum + item.file.size, 0);
 
-                                        'Accept':
-                                            'application/json'
-                                    }
+                                    const batchBytes = batch
+                                        .reduce((sum, item) => sum + item.file.size, 0);
+
+                                    const allBytes = selectedFiles
+                                        .reduce((sum, item) => sum + item.file.size, 0);
+
+                                    const currentBatchProgress = total > 0 ? loaded / total : 0;
+                                    const overallPercent = allBytes > 0
+                                        ? ((previousBytes + batchBytes * currentBatchProgress) / allBytes) * 100
+                                        : 0;
+
+                                    updateDocumentProgress(
+                                        overallPercent,
+                                        `Subiendo lote ${batchIndex + 1} de ${totalBatches}`,
+                                        `${uploadedFiles} de ${totalFiles} documentos procesados`
+                                    );
                                 }
                             );
 
@@ -2701,15 +2812,30 @@
                                         data.document_id
                                     );
 
-                                    const replaceResponse = await fetch(
+                                    const replaceResponse = await uploadDocumentRequest(
                                         documentStoreUrl,
-                                        {
-                                            method: 'POST',
-                                            body: formData,
-                                            headers: {
-                                                'X-Requested-With': 'XMLHttpRequest',
-                                                'Accept': 'application/json'
-                                            }
+                                        formData,
+                                        (loaded, total) => {
+                                            const previousBytes = selectedFiles
+                                                .slice(0, startIndex)
+                                                .reduce((sum, item) => sum + item.file.size, 0);
+
+                                            const batchBytes = batch
+                                                .reduce((sum, item) => sum + item.file.size, 0);
+
+                                            const allBytes = selectedFiles
+                                                .reduce((sum, item) => sum + item.file.size, 0);
+
+                                            const currentBatchProgress = total > 0 ? loaded / total : 0;
+                                            const overallPercent = allBytes > 0
+                                                ? ((previousBytes + batchBytes * currentBatchProgress) / allBytes) * 100
+                                                : 0;
+
+                                            updateDocumentProgress(
+                                                overallPercent,
+                                                'Reemplazando documento...',
+                                                `Lote ${batchIndex + 1} de ${totalBatches}`
+                                            );
                                         }
                                     );
 
@@ -2780,6 +2906,18 @@
                             */
                             submitUploadButton.textContent =
                                 `⏳ ${uploadedFiles} de ${totalFiles} archivos subidos`;
+
+                            const processedBytes = selectedFiles
+                                .slice(0, startIndex + batch.length)
+                                .reduce((sum, item) => sum + item.file.size, 0);
+
+                            updateDocumentProgress(
+                                totalUploadBytes > 0
+                                    ? (processedBytes / totalUploadBytes) * 100
+                                    : ((batchIndex + 1) / totalBatches) * 100,
+                                `Lote ${batchIndex + 1} de ${totalBatches} procesado`,
+                                `${Math.min(startIndex + batch.length, totalFiles)} de ${totalFiles} documentos procesados`
+                            );
                         } catch (error) {
                             console.error(
                                 'Error al subir lote:',
@@ -2816,6 +2954,20 @@
 
                     console.log('Archivos subidos:', uploadedFiles);
                     console.log('Archivos fallidos:', failedFiles);
+
+                    if (failedFiles.length === 0) {
+                        updateDocumentProgress(
+                            100,
+                            'Subida completada',
+                            `${uploadedFiles} de ${totalFiles} documentos subidos correctamente`
+                        );
+                    } else {
+                        updateDocumentProgress(
+                            100,
+                            'Subida finalizada con errores',
+                            `${uploadedFiles} subidos correctamente · ${failedFiles.length} requieren atención`
+                        );
+                    }
 
                     /*
                     |--------------------------------------------------------------------------

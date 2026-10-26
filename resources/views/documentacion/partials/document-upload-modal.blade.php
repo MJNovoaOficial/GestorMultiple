@@ -246,6 +246,45 @@
                 class="space-y-3"
             ></div>
 
+            {{-- PROGRESO REAL DE SUBIDA --}}
+            <div id="document-upload-progress-container" class="hidden space-y-2">
+                <div class="flex items-center justify-between gap-3 text-sm">
+                    <span
+                        id="document-upload-progress-status"
+                        class="text-slate-600 dark:text-slate-300"
+                        aria-live="polite"
+                    >
+                        Preparando archivos...
+                    </span>
+                    <span
+                        id="document-upload-progress-percent"
+                        class="font-semibold text-slate-700 dark:text-slate-200"
+                    >
+                        0%
+                    </span>
+                </div>
+                <div
+                    class="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"
+                    role="progressbar"
+                    aria-label="Progreso de subida de documentos"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                    id="document-upload-progress-track"
+                >
+                    <div
+                        id="document-upload-progress-bar"
+                        class="h-full rounded-full bg-blue-600 transition-[width] duration-150"
+                        style="width: 0%"
+                    ></div>
+                </div>
+                <p
+                    id="document-upload-progress-details"
+                    class="text-xs text-slate-500 dark:text-slate-400"
+                >
+                    0 de 0 archivos enviados
+                </p>
+            </div>
         </div>
 
 
