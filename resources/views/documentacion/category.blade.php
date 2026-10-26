@@ -573,6 +573,28 @@
                                             <span>📂</span>
                                             <span>Mover</span>
                                         </button>
+                                        
+                                        {{-- DESCARGAR ZIP --}}
+                                        <a
+                                            href="{{ route('documentacion.category.download-zip', $subcategory) }}"
+                                            class="
+                                                w-full
+                                                flex
+                                                items-center
+                                                gap-3
+                                                px-4
+                                                py-2.5
+                                                text-sm
+                                                text-slate-700
+                                                dark:text-slate-200
+                                                hover:bg-slate-100
+                                                dark:hover:bg-slate-800
+                                                transition
+                                            "
+                                        >
+                                            <span>📦</span>
+                                            <span>Descargar ZIP</span>
+                                        </a>
                                         {{-- SEPARADOR --}}
                                         <div
                                             class="
@@ -651,6 +673,8 @@
                                     => asset('images/documentacion/imagen.png'),
                                 'xml', 'xml'
                                     => asset('images/documentacion/xml.png'),
+                                'iso', 'img'
+                                    => asset('images/documentacion/cd.png'),
                                 default
                                     => asset('images/documentacion/txt.png'),
                             };
@@ -1921,6 +1945,9 @@
                 'webp': '/images/documentacion/imagen.png',
                 // archivos XML
                 'xml': '/images/documentacion/xml.png',
+                // ISO o IMG
+                'iso': '/images/documentacion/cd.png',
+                'img': '/images/documentacion/cd.png',
             };
             return icons[extension]
                 ?? '/images/documentacion/txt.png';

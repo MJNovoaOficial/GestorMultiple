@@ -394,6 +394,8 @@
                                         'jpg'  => 'imagen.png',
                                         'jpeg' => 'imagen.png',
                                         'png'  => 'imagen.png',
+                                        'iso'  => 'cd.png',
+                                        'img'  => 'cd.png',
                                         'xml'  => 'xml.png',
                                     ];
 

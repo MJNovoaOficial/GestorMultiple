@@ -172,6 +172,8 @@ Route::middleware('auth')->group(function () {
             ->name('documentacion.documents.move');
         Route::get('/documentacion/documentos/{document}/move-targets', [DocumentController::class, 'moveTargets'])
             ->name('documentacion.documents.move-targets');
+        Route::get('/documentacion/{category}/download-zip', [DocumentController::class, 'downloadCategoryZip'])
+            ->name('documentacion.category.download-zip');
         /*
         |--------------------------------------------------------------------------
         | Módulo de Auditoría

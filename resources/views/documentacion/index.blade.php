@@ -409,6 +409,32 @@
                                 <span>📂</span>
                                 <span>Mover</span>
                             </button>
+                            
+
+                            {{-- DESCARGAR ZIP --}}
+                            <a
+                                href="{{ route('documentacion.category.download-zip', $category) }}"
+                                title="Descargar esta carpeta y todo su contenido"
+                                class="w-full
+                                    flex
+                                    items-center
+                                    gap-3
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    text-slate-700
+                                    dark:text-slate-200
+                                    hover:bg-slate-100
+                                    dark:hover:bg-slate-800
+                                    border-b
+                                    border-slate-200
+                                    dark:border-slate-700
+                                    transition"
+                            >
+                                <span>📦</span>
+                                <span>Descargar ZIP</span>
+                            </a>
+
                             {{-- ELIMINAR --}}
                             <button
                                 type="button"
