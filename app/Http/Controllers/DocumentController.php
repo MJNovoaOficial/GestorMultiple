@@ -717,7 +717,6 @@ class DocumentController extends Controller
     public function downloadCategoryZip(DocumentCategory $category)
     {
         abort_unless($category->is_active, 404);
-
         // Verificar que PHP tenga habilitada la extensión ZIP.
         if (!class_exists(\ZipArchive::class)) {
             abort(500, 'La extensión ZIP de PHP no está habilitada.');
@@ -725,16 +724,13 @@ class DocumentController extends Controller
 
         $zipName = \Illuminate\Support\Str::slug($category->name)
             . '-' . $category->id . '.zip';
-
         $tempPath = tempnam(sys_get_temp_dir(), 'multigestor_zip_');
 
         if ($tempPath === false) {
             abort(500, 'No fue posible preparar el archivo ZIP.');
         }
-
         $zip = new \ZipArchive();
         $zipOpened = false;
-
         try {
             if (
                 $zip->open(
@@ -744,7 +740,6 @@ class DocumentController extends Controller
             ) {
                 throw new \RuntimeException('No fue posible crear el ZIP.');
             }
-
             $zipOpened = true;
 
             /*
@@ -752,9 +747,7 @@ class DocumentController extends Controller
             | OBTENER LA CARPETA Y TODAS SUS SUBCARPETAS
             |--------------------------------------------------------------------------
             */
-
             $categoryIds = [$category->id];
-
             $folderPaths = [
                 $category->id => str_replace(
                     ['/', '\\'],
@@ -762,50 +755,39 @@ class DocumentController extends Controller
                     $category->name
                 ),
             ];
-
             $pendingIds = [$category->id];
-
             while (!empty($pendingIds)) {
                 $parentId = array_shift($pendingIds);
-
                 $children = DocumentCategory::query()
                     ->where('parent_id', $parentId)
                     ->where('is_active', true)
                     ->orderBy('name')
                     ->get(['id', 'name', 'parent_id']);
-
                 foreach ($children as $child) {
                     $categoryIds[] = $child->id;
-
                     $safeName = str_replace(
                         ['/', '\\'],
                         '-',
                         $child->name
                     );
-
                     $folderPaths[$child->id] =
                         $folderPaths[$parentId] . '/' . $safeName;
-
                     $pendingIds[] = $child->id;
                 }
             }
-
             /*
             |--------------------------------------------------------------------------
             | CREAR LA ESTRUCTURA DE CARPETAS DEL ZIP
             |--------------------------------------------------------------------------
             */
-
             foreach ($folderPaths as $folderPath) {
                 $zip->addEmptyDir($folderPath);
             }
-
             /*
             |--------------------------------------------------------------------------
             | AGREGAR DOCUMENTOS ACTIVOS
             |--------------------------------------------------------------------------
             */
-
             Document::query()
                 ->whereIn('category_id', $categoryIds)
                 ->where('is_active', true)
@@ -813,25 +795,19 @@ class DocumentController extends Controller
                 ->chunk(200, function ($documents) use ($zip, $folderPaths) {
                     foreach ($documents as $document) {
                         $disk = Storage::disk('public');
-
                         if (
                             !$document->file_path ||
                             !$disk->exists($document->file_path)
                         ) {
                             continue;
                         }
-
                         $filePath = $disk->path($document->file_path);
-
                         $fileName = basename($document->file_name);
-
                         $entryName = $folderPaths[$document->category_id]
                             . '/' . $fileName;
-
                         // Evitar nombres duplicados dentro del ZIP.
                         $originalEntryName = $entryName;
                         $counter = 1;
-
                         while ($zip->locateName($entryName) !== false) {
                             $extension = pathinfo(
                                 $originalEntryName,
@@ -855,7 +831,6 @@ class DocumentController extends Controller
                         }
                     }
                 });
-
             if (!$zip->close()) {
                 $zipOpened = false;
 
@@ -863,28 +838,22 @@ class DocumentController extends Controller
                     'No fue posible finalizar el archivo ZIP.'
                 );
             }
-
             $zipOpened = false;
-
             /*
             |--------------------------------------------------------------------------
             | DESCARGAR Y ELIMINAR EL TEMPORAL
             |--------------------------------------------------------------------------
             */
-
             return response()
                 ->download($tempPath, $zipName)
                 ->deleteFileAfterSend(true);
-
         } catch (\Throwable $e) {
             if ($zipOpened) {
                 $zip->close();
             }
-
             if (file_exists($tempPath)) {
                 @unlink($tempPath);
             }
-
             \Illuminate\Support\Facades\Log::error(
                 'Error al generar ZIP de documentación',
                 [
