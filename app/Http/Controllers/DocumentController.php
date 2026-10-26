@@ -81,6 +81,7 @@ class DocumentController extends Controller
     public function store(Request $request, DocumentCategory $category)
     {
         $files = $request->file('files', []);
+
         if (empty($files)) {
             if ($request->expectsJson()) {
                 return response()->json([
@@ -88,21 +89,20 @@ class DocumentController extends Controller
                     'message' => 'No se recibieron archivos.',
                 ], 422);
             }
-            return back()
-                ->with('error', 'No se recibieron archivos.');
+            return back()->with('error', 'No se recibieron archivos.');
         }
+
         $uploaded = 0;
         $failed = [];
+
         /*
         |--------------------------------------------------------------------------
         | PROCESAR CADA DOCUMENTO INDIVIDUALMENTE
         |--------------------------------------------------------------------------
         */
         foreach ($files as $index => $file) {
-            $documentName =
-                $request->input("names.$index");
-            $description =
-                $request->input("descriptions.$index");
+            $documentName = $request->input("names.$index");
+            $description = $request->input("descriptions.$index");
             /*
             |--------------------------------------------------------------------------
             | VALIDAR DOCUMENTO
@@ -115,19 +115,11 @@ class DocumentController extends Controller
                     'description' => $description,
                 ],
                 [
-                    'file' =>
-                        'required|file|max:51200',
-                    'name' =>
-                        'required|string|max:255',
-                    'description' =>
-                        'nullable|string',
+                    'file' => 'required|file|max:51200',
+                    'name' => 'required|string|max:255',
+                    'description' => 'nullable|string',
                 ]
             );
-            /*
-            |--------------------------------------------------------------------------
-            | SI ESTE DOCUMENTO TIENE ERROR
-            |--------------------------------------------------------------------------
-            */
             if ($validator->fails()) {
                 $failed[] = [
                     'index' => $index,
@@ -135,16 +127,14 @@ class DocumentController extends Controller
                         ? $file->getClientOriginalName()
                         : 'Archivo desconocido',
                     'name' => $documentName,
-                    'errors' => $validator
-                        ->errors()
-                        ->all(),
+                    'errors' => $validator->errors()->all(),
                 ];
-                // Continuamos con el siguiente archivo
                 continue;
             }
+
             /*
             |--------------------------------------------------------------------------
-            | TRANSACCIÓN INDIVIDUAL
+            | COMPROBAR SI EL DOCUMENTO YA EXISTE
             |--------------------------------------------------------------------------
             */
             $existingDocument = Document::query()
@@ -155,7 +145,10 @@ class DocumentController extends Controller
 
             $replaceDocumentId = $request->input('replace_document_id');
 
-            if ($existingDocument && (int) $replaceDocumentId !== (int) $existingDocument->id) {
+            if (
+                $existingDocument &&
+                (int) $replaceDocumentId !== (int) $existingDocument->id
+            ) {
                 return response()->json([
                     'success' => false,
                     'requires_confirmation' => true,
@@ -163,22 +156,41 @@ class DocumentController extends Controller
                     'file_name' => $file->getClientOriginalName(),
                 ], 409);
             }
+
+            /*
+            |--------------------------------------------------------------------------
+            | TRANSACCIÓN INDIVIDUAL
+            |--------------------------------------------------------------------------
+            */
             DB::beginTransaction();
             $storedPath = null;
+
             try {
                 /*
                 |--------------------------------------------------------------------------
-                | GUARDAR ARCHIVO
+                | GUARDAR ARCHIVO FÍSICO
                 |--------------------------------------------------------------------------
                 */
                 $storedPath = $file->store(
                     'documentacion/' . $category->id,
                     'public'
                 );
+                if ($storedPath === false) {
+                    throw new \RuntimeException(
+                        'No fue posible guardar el archivo en el almacenamiento.'
+                    );
+                }
 
-                if ($existingDocument && (int) $replaceDocumentId === (int) $existingDocument->id) {
+                /*
+                |--------------------------------------------------------------------------
+                | REEMPLAZAR DOCUMENTO EXISTENTE
+                |--------------------------------------------------------------------------
+                */
+                if (
+                    $existingDocument &&
+                    (int) $replaceDocumentId === (int) $existingDocument->id
+                ) {
                     $oldPath = $existingDocument->file_path;
-
                     $oldValues = [
                         'id' => $existingDocument->id,
                         'category_id' => $existingDocument->category_id,
@@ -189,21 +201,18 @@ class DocumentController extends Controller
                         'file_type' => $existingDocument->file_type,
                         'file_size' => $existingDocument->file_size,
                     ];
-
                     $existingDocument->update([
                         'file_path' => $storedPath,
                         'file_name' => $file->getClientOriginalName(),
                         'file_type' => $file->getClientOriginalExtension(),
                         'file_size' => $file->getSize(),
                     ]);
-
                     AuditLog::create([
                         'user_id' => auth()->id(),
                         'action' => 'replaced',
                         'description' =>
                             'Se reemplazó el archivo del documento "' .
-                            $existingDocument->name .
-                            '"',
+                            $existingDocument->name . '"',
                         'old_values' => $oldValues,
                         'new_values' => [
                             'id' => $existingDocument->id,
@@ -220,7 +229,6 @@ class DocumentController extends Controller
                     ]);
 
                     DB::commit();
-
                     if (
                         $oldPath &&
                         $oldPath !== $storedPath &&
@@ -228,11 +236,14 @@ class DocumentController extends Controller
                     ) {
                         Storage::disk('public')->delete($oldPath);
                     }
-
                     $uploaded++;
                     continue;
                 }
-
+                /*
+                |--------------------------------------------------------------------------
+                | CREAR DOCUMENTO NUEVO
+                |--------------------------------------------------------------------------
+                */
                 $document = Document::create([
                     'category_id' => $category->id,
                     'name' => $documentName,
@@ -243,52 +254,39 @@ class DocumentController extends Controller
                     'file_size' => $file->getSize(),
                     'created_by' => auth()->id(),
                 ]);
+
+                // CONFIRMAR LA TRANSACCIÓN Y CONTABILIZAR LA SUBIDA
+                DB::commit();
+                $uploaded++;
             } catch (\Throwable $e) {
                 DB::rollBack();
-                /*
-                |--------------------------------------------------------------------------
-                | ELIMINAR ARCHIVO SI ALCANZÓ A GUARDARSE
-                |--------------------------------------------------------------------------
-                */
+                /*ELIMINAR ARCHIVO SI ALCANZÓ A GUARDARSE*/
                 if (
                     $storedPath &&
                     Storage::disk('public')->exists($storedPath)
                 ) {
-                    Storage::disk('public')->delete(
-                        $storedPath
-                    );
+                    Storage::disk('public')->delete($storedPath);
                 }
                 /*
                 |--------------------------------------------------------------------------
                 | REGISTRAR ERROR
                 |--------------------------------------------------------------------------
                 */
-                Log::error(
-                    'Error al subir documento individual',
-                    [
-                        'category_id' => $category->id,
-                        'user_id' => auth()->id(),
-                        'file_name' =>
-                            $file->getClientOriginalName(),
-                        'error' => $e->getMessage(),
-                    ]
-                );
-                /*
-                |--------------------------------------------------------------------------
-                | AGREGAR A FALLIDOS
-                |--------------------------------------------------------------------------
-                */
+                Log::error('Error al subir documento individual', [
+                    'category_id' => $category->id,
+                    'user_id' => auth()->id(),
+                    'file_name' => $file->getClientOriginalName(),
+                    'error' => $e->getMessage(),
+                ]);
+
                 $failed[] = [
                     'index' => $index,
-                    'file_name' =>
-                        $file->getClientOriginalName(),
+                    'file_name' => $file->getClientOriginalName(),
                     'name' => $documentName,
                     'errors' => [
                         'No fue posible guardar el documento.',
                     ],
                 ];
-                // IMPORTANTE:
-                // No detenemos el proceso.
                 continue;
             }
         }
@@ -304,17 +302,13 @@ class DocumentController extends Controller
                 'failed' => $failed,
             ]);
         }
-
         /*
         |--------------------------------------------------------------------------
         | PETICIÓN NORMAL
         |--------------------------------------------------------------------------
         */
         return redirect()
-            ->route(
-                'documentacion.category',
-                $category
-            )
+            ->route('documentacion.category', $category)
             ->with(
                 'success',
                 "Se subieron {$uploaded} documento(s)."
