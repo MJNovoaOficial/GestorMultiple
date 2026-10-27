@@ -1,22 +1,15 @@
 <x-app-layout>
-
     <div class="p-6">
-
         {{-- Header --}}
         <div class="mb-6 flex items-start justify-between">
-
             <div>
-
                 <h1 class="text-3xl font-bold text-slate-900 dark:text-white">
                     Gestor de IPs
                 </h1>
-
                 <p class="text-slate-500 dark:text-slate-400 mt-1">
                     Administración de direcciones IP del sistema
                 </p>
-
             </div>
-
             <button
                 id="openExportModal"
                 class="inline-flex items-center gap-2
@@ -26,9 +19,7 @@
                 shadow-lg transition">
                 📄 Exportar
             </button>
-
         </div>
-
         @php
             $colors = [
                 'green' => 'bg-green-500',
@@ -38,7 +29,6 @@
                 'orange' => 'bg-orange-500',
             ];
         @endphp
-
         {{-- Toolbar filtros --}}
         <div
             class="bg-[#0F172A]
@@ -47,23 +37,18 @@
                    p-4 mb-6
                    shadow-lg"
         >
-
             <div class="flex flex-col gap-4">
-
                 {{-- Top row --}}
                 <div class="flex items-center gap-4 flex-wrap">
-
                     <div class="text-sm font-medium text-gray-400">
                         Filtrar sucursal
                     </div>
-
                     <form
                         id="branchFilterForm"
                         method="GET"
                         action="{{ route('ip-addresses.index') }}"
                         class="flex items-center gap-4 flex-wrap"
                     >
-
                         <select
                             name="branch_id"
                             onchange="document.getElementById('branchFilterForm').submit()"
@@ -79,24 +64,18 @@
                                 focus:border-indigo-500
                             "
                         >
-
                             <option value="">
                                 Todas las sucursales
                             </option>
-
                             @foreach($branches as $branch)
-
                                 <option
                                     value="{{ $branch->id }}"
                                     {{ request('branch_id') == $branch->id ? 'selected' : '' }}
                                 >
                                     {{ $branch->name }}
                                 </option>
-
                             @endforeach
-
                         </select>
-
                         <div>
                             <select
                                 id="statusFilter"
@@ -117,13 +96,10 @@
                                 </option>
 
                                 @foreach($ipStatuses as $status)
-
                                     <option value="{{ strtolower($status->name) }}">
                                         {{ $status->name }}
                                     </option>
-
                                 @endforeach
-
                             </select>
                         </div>
 
@@ -143,18 +119,12 @@
                                 focus:border-indigo-500
                             "
                         >
-
                     </form>
-
                 </div>
-
                 {{-- Subnets --}}
                 @if($subnets->count())
-
                     <div class="flex flex-wrap gap-2">
-
                         @foreach($subnets as $subnet)
-
                             <a
                                 href="{{ route('ip-addresses.index', array_merge(
                                     request()->query(),
@@ -166,7 +136,6 @@
                                     text-sm
                                     font-medium
                                     transition
-
                                     {{ request('subnet') === $subnet
                                         ? 'bg-indigo-600 text-white shadow-lg'
                                         : 'bg-[#1E293B] text-gray-300 hover:bg-gray-700'
@@ -175,27 +144,18 @@
                             >
                                 {{ $subnet }}.x
                             </a>
-
                         @endforeach
-
                     </div>
-
                 @endif
-
             </div>
-
         </div>
 
         {{-- Tabla --}}
         <div class="bg-[#020817] rounded-2xl overflow-hidden shadow-xl">
-
             <table class="w-full">
-
                 {{-- Header --}}
                 <thead class="bg-[#1E293B] text-white">
-
                     <tr>
-
                         <th class="px-6 py-4 text-left">
                             IP
                         </th>
@@ -227,19 +187,13 @@
                         <th class="px-6 py-4 text-center">
                             Acciones
                         </th>
-
                     </tr>
-
                 </thead>
-
                 {{-- Body --}}
                 <tbody>
-
                     @forelse($ipAddresses as $ip)
-
                         <tr data-status="{{ strtolower($ip->ipStatus->name) }}"
                             x-data="{ editing: false }"
-
                             data-search="{{ strtolower(
                                 $ip->ip_address . ' ' .
                                 ($ip->ipStatus?->name ?? '') . ' ' .
@@ -249,7 +203,6 @@
                                 ($ip->branch?->name ?? '') . ' ' .
                                 ($ip->department?->name ?? '')
                             ) }}"
-
                             class="ip-row border-b border-gray-800 hover:bg-[#0F172A] transition"
                         >
 
@@ -271,7 +224,6 @@
                                         @endif
                                     </div>
                                 </template>
-
                                 <template x-if="editing">
                                     <div>
                                         <input
@@ -297,7 +249,6 @@
 
                             {{-- Estado --}}
                             <td class="px-6 py-4 text-center">
-
                                 <span class="
                                     {{ $colors[$ip->ipStatus->color] ?? 'bg-gray-500' }}
                                     text-white
@@ -307,36 +258,23 @@
                                 ">
                                     {{ $ip->ipStatus->name }}
                                 </span>
-
                             </td>
 
                             {{-- Usuario Responsable --}}
                             <td class="px-6 py-4 text-center text-gray-300">
-
                                 <template x-if="!editing">
-
                                     <div>
-
                                         @if ($ip->user_assigned)
-
                                             {{ $ip->user_assigned }}
-
                                         @else
-
                                             <span class="text-gray-500 italic">
                                                 Sin asignación
                                             </span>
-
                                         @endif
-
                                     </div>
-
                                 </template>
-
                                 <template x-if="editing">
-
                                     <div>
-
                                         <input
                                             type="text"
                                             name="user_assigned"
@@ -353,43 +291,30 @@
                                                 w-52
                                             "
                                         >
-
                                     </div>
-
                                 </template>
-
                             </td>
 
                             {{-- Tipo de dispositivo --}}
                             <td class="px-6 py-4 text-center text-gray-300">
-
                                 <template x-if="!editing">
-
                                     <div>
-
                                         @if($ip->deviceType)
-
                                             {{ $ip->deviceType->name }}
-
                                         @else
-
                                             <span class="text-gray-500 italic">
                                                 Sin asignación
                                             </span>
-
                                         @endif
-
                                     </div>
-
                                 </template>
-
                                 <template x-if="editing">
-
                                     <div>
-
                                         <select
                                             name="device_type_id"
                                             form="form-{{ $ip->id }}"
+                                            data-ip-edit-select="device"
+                                            data-selected="{{ $ip->device_type_id }}"
                                             class="
                                                 bg-[#1E293B]
                                                 border border-gray-700
@@ -400,77 +325,43 @@
                                                 w-52
                                             "
                                         >
-
-                                            <option value="">
-                                                Sin asignación
-                                            </option>
-
-                                            @foreach($deviceTypes as $deviceType)
-
-                                                <option
-                                                    value="{{ $deviceType->id }}"
-                                                    {{ $ip->device_type_id == $deviceType->id ? 'selected' : '' }}
-                                                >
-                                                    {{ $deviceType->name }}
-                                                </option>
-
-                                            @endforeach
-
+                                            <option value="">Sin asignación</option>
                                         </select>
-
                                     </div>
-
                                 </template>
-
                             </td>
 
                             {{-- Sucursal --}}
                             <td class="px-6 py-4 text-center text-gray-300">
-
                                 @if($ip->branch)
-
                                     {{ $ip->branch->name }}
-
                                 @else
-
                                     <span class="text-gray-500 italic">
                                         Sin asignación
                                     </span>
-
                                 @endif
-
                             </td>
-
                             {{-- Departamento --}}
                             <td class="px-6 py-4 text-center text-gray-300">
-
                                 <template x-if="!editing">
-
                                     <div>
-
                                         @if($ip->department)
-
                                             {{ $ip->department->name }}
-
                                         @else
-
                                             <span class="text-gray-500 italic">
                                                 Sin asignación
                                             </span>
-
                                         @endif
-
                                     </div>
-
                                 </template>
 
                                 <template x-if="editing">
-
                                     <div>
-
                                         <select
                                             name="department_id"
                                             form="form-{{ $ip->id }}"
+                                            data-ip-edit-select="department"
+                                            data-selected="{{ $ip->department_id }}"
                                             class="
                                                 bg-[#1E293B]
                                                 border border-gray-700
@@ -481,35 +372,14 @@
                                                 w-52
                                             "
                                         >
-
-                                            <option value="">
-                                                Sin asignación
-                                            </option>
-
-                                            @foreach($departments as $department)
-
-                                                <option
-                                                    value="{{ $department->id }}"
-                                                    {{ $ip->department_id == $department->id ? 'selected' : '' }}
-                                                >
-                                                    {{ $department->name }}
-                                                </option>
-
-                                            @endforeach
-
+                                            <option value="">Sin asignación</option>
                                         </select>
-
                                     </div>
-
                                 </template>
-
                             </td>
-
                             {{-- Acciones --}}
                             <td class="px-6 py-4">
-
                                 <div class="flex items-center justify-center gap-2">
-
                                     {{-- Formulario --}}
                                     <form
                                         id="form-{{ $ip->id }}"
@@ -519,35 +389,29 @@
                                         @csrf
                                         @method('PUT')
                                     </form>
-
                                     {{-- Editar --}}
                                     <button
                                         type="button"
-                                        @click="editing = !editing"
+                                        @click="editing = !editing; if (editing) $nextTick(() => window.populateIpEditSelects($el.closest('tr')))"
                                         class="bg-yellow-500 hover:bg-yellow-600
-                                               text-white p-2 rounded-lg transition"
+                                            text-white p-2 rounded-lg transition"
                                     >
                                         ✏️
                                     </button>
 
                                     {{-- Guardar --}}
                                     <template x-if="editing">
-
                                         <div>
-
                                             <button
                                                 type="submit"
                                                 form="form-{{ $ip->id }}"
                                                 class="bg-green-600 hover:bg-green-500
-                                                       text-white p-2 rounded-lg transition"
+                                                    text-white p-2 rounded-lg transition"
                                             >
                                                 💾
                                             </button>
-
                                         </div>
-
                                     </template>
-
                                     {{-- Ping --}}
                                     <button
                                         type="button"
@@ -560,7 +424,6 @@
                                     >
                                         📡
                                     </button>
-
                                     {{-- Liberar --}}
                                     <button
                                         type="button"
@@ -569,180 +432,163 @@
                                             release-btn
                                             bg-green-600 hover:bg-green-500
                                             text-white p-2 rounded-lg transition
-                                        "
-                                    >
+                                    ">
                                         🔓
                                     </button>
-
                                 </div>
-
                             </td>
-
                         </tr>
-
                     @empty
-
                         <tr>
-
                             <td colspan="8" class="px-6 py-8 text-center text-gray-500">
-
                                 No hay IPs registradas.
-
                             </td>
-
                         </tr>
-
                     @endforelse
-
                 </tbody>
             </table>
         </div>
     </div>
-
-    {{-- Modal Exportar --}}
     @include('ip-addresses.partials.export-modal')
-
-    {{-- Modal Ping --}}
     @include('ip-addresses.partials.ping-modal')
 
+    {{-- Catálogos compartidos: las opciones se renderizan una sola vez y se clonan al editar una IP --}}
+    <template id="deviceTypeOptionsTemplate">
+        @foreach($deviceTypes as $deviceType)
+            <option value="{{ $deviceType->id }}">{{ $deviceType->name }}</option>
+        @endforeach
+    </template>
+
+    <template id="departmentOptionsTemplate">
+        @foreach($departments as $department)
+            <option value="{{ $department->id }}">{{ $department->name }}</option>
+        @endforeach
+    </template>
+
     <script>
+        // Carga los catálogos compartidos solo cuando se activa la edición de una fila.
+        window.populateIpEditSelects = function (row) {
+            const definitions = [
+                { selector: '[data-ip-edit-select="device"]', templateId: 'deviceTypeOptionsTemplate' },
+                { selector: '[data-ip-edit-select="department"]', templateId: 'departmentOptionsTemplate' },
+            ];
+
+            definitions.forEach(({ selector, templateId }) => {
+                const select = row.querySelector(selector);
+                const template = document.getElementById(templateId);
+                if (!select || !template) return;
+                if (select.dataset.loaded !== 'true') {
+                    select.appendChild(template.content.cloneNode(true));
+                    select.dataset.loaded = 'true';
+                }
+                select.value = select.dataset.selected || '';
+            });
+        };
+
         // FORMATEAR MAC AUTOMÁTICAMENTE
         document.addEventListener('input', function (event) {
             if (!event.target.classList.contains('mac-input')) {
                 return;
             }
+
             let value = event.target.value
                 .replace(/[^a-fA-F0-9]/g, '')
                 .toUpperCase();
             // Máximo 12 caracteres hexadecimales
             value = value.substring(0, 12);
+
             // Agregar ":" cada 2 caracteres
             const groups = value.match(/.{1,2}/g);
             event.target.value = groups
                 ? groups.join(':')
                 : '';
         });
+
         // BUSCADOR GLOBAL
         const globalSearch =
             document.getElementById('globalSearch');
-
         const statusFilter =
             document.getElementById('statusFilter');
 
         function filterTable() {
-
             const searchValue =
                 globalSearch.value.toLowerCase();
-
             const selectedStatus =
                 statusFilter.value.toLowerCase();
-
             document.querySelectorAll('.ip-row').forEach(row => {
-
                 const content =
                     row.dataset.search || '';
-
                 const rowStatus =
                     row.dataset.status || '';
-
                 const matchesSearch =
                     content.includes(searchValue);
-
                 const matchesStatus =
                     !selectedStatus ||
                     rowStatus.includes(selectedStatus);
-
                 row.style.display =
                     matchesSearch && matchesStatus
                         ? ''
                         : 'none';
-
             });
-
         }
-
-        // ======================================================
-        // MODAL EXPORTACIÓN
-        // ======================================================
-
+        /* 
+        |======================================================
+        | MODAL EXPORTACIÓN
+        |======================================================
+        */
         const exportModal = document.getElementById('exportModal');
         const openExportModal = document.getElementById('openExportModal');
         const closeExportModal = document.getElementById('closeExportModal');
         const cancelExport = document.getElementById('cancelExport');
 
         if (openExportModal) {
-
             openExportModal.addEventListener('click', () => {
-
                 exportModal.classList.remove('hidden');
-
             });
-
         }
 
         if (closeExportModal) {
-
             closeExportModal.addEventListener('click', () => {
-
                 exportModal.classList.add('hidden');
-
             });
-
         }
 
         if (cancelExport) {
-
             cancelExport.addEventListener('click', () => {
-
                 exportModal.classList.add('hidden');
-
             });
-
         }
 
-        // ======================================================
-        // ASISTENTE DE EXPORTACIÓN
-        // ======================================================
-
+        /* 
+        |======================================================
+        | ASISTENTE DE EXPORTACIÓN
+        |======================================================
+        */
         const exportForm = document.getElementById('exportForm');
-
         if (exportForm) {
-
             const subnetButtons = document.querySelectorAll('[data-subnet]');
             const allButton = document.getElementById('selectAllSubnets');
-
             const hiddenContainer =
                 document.getElementById('selectedSubnets');
-
             const summaryNetworks =
                 document.getElementById('summaryNetworks');
-            
             const summaryOccupiedIps = 
                 document.getElementById('summaryOccupiedIps');
-            
             const columnCheckboxes = document.querySelectorAll(
                 'input[name="columns[]"]'
             );
-
             const summaryColumns = document.getElementById('summaryColumns');
-            
             function updateColumnsSummary() {
-
                 const total =
                     [...columnCheckboxes]
                         .filter(cb => cb.checked)
                         .length;
-
                 summaryColumns.textContent = total;
-
             }
-            
+
             function setButtonStyle(button, selected) {
-
                 button.dataset.selected = selected ? 'true' : 'false';
-
                 if (selected) {
-
                     button.classList.remove(
                         'bg-[#1E293B]',
                         'text-gray-300'
@@ -752,9 +598,7 @@
                         'bg-indigo-600',
                         'text-white'
                     );
-
                 } else {
-
                     button.classList.remove(
                         'bg-indigo-600',
                         'text-white'
@@ -764,115 +608,78 @@
                         'bg-[#1E293B]',
                         'text-gray-300'
                     );
-
                 }
-
             }
 
             function rebuildHiddenInputs() {
-
                 hiddenContainer.innerHTML = '';
-
                 let selectedCount = 0;
                 let occupiedIps = 0;
-
                 subnetButtons.forEach(button => {
-
                     if (button.dataset.selected === 'true') {
-
                         selectedCount++;
                         occupiedIps += Number(button.dataset.count);
-
                         const input =
                             document.createElement('input');
-
                         input.type = 'hidden';
                         input.name = 'subnets[]';
                         input.value = button.dataset.subnet;
-
                         hiddenContainer.appendChild(input);
-
                     }
-
                 });
-
                 summaryNetworks.textContent = selectedCount;
                 summaryOccupiedIps.textContent = occupiedIps;
                 updateAllButton();
-
             }
 
             function updateAllButton() {
-
                 const allSelected =
                     [...subnetButtons].every(button =>
                         button.dataset.selected === 'true'
                     );
-
                 setButtonStyle(allButton, allSelected);
-
             }
 
             subnetButtons.forEach(button => {
-
                 button.addEventListener('click', () => {
-
                     const selected =
                         button.dataset.selected === 'true';
-
                     const totalSelected =
                         [...subnetButtons].filter(button =>
                             button.dataset.selected === 'true'
                         ).length;
-
                     if (selected && totalSelected === 1) {
-
                         return;
-
                     }
-
                     setButtonStyle(button, !selected);
-
                     rebuildHiddenInputs();
-
                 });
-
             });
 
             columnCheckboxes.forEach(checkbox => {
-
                 checkbox.addEventListener('change', () => {
-
                     updateColumnsSummary();
-
                 });
-
             });
 
             allButton.addEventListener('click', () => {
-
                 const allSelected =
                     [...subnetButtons].every(button =>
                         button.dataset.selected === 'true'
                     );
-
                 subnetButtons.forEach(button => {
-
                     setButtonStyle(button, !allSelected);
-
                 });
-
                 rebuildHiddenInputs();
-
             });
-
             rebuildHiddenInputs();
-
         }
 
-        //===========================================
-        // ASISTENTE DE PING
-        //===========================================
+        /*
+        |===========================================
+        | ASISTENTE DE PING
+        |===========================================
+        */
         const stopPingBtn = document.getElementById('stopPingBtn');
         const closePingModal = document.getElementById('closePingBtn');
 
@@ -887,45 +694,32 @@
         );
 
         function stopPing() {
-
             console.log('DETENIENDO');
-
             pingRunning = false;
-
             pingOutput.innerHTML +=
                 '<div class="text-yellow-400">Ping detenido.</div>';
-
             pingModal.classList.add('hidden');
-
         }
 
         let pingRunning = false;
-
         function addPingLine(success, ip, message = '') {
-
             const line = document.createElement('div');
-
             const time = new Date().toLocaleTimeString(
                 'es-CL',
                 {
                     hour12: false
                 }
             );
-
             line.textContent = success
                 ? `[${time}] ✅ Respuesta desde ${ip}`
                 : `[${time}] ❌ ${message}`;
 
             pingOutput.appendChild(line);
-
-            pingOutput.scrollTop =
-                pingOutput.scrollHeight;
+            pingOutput.scrollTop = pingOutput.scrollHeight;
         }
 
         function addErrorLine(message = 'Error ejecutando ping') {
-
             const line = document.createElement('div');
-
             const time = new Date().toLocaleTimeString(
                 'es-CL',
                 {
@@ -935,159 +729,108 @@
 
             line.textContent =
                 `[${time}] ❌ ${message}`;
-
             pingOutput.appendChild(line);
-
             pingOutput.scrollTop =
+
                 pingOutput.scrollHeight;
+
         }
 
         async function startPing(ip) {
-
             pingRunning = true;
-
             while (pingRunning) {
-
                 try {
-
                     const response = await fetch(
                         "{{ route('ip-addresses.ping') }}",
                         {
                             method: 'POST',
-
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
-
                             body: JSON.stringify({
                                 ip
                             })
                         }
                     );
-
                     if (!response.ok) {
-
                         addErrorLine(
-                            `Error HTTP ${response.status}`
+                            `[${time}] ❌ Error HTTP ${response.status}`
                         );
-
                         await new Promise(
                             resolve => setTimeout(resolve, 2000)
                         );
-
                         continue;
-
                     }
-
                     const data = await response.json();
-
                     let message = 'Tiempo de espera agotado';
-
                     switch (data.state) {
-
                         case 'success':
-
                             addPingLine(
                                 true,
                                 ip
                             );
-
                             break;
-
                         case 'unreachable':
-
                             message =
                                 'Host de destino inaccesible';
-
                             addPingLine(
                                 false,
                                 ip,
                                 message
                             );
-
                             break;
-
                         case 'timeout':
-
                             message =
                                 'Tiempo de espera agotado';
-
                             addPingLine(
                                 false,
                                 ip,
                                 message
                             );
-
                             break;
-
                         case 'invalid':
-
                             message =
                                 'IP inválida';
-
                             addPingLine(
                                 false,
                                 ip,
                                 message
                             );
-
                             break;
-
                         default:
-
                             addPingLine(
                                 false,
                                 ip,
                                 'Error desconocido'
                             );
-
                     }
-
                 } catch (error) {
-
                     console.error(
                         'ERROR PING:',
                         error
                     );
-
                     addErrorLine();
-
                 }
-
                 await new Promise(
                     resolve => setTimeout(resolve, 2000)
                 );
-
             }
-
         }
-
         document.querySelectorAll('.ping-btn').forEach(button => {
-
             button.addEventListener('click', () => {
-
                 const ip = button.dataset.ip;
-
                 if (!ip) return;
-
                 pingModal.classList.remove('hidden');
-
                 pingTitle.innerText =
                     `📡 Ping ${ip}`;
-
                 pingOutput.innerHTML = '';
-
                 pingRunning = false;
 
                 setTimeout(() => {
-
                     startPing(ip);
-
                 }, 100);
-
             });
-
         });
 
         closePingModal.addEventListener(
@@ -1102,17 +845,12 @@
 
         // LIBERAR IP
         document.querySelectorAll('.release-btn').forEach(button => {
-
             button.addEventListener('click', async () => {
-
                 if (!confirm('¿Liberar esta IP?')) {
                     return;
                 }
-
                 const id = button.dataset.id;
-
                 try {
-
                     const response = await fetch(
                         `/ip-addresses/${id}/release`,
                         {
@@ -1125,23 +863,13 @@
                     );
 
                     const data = await response.json();
-
                     if (data.success) {
-
                         location.reload();
-
                     }
-
                 } catch (error) {
-
                     alert('Error liberando IP');
-
                 }
-
             });
-
         });
-
     </script>
-
 </x-app-layout>
